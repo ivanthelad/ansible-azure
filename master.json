@@ -38,7 +38,7 @@
 
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameter('virtualNetworkName'))]",
     "mastersubnetName": "masterSubnet",
-     "masterSubnetRef": "[concat(parameters('vnetId'), '/subnets/', variables('mastersubnetName'))]",
+     "masterSubnetRef": "[concat(variables('vnetId'), '/subnets/', variables('mastersubnetName'))]",
      "centos": {
       "publisher": "Openlogic",
       "offer": "CentOS",
