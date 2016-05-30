@@ -7,10 +7,6 @@
   
   },
   "variables": {
-    "baseTemplateUrl": "https://raw.githubusercontent.com/derdanu/azure-openshift/master/",
-    "baseVMachineTemplateUriInfranode": "[concat(variables('baseTemplateUrl'), 'infranode.json')]",
-    "baseVMachineTemplateUriNode": "[concat(variables('baseTemplateUrl'), 'node.json')]",
-    "baseVMachineTemplateUriMaster": "[concat(variables('baseTemplateUrl'), 'master.json')]",
     "location": "[resourceGroup().location]",
     "virtualNetworkName": "openshiftVnet",
     "addressPrefix": "10.0.0.0/16",
