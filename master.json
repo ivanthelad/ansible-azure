@@ -9,7 +9,9 @@
     "dnsName": {
       "type": "string"
     },
-   
+       "virtualNetworkName": {
+      "type": "string"
+    },
   
     "vmSize": {
       "type": "string"
@@ -35,7 +37,7 @@
 
     
     "mastersubnetName": "masterSubnet",
-     "masterSubnetRef": "[concat(variables('vnetId'), '/subnets/', variables('mastersubnetName'))]",
+     "masterSubnetRef": "[concat(parameters('virtualNetworkName'), '/subnets/', variables('mastersubnetName'))]",
      "centos": {
       "publisher": "Openlogic",
       "offer": "CentOS",
