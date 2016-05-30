@@ -35,6 +35,7 @@
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "masterStorageName": "[concat(uniqueString(resourceGroup().id), 'mastersa')]",
        "location": "[resourceGroup().location]",
+       "sa": "[variables('masterStorageName')]",
 
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "mastersubnetName": "masterSubnet",
