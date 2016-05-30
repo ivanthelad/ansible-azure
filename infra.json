@@ -75,15 +75,5 @@
     }
  
    
-  ],
-  "outputs": {
-    "fqdn": {
-      "type": "string",
-      "value": "[reference(concat(parameters('vmName'), 'pip')).dnsSettings.fqdn]"
-    },
-    "pip": {
-      "type": "string",
-      "value": "[reference(concat(parameters('vmName'), 'pip')).ipAddress]"
-    }
-  }
+  ]
 }
