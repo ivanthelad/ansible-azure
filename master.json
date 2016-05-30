@@ -25,13 +25,8 @@
       "metadata": {
         "description": "SSH rsa public key file as a string."
       }
-    },
-    "imageReference": {
-      "type": "object",
-      "metadata": {
-        "description": "imageReference object that should be used to create the virtual machine"
-      }
     }
+
   },
   "variables": {
     "apiVersion": "2015-06-15",
@@ -41,6 +36,12 @@
     
     "mastersubnetName": "masterSubnet",
      "masterSubnetRef": "[concat(variables('vnetId'), '/subnets/', variables('mastersubnetName'))]"
+     "centos": {
+      "publisher": "Openlogic",
+      "offer": "CentOS",
+      "sku": "7.2",
+      "version": "latest"
+    }
   },
   "resources": [
       {
@@ -118,7 +119,7 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[parameters('imageReference')]",
+          "imageReference": "[variables('centos')]",
           "osDisk": {
             "name": "osdisk",
             "vhd": {
