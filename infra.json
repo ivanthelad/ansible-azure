@@ -1,0 +1,97 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+
+  
+  
+  },
+  "variables": {
+    "baseTemplateUrl": "https://raw.githubusercontent.com/derdanu/azure-openshift/master/",
+    "baseVMachineTemplateUriInfranode": "[concat(variables('baseTemplateUrl'), 'infranode.json')]",
+    "baseVMachineTemplateUriNode": "[concat(variables('baseTemplateUrl'), 'node.json')]",
+    "baseVMachineTemplateUriMaster": "[concat(variables('baseTemplateUrl'), 'master.json')]",
+    "location": "[resourceGroup().location]",
+    "virtualNetworkName": "openshiftVnet",
+    "addressPrefix": "10.0.0.0/16",
+    "infranodesubnetName": "infranodeSubnet",
+    "infranodesubnetPrefix": "10.0.2.0/24",
+    "nodesubnetName": "nodeSubnet",
+    "nodesubnetPrefix": "10.0.1.0/24",
+    "mastersubnetName": "masterSubnet",
+    "mastersubnetPrefix": "10.0.0.0/24",
+    "apiVersion": "2015-06-15",
+    "vhdStorageType": "Standard_LRS",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+    "infranodeSubnetRef": "[concat(variables('vnetId'), '/subnets/', variables('infranodesubnetName'))]",
+    "nodeSubnetRef": "[concat(variables('vnetId'), '/subnets/', variables('nodesubnetName'))]",
+    "masterSubnetRef": "[concat(variables('vnetId'), '/subnets/', variables('mastersubnetName'))]",
+    "centos": {
+      "publisher": "Openlogic",
+      "offer": "CentOS",
+      "sku": "7.2",
+      "version": "latest"
+    },
+    "rhel": {
+      "publisher": "RedHat",
+      "offer": "RHEL",
+      "sku": "7.2",
+      "version": "latest"
+    }  
+  },
+  "resources": [
+  
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "displayName": "VirtualNetwork"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('infranodesubnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('infranodesubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[variables('nodesubnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('nodesubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[variables('mastersubnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('mastersubnetPrefix')]"
+            }
+          }
+        ]
+      }
+    }
+ 
+   
+  ],
+  "outputs": {
+    "Openshift Webconsole": {
+      "type": "string",
+      "value": "[concat('https://', reference('master').outputs.fqdn.value, ':8443')]"
+    },
+    "Openshift Master ssh": {
+      "type": "string",
+      "value": "[concat('ssh -A ', reference('master').outputs.pip.value)]"
+    },
+    "Openshift Router Public IP": {
+      "type": "string",
+      "value": "[reference('infranode').outputs.pip.value]"
+    }
+  }
+}
