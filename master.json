@@ -36,7 +36,7 @@
     "masterStorageName": "[concat(uniqueString(resourceGroup().id), 'mastersa')]",
        "location": "[resourceGroup().location]",
 
-    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameter('virtualNetworkName'))]",
     "mastersubnetName": "masterSubnet",
      "masterSubnetRef": "[concat(parameters('vnetId'), '/subnets/', variables('mastersubnetName'))]",
      "centos": {
