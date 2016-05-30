@@ -12,9 +12,7 @@
     "sa": {
       "type": "string"
     },
-    "subnetRef": {
-      "type": "string"
-    },
+  
     "vmSize": {
       "type": "string"
     },
@@ -30,15 +28,6 @@
         "description": "SSH rsa public key file as a string."
       }
     },
-    "numberOfNodes": {
-      "type": "int"
-    },
-    "baseTemplateUrl": {
-      "type": "string"
-    },
-    "routerExtIP": {
-      "type": "string"
-    },
     "imageReference": {
       "type": "object",
       "metadata": {
@@ -48,7 +37,12 @@
   },
   "variables": {
     "apiVersion": "2015-06-15",
-    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]"
+    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
+    "masterStorageName": "[concat(uniqueString(resourceGroup().id), 'mastersa')]",
+
+    
+    "mastersubnetName": "masterSubnet",
+     "masterSubnetRef": "[concat(variables('vnetId'), '/subnets/', variables('mastersubnetName'))]"
   },
   "resources": [
       {
@@ -85,7 +79,7 @@
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), 'pip'))]"
               },
               "subnet": {
-                "id": "[parameters('subnetRef')]"
+                "id": "[variables('masterSubnetRef')]"
               }
             }
           }
@@ -157,27 +151,7 @@
         }
       }
     },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('vmName'),'/installcustomscript')]",
-      "apiVersion": "[variables('apiVersion')]",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "VirtualMachineCustomScriptExtension"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.OSTCExtensions",
-        "type": "CustomScriptForLinux",
-        "typeHandlerVersion": "1.3",
-        "settings": {
-          "fileUris": [ "[concat(parameters('baseTemplateUrl'), 'master.sh')]" ],
-          "commandToExecute": "[ concat('sh master.sh ', parameters('adminUsername'), ' ', parameters('adminPassword'), ' ', reference(concat(parameters('vmName'), 'pip')).dnsSettings.fqdn, ' ', padLeft(parameters('numberOfNodes'), 2, '0'), ' ', parameters('routerExtIP') ) ]"
-        }
-      }
-    },
+   
     {
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[concat(parameters('vmName'), 'nsg')]",
