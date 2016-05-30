@@ -44,7 +44,8 @@
       "offer": "CentOS",
       "sku": "7.2",
       "version": "latest"
-    }
+    },
+    "vhdStorageType": "Standard_LRS"
   },
   "resources": [
       {
