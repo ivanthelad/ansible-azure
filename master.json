@@ -34,6 +34,7 @@
     "apiVersion": "2015-06-15",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "masterStorageName": "[concat(uniqueString(resourceGroup().id), 'mastersa')]",
+       "location": "[resourceGroup().location]",
 
     
     "mastersubnetName": "masterSubnet",
