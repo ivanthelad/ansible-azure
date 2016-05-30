@@ -9,9 +9,7 @@
     "dnsName": {
       "type": "string"
     },
-    "sa": {
-      "type": "string"
-    },
+   
   
     "vmSize": {
       "type": "string"
