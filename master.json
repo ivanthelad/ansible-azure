@@ -36,9 +36,9 @@
     "masterStorageName": "[concat(uniqueString(resourceGroup().id), 'mastersa')]",
        "location": "[resourceGroup().location]",
 
-    
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "mastersubnetName": "masterSubnet",
-     "masterSubnetRef": "[concat(parameters('virtualNetworkName'), '/subnets/', variables('mastersubnetName'))]",
+     "masterSubnetRef": "[concat(parameters('vnetId'), '/subnets/', variables('mastersubnetName'))]",
      "centos": {
       "publisher": "Openlogic",
       "offer": "CentOS",
