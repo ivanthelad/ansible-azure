@@ -8,9 +8,7 @@
     "vmName": {
       "type": "string"
     },
-    "dnsName": {
-      "type": "string"
-    },
+
     "virtualNetworkName": {
       "type": "string"
     },
@@ -52,8 +50,7 @@
     "location": "[resourceGroup().location]",
     "sa": "[variables('storageName')]",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-    "subnetName": "parameters('subnetName')",
-    "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnetName'))]",
+    "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
     "centos": {
       "publisher": "Openlogic",
       "offer": "CentOS",
