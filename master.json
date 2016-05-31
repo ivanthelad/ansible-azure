@@ -80,7 +80,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('dnsName'), 'pip'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), 'pip'))]"
               },
               "subnet": {
                 "id": "[variables('masterSubnetRef')]"
@@ -198,7 +198,7 @@
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(parameters('dnsName'), 'pip')]",
+      "name": "[concat(parameters('vmName'), 'pip')]",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "PublicIPAddress"
