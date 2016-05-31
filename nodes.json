@@ -1,14 +1,17 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
   "parameters": {
+
+
+
     "vmName": {
       "type": "string"
     },
-    "sa": {
+    "dnsName": {
       "type": "string"
     },
-    "subnetRef": {
+    "virtualNetworkName": {
       "type": "string"
     },
     "vmSize": {
@@ -17,27 +20,71 @@
     "adminUsername": {
       "type": "string"
     },
+    "subnetName": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
     "sshKeyData": {
       "type": "string",
       "metadata": {
         "description": "SSH rsa public key file as a string."
       }
     },
-    "baseTemplateUrl": {
-      "type": "string"
-    },
-    "imageReference": {
-      "type": "object",
+
+    "image": {
+      "type": "string",
+      "allowedValues": [
+        "centos",
+        "rhel"
+      ],
+      "defaultValue": "centos",
       "metadata": {
-        "description": "imageReference object that should be used to create the virtual machine"
+        "description": "OS to use. Centos or Redhat Enterprise Linux"
       }
     }
   },
   "variables": {
     "apiVersion": "2015-06-15",
-    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]"
+    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
+    "storageName": "[concat(uniqueString(resourceGroup().id), parameters('vmName'))]",
+    "location": "[resourceGroup().location]",
+    "sa": "[variables('storageName')]",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "subnetName": "parameters('subnetName')",
+    "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnetName'))]",
+    "centos": {
+      "publisher": "Openlogic",
+      "offer": "CentOS",
+      "sku": "7.2",
+      "version": "latest"
+    },
+    "rhel": {
+      "publisher": "RedHat",
+      "offer": "RHEL",
+      "sku": "7.2",
+      "version": "latest"
+    },
+        "vhdStorageType": "Standard_LRS",
+
+    "imageReference": {
+      "value": "[variables(parameters('image'))]"
+    }
   },
   "resources": [
+      {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageName')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "displayName": "StorageAccount"
+      },
+      "properties": {
+        "accountType": "[variables('vhdStorageType')]"
+      }
+    },
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Network/networkInterfaces",
@@ -53,7 +100,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[parameters('subnetRef')]"
+                "id": "[variables('subnetRef')]"
               }
             }
           }
@@ -91,11 +138,11 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[parameters('imageReference')]",
+          "imageReference": "[variables('imageReference')]",
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', parameters('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '.vhd')]"
+              "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -104,11 +151,11 @@
             {
               "caching": "None",
               "createOption": "Empty",
-              "diskSizeGB": "128",
+              "diskSizeGB": "64",
               "lun": 0,
               "name": "datadisk1",
               "vhd": {
-                "uri": "[concat('http://', parameters('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '_datadisk1.vhd')]"
+                "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '_datadisk1.vhd')]"
               }
             }
           ]
@@ -121,29 +168,8 @@
           ]
         }
       }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('vmName'),'/installcustomscript')]",
-      "apiVersion": "[variables('apiVersion')]",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "VirtualMachineCustomScriptExtension"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.OSTCExtensions",
-        "type": "CustomScriptForLinux",
-        "typeHandlerVersion": "1.3",
-        "settings": {
-          "fileUris": [ "[concat(parameters('baseTemplateUrl'), 'node.sh')]" ],
-          "commandToExecute": "sh node.sh"
-        }
-      }
     }
   ],
-    "outputs": {
-    }
+  "outputs": {
+  }
 }

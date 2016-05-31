@@ -1,7 +1,6 @@
-
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
   "parameters": {
     "vmName": {
       "type": "string"
@@ -9,14 +8,16 @@
     "dnsName": {
       "type": "string"
     },
-       "virtualNetworkName": {
+    "virtualNetworkName": {
       "type": "string"
     },
-  
     "vmSize": {
       "type": "string"
     },
     "adminUsername": {
+      "type": "string"
+    },
+    "subnetName": {
       "type": "string"
     },
     "adminPassword": {
@@ -27,31 +28,46 @@
       "metadata": {
         "description": "SSH rsa public key file as a string."
       }
+    },
+    "image": {
+      "type": "string",
+      "allowedValues": [
+        "centos",
+        "rhel"
+      ],
+      "defaultValue": "centos",
+      "metadata": {
+        "description": "OS to use. Centos or Redhat Enterprise Linux"
+      }
     }
-
   },
   "variables": {
     "apiVersion": "2015-06-15",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
-    "masterStorageName": "[concat(uniqueString(resourceGroup().id), 'mastersa')]",
-       "location": "[resourceGroup().location]",
-       "sa": "[variables('masterStorageName')]",
-
+    "storageName": "[concat(uniqueString(resourceGroup().id), parameters('vmName'))]",
+    "location": "[resourceGroup().location]",
+    "sa": "[variables('storageName')]",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-    "mastersubnetName": "masterSubnet",
-     "masterSubnetRef": "[concat(variables('vnetId'), '/subnets/', variables('mastersubnetName'))]",
-     "centos": {
+    "subnetName": "parameters('subnetName')",
+    "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnetName'))]",
+    "centos": {
       "publisher": "Openlogic",
       "offer": "CentOS",
+      "sku": "7.2",
+      "version": "latest"
+    },
+    "rhel": {
+      "publisher": "RedHat",
+      "offer": "RHEL",
       "sku": "7.2",
       "version": "latest"
     },
     "vhdStorageType": "Standard_LRS"
   },
   "resources": [
-      {
+    {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('masterStorageName')]",
+      "name": "[variables('storageName')]",
       "apiVersion": "[variables('apiVersion')]",
       "location": "[variables('location')]",
       "tags": {
@@ -83,7 +99,7 @@
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), 'pip'))]"
               },
               "subnet": {
-                "id": "[variables('masterSubnetRef')]"
+                "id": "[variables('subnetRef')]"
               }
             }
           }
@@ -155,7 +171,6 @@
         }
       }
     },
-   
     {
       "type": "Microsoft.Network/networkSecurityGroups",
       "name": "[concat(parameters('vmName'), 'nsg')]",
