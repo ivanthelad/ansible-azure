@@ -109,7 +109,9 @@
         "displayName": "VirtualMachine"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]"
+        "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', [variables('storageName')])]"
+
       ],
       "properties": {
         "hardwareProfile": {
