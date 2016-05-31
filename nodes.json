@@ -63,11 +63,7 @@
       "sku": "7.2",
       "version": "latest"
     },
-        "vhdStorageType": "Standard_LRS",
-
-    "imageReference": {
-      "value": "[variables(parameters('image'))]"
-    }
+    "vhdStorageType": "Standard_LRS"
   },
   "resources": [
       {
@@ -148,7 +144,7 @@
             {
               "caching": "None",
               "createOption": "Empty",
-              "diskSizeGB": "64",
+              "diskSizeGB": "128",
               "lun": 0,
               "name": "datadisk1",
               "vhd": {
