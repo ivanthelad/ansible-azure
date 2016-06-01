@@ -16,9 +16,6 @@
         "stage": "dev"
       }
     },
-    "masterKey": {
-      "type": "string"
-    },
     "virtualNetworkName": {
       "type": "string"
     },
