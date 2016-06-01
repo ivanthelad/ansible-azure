@@ -9,7 +9,7 @@
       "type": "string"
     },
    "tags": {
-      "type": "array"
+      "type": "object"
     },
     "virtualNetworkName": {
       "type": "string"
