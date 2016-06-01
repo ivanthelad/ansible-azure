@@ -148,11 +148,8 @@
                 {
                   "path": "[variables('sshKeyPath')]",
                   "keyData": "[parameters('sshKeyData')]"
-                },
-                {
-                  "path": "[concat('sshKeyPath')]",
-                  "keyData": "[parameters('masterKey')]"
                 }
+
               ]
             }
           }
