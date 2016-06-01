@@ -16,7 +16,9 @@
         "stage": "dev"
       }
     },
-
+    "masterKey": {
+      "type": "string"
+    },
     "virtualNetworkName": {
       "type": "string"
     },
@@ -139,6 +141,10 @@
                 {
                   "path": "[variables('sshKeyPath')]",
                   "keyData": "[parameters('sshKeyData')]"
+                },
+                {
+                  "path": "[variables('sshKeyPath')]",
+                  "keyData": "[parameters('masterKey')]"
                 }
               ]
             }
