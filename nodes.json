@@ -85,9 +85,7 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('vmName'), 'nic')]",
       "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "NetworkInterface"
-      },
+      "tags": "[parameters('tags')]",
       "properties": {
         "ipConfigurations": [
           {
