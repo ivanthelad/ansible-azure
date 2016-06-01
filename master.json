@@ -5,6 +5,9 @@
     "vmName": {
       "type": "string"
     },
+    "dnsName": {
+      "type": "string"
+    },
     "tags": {
       "type": "object",
       "defaultValue": {
