@@ -8,9 +8,15 @@
     "vmName": {
       "type": "string"
     },
-   "tags": {
-      "type": "object"
+    "tags": {
+      "type": "object",
+      "defaultValue": {
+        "region": "NorthEurope",
+        "zone": "apps",
+        "stage": "dev"
+      }
     },
+
     "virtualNetworkName": {
       "type": "string"
     },
@@ -85,7 +91,9 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('vmName'), 'nic')]",
       "location": "[resourceGroup().location]",
-      "tags": "[parameters('tags')]",
+      "tags": {
+        "displayName": "NetworkInterface"
+      },
       "properties": {
         "ipConfigurations": [
           {
@@ -105,7 +113,13 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
-      "displayName": "StorageAccount",
+      "tags": {
+        "displayName": "VirtualMachine",
+        "openshift": "3.2",
+        "region": "[parameters('tags').region]",
+        "zone": "[parameters('tags').zone]",
+        "stage": "[parameters('tags').stage]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
