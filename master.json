@@ -5,7 +5,15 @@
     "vmName": {
       "type": "string"
     },
-    "dnsName": {
+    "tags": {
+      "type": "object",
+      "defaultValue": {
+        "region": "NorthEurope",
+        "zone": "infra",
+        "stage": "dev"
+      }
+    },
+    "masterKey": {
       "type": "string"
     },
     "virtualNetworkName": {
@@ -48,6 +56,7 @@
     "location": "[resourceGroup().location]",
     "sa": "[variables('storageName')]",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "subnetName": "parameters('subnetName')",
     "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
     "centos": {
       "publisher": "Openlogic",
@@ -114,10 +123,16 @@
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
       "tags": {
-        "displayName": "VirtualMachine"
+        "displayName": "VirtualMachine",
+        "openshift": "3.2",
+        "region": "[parameters('tags').region]",
+        "zone": "[parameters('tags').zone]",
+        "stage": "[parameters('tags').stage]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]"
+        "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+
       ],
       "properties": {
         "hardwareProfile": {
@@ -133,6 +148,10 @@
                 {
                   "path": "[variables('sshKeyPath')]",
                   "keyData": "[parameters('sshKeyData')]"
+                },
+                {
+                  "path": "[concat('sshKeyPath')]",
+                  "keyData": "[parameters('masterKey')]"
                 }
               ]
             }
