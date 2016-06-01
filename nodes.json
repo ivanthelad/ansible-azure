@@ -12,7 +12,7 @@
     },
    "tags": {
       "type": "array"
-    }
+    },
     "virtualNetworkName": {
       "type": "string"
     },
