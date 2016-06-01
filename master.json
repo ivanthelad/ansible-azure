@@ -155,7 +155,7 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[variables('centos')]",
+          "imageReference": "[variables('rhel')]",
           "osDisk": {
             "name": "osdisk",
             "vhd": {
