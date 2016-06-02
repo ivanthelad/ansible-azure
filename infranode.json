@@ -38,15 +38,8 @@
         "description": "SSH rsa public key file as a string."
       }
     },
-    "baseTemplateUrl": {
-      "type": "string"
-    },
-    "imageReference": {
-      "type": "object",
-      "metadata": {
-        "description": "imageReference object that should be used to create the virtual machine"
-      }
-    },    "image": {
+
+    "image": {
       "type": "string",
       "allowedValues": [
         "centos",
