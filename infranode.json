@@ -5,9 +5,7 @@
     "vmName": {
       "type": "string"
     },
-    "sa": {
-      "type": "string"
-    },
+
     "tags": {
       "type": "object",
       "defaultValue": {
