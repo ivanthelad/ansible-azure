@@ -1,0 +1,9 @@
+[azure_vms]
+
+[gatewayed-masters]
+master1
+[gatewayed-nodes]
+node1
+master1
+infranode1
+

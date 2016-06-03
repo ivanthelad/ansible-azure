@@ -1,0 +1,55 @@
+[defaults]
+log_path=/var/log/ansible.log
+[OSEv3:children]
+masters
+nodes
+[OSEv3:vars]
+# SSH user, this user should allow ssh based auth without requiring a password
+ansible_ssh_user={{ adminUsername }}
+
+# If ansible_ssh_user is not root, ansible_sudo must be set to true
+ansible_sudo=true
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+deployment_type=openshift-enterprise
+osm_default_subdomain=cloudapps.example.com
+# uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+openshift_node_kubelet_args={'max-pods': ['40'], 'image-gc-high-threshold': ['90'], 'image-gc-low-threshold': ['80']}
+logrotate_scripts=[{"name": "syslog", "path": "/var/log/cron\n/var/log/maillog\n/var/log/messages\n/var/log/secure\n/var/log/spooler\n", "options": ["daily", "rotate 7", "compress", "sharedscripts", "missingok"], "scripts": {"postrotate": "/bin/kill -HUP `cat /var/run/syslogd.pid 2> /dev/null` 2> /dev/null || true"}}]
+#osm_default_node_selector="region=primary"
+openshift_router_selector='region=infra'
+openshift_registry_selector='region=infra'
+openshift_node_iptables_sync_period=5s
+openshift_hosted_router_selector='region=infra,zone=default'
+openshift_master_pod_eviction_timeout=3m
+osm_controller_args={'resource-quota-sync-period': ['10s']}
+osm_api_server_args={'max-requests-inflight': ['400']}
+osm_cockpit_plugins=['cockpit-kubernetes']
+osm_use_cockpit=true
+openshift_use_dnsmasq=False
+#openshift_master_cluster_method=native
+#openshift_master_cluster_hostname=dns.example.com
+#openshift_master_cluster_public_hostname=dns.example.com
+
+#[etcd:vars]
+#etcd_interface=eth1
+# host group for masters
+
+[masters]
+{% for key, value in masters.iteritems() %}
+{{ value.name }} {% endfor %} openshift_public_hostname={{ publicmasterdns }}
+
+
+
+# host group for nodes, includes region info
+[nodes]
+{% for key, value in nodes.iteritems() %}
+{{ value.name }} openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
+{% endfor %}
+{% for key, value in masters.iteritems() %}
+{{ value.name }} openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
+{% endfor %}
+{% for key, value in infranodes.iteritems() %}
+{{ value.name }} openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
+{% endfor %}

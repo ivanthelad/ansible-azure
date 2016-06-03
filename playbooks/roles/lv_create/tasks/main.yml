@@ -1,0 +1,40 @@
+
+
+- name: creating new LVM logical volume
+  lvol: vg={{ create_vgname }} lv={{ create_lvname }} size={{ create_lvsize }}
+
+- name: "Mkdir {i{ pv_tmpdir }}"
+  file:
+    state: directory
+    path: "{{ new_mntp }}"
+    mode: '0750'
+
+- name: creating new filesystem on new LVM logical volume
+  filesystem: fstype={{ filesystem }} dev=/dev/{{ create_vgname }}/{{ create_lvname }}
+
+- name: mounting new filesystem
+  mount: name={{ new_mntp }} src=/dev/{{ create_vgname }}/{{ create_lvname }} fstype={{ filesystem }} state=mounted
+
+
+
+#- name: "Mkdir {i{ pv_tmpdir }}"
+#  file:
+#    state: directory
+#    path: "{{ pv_tmpdir }}"
+#    mode: '0750'
+#
+#- name: mkfs
+#  filesystem:
+#    dev: "{{ cli_device_name }}"
+#    fstype: ext4
+#
+#- name: Mount the dev
+#  mount:
+#    name: "{{ pv_mntdir }}"
+#    src: "{{ cli_device_name }}"
+#    fstype: ext4
+#    state: mounted
+
+
+
+

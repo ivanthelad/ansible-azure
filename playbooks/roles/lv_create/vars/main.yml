@@ -1,0 +1,7 @@
+
+create_lvname: 'ose-lv'
+create_vgname: 'docker_vg'
+filesystem: 'ext4'  
+new_mntp: '/var/lib/origin/openshift.local.etcd/'
+#create_lvsize: '100%FREE'
+create_lvsize: '512'

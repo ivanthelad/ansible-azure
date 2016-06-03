@@ -1,0 +1,33 @@
+---
+# file: prep.yml
+# Playbook to prep OpenShift Enterprise hosts for installation. Run this before
+# the openshift-ansible byo playbook.
+- name: Install Basic Preqes
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+#    - atomic-openshift-utils
+    - wget
+    - git
+    - net-tools
+    - bind-utils
+    - iptables-services
+    - bridge-utils
+    - bash-completion
+    - httpd-tools 
+    - docker
+    - vim
+- name: upgrade all packages
+  yum: name=* state=latest
+- name: OpenShift use nfs files
+  seboolean:
+    name: virt_use_nfs
+    state: no
+    persistent: yes
+- name: Remove swaps from fstab
+  lineinfile:
+    dest: /etc/fstab
+    regexp: '^/[\S]+\s+swap\s+swap'
+    state: absent
+  notify: disable swap

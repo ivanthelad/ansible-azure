@@ -1,0 +1,63 @@
+---
+resource_group_name: ose86
+### subscrption id for Azure 
+subscriptionID: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+adminUsername: userforjumphost
+adminPassword: passwordforjumphost
+
+# see https://azure.microsoft.com/en-us/documentation/articles/cloud-services-sizes-specs/
+master_vmSize: Standard_D2_v2
+node_vmSize: Standard_D2_v2
+
+jumphost: 104.41.204.53
+
+## docker info
+docker_storage_device: /dev/sdc
+create_vgname: docker_vg
+filesystem: 'xfs'
+create_lvsize: '80%FREE'
+#create_lvsize: '2g'
+
+#### subscription information for redhat
+rh_subcription_user: XXXXXXXXX 
+rh_subcription_pass: XXXXXXXXX
+
+## poolid, should look like D8a85f9843e3d687a013e3eee471a083e  
+openshift_pool_id: XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#### public key
+sshkey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+masters:
+  master1:
+    name: master1
+    tags:
+      region: northeurope
+      zone: infra
+      stage: dev
+
+infranodes:
+  infranode1:
+    name: infranode1
+    tags:
+      region: northeurope
+      zone: infra
+      stage: dev
+nodes:
+  node1:
+    name: node1
+    tags: 
+      region: northeurope
+      zone: frontend
+      stage: dev
+
+#  node2:
+#    name: node2
+#    tags:
+#      region: northeurope
+#      zone: backend
+#      stage: dev
+#i#nodes:
+#  name: node1
+#  name: node2
+publicmasterip: 52.169.180.38
+publicmasterdns: master-ose86.northeurope.cloudapp.azure.com

@@ -1,0 +1,69 @@
+---
+# file: prep.yml
+# Playbook to prep OpenShift Enterprise hosts for installation. Run this before
+# the openshift-ansible byo playbook.
+- name: Install Basic Preqes
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - atomic-openshift-utils
+    - bind-utils
+    - bridge-utils
+    - docker
+    - gcc
+    - git
+    - iptables-services
+    - net-tools
+    - openssh-clients
+    - python
+    - python-virtualenv
+    - wget
+    - docker
+- name: stop docker
+  service:
+    name: docker
+    state: stopped
+- name: delete /var/lib/docker
+  command: rm -rf /var/lib/docker
+- name: check to see if /dev/sdb exists
+  command: test -e /dev/sdb
+  register: sdb_check
+  ignore_errors: yes
+
+- debug: var=sdb_check
+
+- name: copy the docker-storage-setup config file
+  copy:
+    src: docker-storage-setup
+    dest: /etc/sysconfig/docker-storage-setup
+    owner: root
+    group: root
+    mode: 0664
+
+- name: docker storage setup
+  command: docker-storage-setup
+  register: setup_output
+
+- debug: var=setup_output
+
+- name: start docker
+  command: systemctl start docker.service
+  register: dockerstart
+
+- debug: var=dockerstart
+- name: OpenShift use nfs files
+  seboolean:
+    name: virt_use_nfs
+    state: no
+    persistent: yes
+- name: Remove swaps from fstab
+  lineinfile:
+    dest: /etc/fstab
+    regexp: '^/[\S]+\s+swap\s+swap'
+    state: absent
+  notify: disable swap
+handlers:
+- name: disable swap
+  command: swapoff --all
+  ignore_errors: yes
