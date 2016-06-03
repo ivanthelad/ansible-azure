@@ -4,10 +4,11 @@ https://azure.microsoft.com/en-us/documentation/articles/xplat-cli-install/
 
 ## Configure azure creditals 
 under the file  ~/.azure/credentials, insert the following (or create a principle)
-[default]
-ad_user=ansible@xxxxxxx.onmicrosoft.com
-password=XXXXXXX
-subscription_id=XXXXXXXX
+
+ [default]
+ ad_user=ansible@xxxxxxx.onmicrosoft.com
+ password=XXXXXXX
+ subscription_id=XXXXXXXX
 
 For the above, i recommend created a "ansible" user instead of using your existing adming user. The following steps can be followed to perform this 
 https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/
