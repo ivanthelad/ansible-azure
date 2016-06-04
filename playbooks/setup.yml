@@ -94,16 +94,16 @@
   vars:
     publicmasterdns: "{{ hostvars['localhost']['publicmasterdns']}}"
     publicmasterip: "{{ hostvars['localhost']['publicmasterip']}}"
-  user: ivan
+  user: "{{ adminUsername }}"
   tasks:
     - name: Wait for SSH to come up
       wait_for: port=22 timeout=2000 state=started
     - name: echo the hostname of the vm
       shell: hostname
     - name: Generating RSA key for root
-      user: name=ivan generate_ssh_key=yes
+      user: name={{ adminUsername }} generate_ssh_key=yes
     - name: Downloading pub key
-      fetch: src=/home/ivan/.ssh/id_rsa.pub dest=/tmp/id_rsa.tmp flat=yes
+      fetch: src=/home/{{ adminUsername }}/.ssh/id_rsa.pub dest=/tmp/id_rsa.tmp flat=yes
     - authorized_key: user="{{ adminUsername }}" key="{{ lookup('file', '/tmp/id_rsa.tmp') }}"
 
 
@@ -111,7 +111,7 @@
 #### Subscribe the jump hosts. need to install bits like ansible and "atomic-openshift-utils"
 ################################################
 - hosts: azure_vms
-  user: ivan
+  user: "{{ adminUsername }}"
   sudo: true
   roles:
      - { role: subscribe, rhnuser: "{{ rh_subcription_user }}", rhnpassword: "{{ rh_subcription_pass }}" }
@@ -131,7 +131,7 @@
 #### because
 ################################################
 - hosts: azure_vms
-  user: ivan
+  user: "{{ adminUsername }}"
   vars:
     contents: "{{ lookup('file', '/tmp/id_rsa.tmp') }}"
   tasks:
@@ -228,7 +228,7 @@
           sshKeyData:
             value: "{{ sshkey }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
-        #i#template_link: 'ansible-azure/nodes.json' 
+        #i#template_link: 'ansible-azure/nodes.json'
       register: azurenodes
 
 
@@ -241,7 +241,7 @@
 ####
 ################################################
 - hosts: azure_vms
-  user: ivan
+  user: "{{ adminUsername }}"
   tasks:
 ## From the jumphost scan the keys for all app nodes  and print to file
     - name: From the jumphost scan the keys for all app nodes  and print to file
@@ -295,7 +295,7 @@
   vars:
     publicmasterdns: "{{ hostvars['localhost']['publicmasterdns']}}"
     publicmasterip: "{{ hostvars['localhost']['publicmasterip']}}"
-  user: ivan
+  user: "{{ adminUsername }}"
   sudo: true
   roles:
      - { role: prepare }
@@ -310,7 +310,7 @@
     publicmasterdns: "{{ hostvars['localhost']['publicmasterdns']}}"
     publicmasterip: "{{ hostvars['localhost']['publicmasterip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicmasterip }}"
-  user: ivan
+  user: "{{ adminUsername }}"
   sudo: true
   tasks:
       - debug : msg=" {{ ansible_ssh_common_args }} "
@@ -392,17 +392,16 @@
  #### Installing openshift
 ################################################
 - hosts: gatewayed-masters
-  user: ivan
+  user: "{{ adminUsername }}"
   force_handlers: yes
   tasks:
   - name: install openshift
     notify: Get Ansible log files
     command: "/bin/ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml  "
     args:
-      chdir: /home/ivan
+      chdir: /home/"{{ adminUsername }}"
 
 - hosts: localhost
-  connection: local
   tasks:
     - debug: msg="Congrats. Openshift should be now up and running under https://{{ publicmasterdns }}:8443/"
     - debug: msg="You can login using your user {{ adminUsername }}@{{ publicmasterip }}"
@@ -411,13 +410,12 @@
 
 - handlers:
     - name: Get Ansible log files
-
       fetch:
         src: /tmp/ansible.log
         dest: "{{ resource_group_name }}_ansible.log"
         flat: yes
 
-### todo, get log of ansible file for shits and giggles
+### todo, get log of ansible file for
 ### Todo, Simplify by defiing a jump host/gateway
 ## Todo,  commit code
 ## todo, the mnt_points need to be adjuested to reflect realworld mounts on the masters
