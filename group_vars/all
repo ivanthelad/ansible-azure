@@ -59,5 +59,3 @@ nodes:
 #i#nodes:
 #  name: node1
 #  name: node2
-publicmasterip: 52.169.180.38
-publicmasterdns: master-ose86.northeurope.cloudapp.azure.com

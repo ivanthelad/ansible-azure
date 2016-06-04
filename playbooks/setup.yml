@@ -144,7 +144,7 @@
 ####Todo, dyncamically add the list of infra nodes to group
 ################################################
 - hosts: localhost
-  serial: 3
+#  serial: 2
   connection: local
   vars:
       masterkey: "{{ lookup('file', '/tmp/id_rsa.tmp') }}"
@@ -192,7 +192,7 @@
 ####Todo, dyncamically add the list of infra nodes to group
 ################################################
 - hosts: localhost
-  serial: 3
+#  serial: 1
   connection: local
   vars:
       masterkey: "{{ lookup('file', '/tmp/id_rsa.tmp') }}"
@@ -295,6 +295,7 @@
   vars:
     publicmasterdns: "{{ hostvars['localhost']['publicmasterdns']}}"
     publicmasterip: "{{ hostvars['localhost']['publicmasterip']}}"
+    routerpublicmasterip: "{{ hostvars['localhost']['routerpublicmasterip']}}"
   user: "{{ adminUsername }}"
   sudo: true
   roles:
@@ -305,7 +306,7 @@
  #### Heres the real business. Subscribing all nodes and masters Via jump host
 ################################################
 - hosts: gatewayed-masters:gatewayed-nodes
-  serial: 4
+# serial: 2
   vars:
     publicmasterdns: "{{ hostvars['localhost']['publicmasterdns']}}"
     publicmasterip: "{{ hostvars['localhost']['publicmasterip']}}"
@@ -362,7 +363,7 @@
  #### Heres the real business. Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
 ################################################
 - hosts: gatewayed-nodes
-  serial: 3
+  serial: 4
   vars:
     publicmasterdns: "{{ hostvars['localhost']['publicmasterdns']}}"
     publicmasterip: "{{ hostvars['localhost']['publicmasterip']}}"
@@ -397,9 +398,9 @@
   tasks:
   - name: install openshift
     notify: Get Ansible log files
-    command: "/bin/ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml  "
+    command: "/bin/ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml"
     args:
-      chdir: /home/"{{ adminUsername }}"
+      chdir: /home/{{ adminUsername }}
 
 - hosts: localhost
   tasks:
