@@ -170,7 +170,7 @@
               "createOption": "Empty",
               "diskSizeGB": "128",
               "lun": 0,
-              "name": "datadisk1",
+              "name": "[parameters('vmName')]",
               "vhd": {
                 "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '_datadisk1.vhd')]"
               }
