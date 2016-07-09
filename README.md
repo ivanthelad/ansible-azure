@@ -38,7 +38,7 @@ Under the groups/all there is a  list of vms that will get created. This list al
 
 Once installation is complete the following is configured 
  - router ( is not deployed by default because the region=infra is not used)
- - Register: (is  not deployed by default because the region=infra is not used) currently a bug with regard to local permisions on dir /mnt/registry to fix jump on to infranode1 and perform  ```sudo chown 1001:root /mnt/registry/ ```(is are not deployed by default because the region=infra is not used)
+ - Register: (is  not deployed by default because the region=infra is not used) currently a bug exist with regard to local permisions on dir /mnt/registry to fix jump on to infranode1 and perform  ```sudo chown 1001:root /mnt/registry/ ```(is are not deployed by default because the region=infra is not used)
  - metrics, 
  - logging : waits untils everything is ready before scaling out the fluentd nodes 
  ### example node setup under groupvars/all
@@ -114,6 +114,15 @@ To setup the following params are required
  - rh_subcription_pass
  - openshift_pool_id
 
+### Debugging nodes 
+
+to debug stuff on nodes your first need to ssh to the jump node. ssh $adminUsername@jumpnodeip. The jump node ip should be written to groups/all file(only for later debugging purposes) but it is also writen to console as the ansible script is been executed. the jump nodes acts as a gateway for all vms created in azure. once logged into the jump node the user $adminUsername should have preconfigured ssh acces to all openshift nodes.  Simply execute  ``` ssh master1 ``` . The user $adminUsername also has sudo rights on all machines 
+
+#### monitoring openshift install 
+Since the openshift install is execute async on the jump node we cannot see the progress of the install. 
+To following the progress of the install, You can login using your user ivan@23.100.53.57 and tail the log file /tmp/ansible.log. 
+TODO: write ansible check to distinguish between failure and success of the install. 
+ 
 
 
 
