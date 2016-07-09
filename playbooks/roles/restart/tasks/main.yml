@@ -1,0 +1,5 @@
+- service: name=atomic-openshift-master-controllers state=restarted
+- service: name=atomic-openshift-master-api state=restarted
+- service: name=atomic-openshift-node  state=restarted
+- service: name=docker  state=restarted
+

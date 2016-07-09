@@ -1,12 +1,6 @@
 [azure_vms]
 [azure_vms2]
-40.113.10.43
 
 [gatewayed-masters]
-master1
-[gatewayed-nodes]
-node1
-node2
-master1
-infranode1
 
+[gatewayed-nodes]

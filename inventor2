@@ -1,0 +1,14 @@
+[azure_vms]
+52.169.107.22
+[azure_vms2]
+
+[gatewayed-masters]
+master1
+master2
+master3
+[gatewayed-nodes]
+master1
+master2
+master3
+infranode1
+node1

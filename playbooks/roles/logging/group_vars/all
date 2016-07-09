@@ -1,0 +1,3 @@
+kibana_hostname: kibana.tes.com 
+image_version: latest
+public_master_url: https://:8443

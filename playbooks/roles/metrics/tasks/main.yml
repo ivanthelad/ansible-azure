@@ -1,0 +1,46 @@
+---
+- name: Copy the pc file 
+  copy: src="cassandra-pv.yaml" dest="."
+  tags: hawkular-metrics
+
+- name: Copy the metrics service account definition
+  copy: src="metrics-service-account.yaml" dest="."
+  tags: hawkular-metrics
+
+- debug: msg="Updating the node selector for the default namespace"
+- name: Set the node-selector for the default namespace
+  shell: "oc patch ns/openshift-infra --api-version=v1 -p '{\"metadata\": {\"annotations\": {\"openshift.io/node-selector\":\"zone=infra\"}}}'"
+
+- name: Create service account for metrics deployer
+  action: command oc create -n openshift-infra -f metrics-service-account.yaml
+  ignore_errors: yes
+  tags: hawkular-metrics
+
+- name: Grant edit permission on project openshift-infra for the service account metric-deployer
+  action: command oadm policy add-role-to-user \
+          edit system:serviceaccount:openshift-infra:metrics-deployer -n openshift-infra
+  tags: hawkular-metrics
+
+- name: Grant Heapster service account the cluster-reader permission to read the stats
+  action: command oadm policy add-cluster-role-to-user \
+          cluster-reader system:serviceaccount:openshift-infra:heapster -n openshift-infra
+  tags: hawkular-metrics
+
+- name: Create a "dummy" secret that does not specify a certificate value for the metrics deployer
+  action: command oc secrets new metrics-deployer nothing=/dev/null -n openshift-infra
+  tags: hawkular-metrics
+
+
+#- name: create the PV required by metric  
+#  action: command oc create -f cassandra-pv.yaml -n openshift-infra
+#  tags: hawkular-metrics
+
+- name: Process the metrics deployer
+  shell: command oc process metrics-deployer-template -n openshift -v \
+          IMAGE_VERSION={{ image_version }},MASTER_URL={{ master_url }},HAWKULAR_METRICS_HOSTNAME={{ hawkular_metrics_hostname }},USE_PERSISTENT_STORAGE={{ persistent }} | oc create -n openshift-infra -f -
+  tags: hawkular-metrics
+
+
+#- name: Add metrics URL in master config
+#  lineinfile: "dest=/etc/origin/master/master-config.yaml state=present insertafter='  publicURL: https://ose-master.example.com:8443/console/' line='  metricsPublicURL: https://hawkular-metrics.example.com/hawkular/metrics'"
+#  tags: hawkular-metrics

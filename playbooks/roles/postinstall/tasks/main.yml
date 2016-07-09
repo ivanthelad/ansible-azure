@@ -1,0 +1,41 @@
+################################
+# Update default node selector for the default namespace
+###############################
+- debug: msg="Updating the node selector for the default namespace"
+- name: Set the node-selector for the default namespace
+  shell: "oc patch ns/default --api-version=v1 -p '{\"metadata\": {\"annotations\": {\"openshift.io/node-selector\":\"\"}}}'"
+
+- debug: msg="Updating the nodes to be schedulable"
+- name: Set nodes schedulable 
+  shell: "oadm manage-node  --schedulable --selector=\"zone=infra\"" 
+
+################################
+# Creating the default router
+################################
+
+
+- name: Check if router is in place.
+  shell: "oadm router --dry-run --credentials='/etc/origin/master/openshift-router.kubeconfig' --selector='zone=infra' --service-account=router -n default "
+  ignore_errors: True
+  failed_when: False
+  register: router
+- shell: echo 'Installing router'
+- name: Creating Router
+  command: " oadm router router --replicas=1  --credentials='/etc/origin/master/openshift-router.kubeconfig'     --service-account=router --selector='zone=infra,stage=dev' -n default "
+  when: router.rc != 0
+
+
+- name: Check if Registy exists
+  shell: " oadm registry  --service-account=registry --config=/etc/origin/master/admin.kubeconfig  --credentials=/etc/origin/master/openshift-registry.kubeconfig  --images='registry.access.redhat.com/openshift3/ose-${component}:${version}' --selector='stage=dev,zone=infra'    --mount-host=/mnt/registry --dry-run "
+  register: reg
+  ignore_errors: True
+  failed_when: False
+- shell: echo 'Installing registry'
+  when: reg.rc != 0
+- command: "mkdir /mnt/registry"
+  ignore_errors: yes
+  when: reg.rc != 0
+- command: "chown 1001:root /mnt/registry"
+  when: reg.rc != 0
+- command: "oadm registry  --service-account=registry --config=/etc/origin/master/admin.kubeconfig  --credentials=/etc/origin/master/openshift-registry.kubeconfig  --images='registry.access.redhat.com/openshift3/ose-${component}:${version}' --selector='stage=dev,zone=infra'    --mount-host=/mnt/registry"
+  when: reg.rc != 0

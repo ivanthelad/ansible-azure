@@ -1,15 +1,14 @@
 ---
-resource_group_name: ose86
-### subscrption id for Azure 
-subscriptionID: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-adminUsername: userforjumphost
-adminPassword: passwordforjumphost
-
+resource_group_name: ose164
+subscriptionID: "806a3527-ec8c-42b7-a080-e648814b0275"
+## user to login to the jump host
+adminUsername: XXXXXX 
+## user pwd for jump host 
+adminPassword: XXX_please_replace_me_XXX
 # see https://azure.microsoft.com/en-us/documentation/articles/cloud-services-sizes-specs/
-master_vmSize: Standard_D2_v2
-node_vmSize: Standard_D2_v2
-
-jumphost: 104.41.204.53
+master_vmSize: Standard_D1_v2
+node_vmSize: Standard_D1_v2
+region: northeurope
 
 ## docker info
 docker_storage_device: /dev/sdc
@@ -18,23 +17,42 @@ filesystem: 'xfs'
 create_lvsize: '80%FREE'
 #create_lvsize: '2g'
 
-#### subscription information for redhat
-rh_subcription_user: XXXXXXXXX 
-rh_subcription_pass: XXXXXXXXX
-
-## poolid, should look like D8a85f9843e3d687a013e3eee471a083e  
-openshift_pool_id: XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-#### public key
-sshkey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
+#### subscription information
+rh_subcription_user: XXX_please_replace_me_XXX
+rh_subcription_pass: XXX_please_replace_me_XXX
+openshift_pool_id: XXXXXXXXXXXXXXXXXXXXXXXXXX 
+#### ssh key to user for jump host
+sshkey: XXXXXXXXXXXXXXXXXXX 
+#### jump host 
+jumphost:
+  jumphost1:
+    name: jumphost1
+    tags:
+      region: northeurope
+      zone: jumphost
+      stage: jumphost
+### List of masters including tags/labels to be applied. Azure gets tags while ose gets labels
 masters:
   master1:
     name: master1
     tags:
       region: northeurope
       zone: infra
-      stage: dev
-
+      stage: none
+  master2:
+    name: master2
+    tags:
+      region: northeurope
+      zone: infra
+      stage: none
+  master3:
+    name: master3
+    tags:
+      region: northeurope
+      zone: infra
+      stage: none
+### infra node, user for exposing router ###
+### have not tested with multiple infra nodes yet 
 infranodes:
   infranode1:
     name: infranode1
@@ -42,11 +60,13 @@ infranodes:
       region: northeurope
       zone: infra
       stage: dev
+### add as many nodes here as you like 
+## does not split across region yet. thats a todo
 nodes:
   node1:
     name: node1
-    tags: 
-      region: northeurope
+    tags:
+      region: northeurope 
       zone: frontend
       stage: dev
 

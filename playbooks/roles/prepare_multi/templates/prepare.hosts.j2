@@ -1,0 +1,16 @@
+
+[masters]
+{% for key, value in masters.iteritems() %}
+{{ value.name }}
+{% endfor %}
+
+
+
+# host group for nodes, includes region info
+[nodes]
+{% for key, value in nodes.iteritems() %}
+{{ value.name }}
+{% endfor %}
+{% for key, value in masters.iteritems() %}
+{{ value.name }}
+{% endfor %}

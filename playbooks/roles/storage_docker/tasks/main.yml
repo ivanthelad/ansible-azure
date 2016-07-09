@@ -1,6 +1,6 @@
 ---
 - name: Ensure docker is installed
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
+  action: "yum  name={{ item }} state=present"
   with_items:
   - docker
 

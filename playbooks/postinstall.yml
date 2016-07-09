@@ -1,0 +1,54 @@
+- hosts: masters
+  tasks:
+##################################
+### Update default node selector for the default namespace
+#################################
+    - debug: msg="Updating the node selector for the default namespace"
+    - name: Set the node-selector for the default namespace
+      shell: "oc patch ns/default --api-version=v1 -p '{\"metadata\": {\"annotations\": {\"openshift.io/node-selector\":\"\"}}}'"
+##################################
+#  Creating the default router
+##################################
+
+
+    - name: Check if router is in place.
+      shell: "oadm router --dry-run --credentials='/etc/origin/master/openshift-router.kubeconfig' --service-account=router -n default "
+      ignore_errors: True
+      failed_when: False
+      register: router
+    - shell: echo 'Installing router'
+    - name: Creating Router
+      command: " oadm router router --replicas=1  --credentials='/etc/origin/master/openshift-router.kubeconfig'     --service-account=router --selector='zone=infra' -n default "
+      when: router.rc != 0
+
+
+- hosts: masters
+  tasks:
+    - name: Check if Registy exists
+      shell: oadm registry
+      register: reg
+      ignore_errors: True
+      failed_when: False
+
+    - command: "oadm registry --selector='kubernetes.io/hostname=' --service-account=registry --config=/etc/origin/master/admin.kubeconfig  --credentials=/etc/origin/master/openshift-registry.kubeconfig  --images='registry.access.redhat.com/openshift3/ose-${component}:${version}'     --mount-host=/mnt/registry"
+      when: reg.rc != 0
+
+
+
+
+
+
+##################################
+## Creating the default registry
+##################################
+    - name: Check if Registy exists
+      shell: oadm registry
+      register: reg
+      ignore_errors: True
+      failed_when: False
+    - command: "oadm registry --selector='zone=infra' --service-account=registry --config=/etc/origin/master/admin.kubeconfig  --credentials=/etc/origin/master/openshift-registry.kubeconfig  --images='registry.access.redhat.com/openshift3/ose-${component}:${version}'  "
+      when: reg.rc != 0
+
+    - name: attaching to remote nfs share
+      command: "oc volume deploymentconfigs/docker-registry  --add --overwrite --name=registry-storage --mount-path=/registry --source='{\"nfs\": { \"server\": \"11.2.120.143\", \"path\": \"//openshift-infra/docker-registry\"}}'"
+

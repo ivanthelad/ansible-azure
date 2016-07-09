@@ -1,0 +1,20 @@
+{
+    "kind": "PersistentVolume",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "pv-metrics-cassandra"
+    },
+    "spec": {
+        "capacity": {
+            "storage": "10Gi"
+        },
+        "nfs": {
+            "server": "",
+            "path": "//openshift-infra/metrics-cassandra"
+        },
+        "accessModes": [
+            "ReadWriteOnce"
+        ],
+        "persistentVolumeReclaimPolicy": "Recycle"
+    }
+}

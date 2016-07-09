@@ -1,0 +1,21 @@
+{
+    "kind": "PersistentVolume",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "pv-elastic-search"
+    },
+    "spec": {
+        "capacity": {
+            "storage": "1Gi"
+        },
+        "nfs": {
+            "server": "",
+            "path": "t/openshift-infra/logging-elasticsearch"
+        },
+        "accessModes": [
+            "ReadWriteOnce"
+        ],
+        "persistentVolumeReclaimPolicy": "Retain"
+    }
+}
+
