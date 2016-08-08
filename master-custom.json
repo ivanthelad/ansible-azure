@@ -157,13 +157,13 @@
         "storageProfile": {
            "osDisk": {
             "osType": "Linux",
-            "name": "oscpbase-osDisk.3ba6836a-1b71-46aa-9971-39b798f5561d.vhd",
+            "name": "customervmimage",
             "createOption": "FromImage",
             "image": {
-              "uri": "https://tempdiag841.blob.core.windows.net/system/Microsoft.Compute/Images/vhds/oscpbase-osDisk.3ba6836a-1b71-46aa-9971-39b798f5561d.vhd"
+              "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/system/Microsoft.Compute/Images/vhds/oscpbase-osDisk.3ba6836a-1b71-46aa-9971-39b798f5561d.vhd')]"
             },
-            "vhd": {
-              "uri": "https://tempdiag841.blob.core.windows.net/vmcontainer1e639672-9d73-4ea6-b57b-007c53f74178/osDisk.1e639672-9d73-4ea6-b57b-007c53f74178.vhd"
+           "vhd": {
+              "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '.vhd')]"
             },
             "caching": "ReadWrite"
           },
