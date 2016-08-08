@@ -155,14 +155,17 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[variables('rhel')]",
-          "osDisk": {
-            "name": "osdisk",
-            "vhd": {
-              "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '.vhd')]"
+           "osDisk": {
+            "osType": "Linux",
+            "name": "oscpbase-osDisk.3ba6836a-1b71-46aa-9971-39b798f5561d.vhd",
+            "createOption": "FromImage",
+            "image": {
+              "uri": "https://tempdiag841.blob.core.windows.net/system/Microsoft.Compute/Images/vhds/oscpbase-osDisk.3ba6836a-1b71-46aa-9971-39b798f5561d.vhd"
             },
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "vhd": {
+              "uri": "https://tempdiag841.blob.core.windows.net/vmcontainer1e639672-9d73-4ea6-b57b-007c53f74178/osDisk.1e639672-9d73-4ea6-b57b-007c53f74178.vhd"
+            },
+            "caching": "ReadWrite"
           },
           "dataDisks": [
             {
