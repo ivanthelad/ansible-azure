@@ -160,7 +160,7 @@
             "name": "customervmimage",
             "createOption": "FromImage",
             "image": {
-              "uri": "https://tempdiag841.blob.core.windows.net/system/Microsoft.Compute/Images/vhds/oscpbase-osDisk.3ba6836a-1b71-46aa-9971-39b798f5561d.vhd"
+              "uri": "https://oscp457.blob.core.windows.net/system/Microsoft.Compute/Images/vhds/oscpbase-osDisk.7a23abec-1cef-405d-8823-bfc2437ac4a3.vhd"
             },
            "vhd": {
               "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '.vhd')]"
