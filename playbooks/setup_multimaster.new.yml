@@ -2,12 +2,12 @@
   connection: local
   gather_facts: no
   tasks:
-    - name: "Destroy Azure Deploy  Resource group {{ resource_group_name }}"
-      azure_rm_deployment:
-        state: absent
-        subscription_id: "{{ subscriptionID }}"
-        resource_group_name: "{{ resource_group_name }}"
-        location: "{{ region }}"
+#    - name: "Destroy Azure Deploy  Resource group {{ resource_group_name }}"
+#      azure_rm_deployment:
+ #       state: absent
+ #       subscription_id: "{{ subscriptionID }}"
+ #       resource_group_name: "{{ resource_group_name }}"
+#        location: "{{ region }}"
 ################################################
 ####  Create basic infra components
 ################################################
@@ -172,7 +172,7 @@
 ################################################
 - hosts: localhost
   strategy: free
-  serial: 3
+  serial: 20
   connection: local
   vars:
       masterkey: "{{ lookup('file', '/tmp/id_rsa.tmp') }}"
@@ -213,25 +213,11 @@
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
-    - name: Wait for master instance creation to complete
-      async_status: jid={{ item.ansible_job_id }}
-      register: azuremasternodes
-      until: azuremasternodes.finished
-      retries: 900
-      with_items: "{{ azuremasternodes_sync.results }}"
 
 ################################################
 #### Creating the infrastrucute nodes.
 ####Todo, dyncamically add the list of infra nodes to group
 ################################################
-- hosts: localhost
-#i#  serial: 2
-  strategy: free
-  connection: local
-  vars:
-      masterkey: "{{ lookup('file', '/tmp/id_rsa.tmp') }}"
-  gather_facts: no
-  tasks:
     - name: Create infra Nodes Deploy
       with_dict: "{{ infranodes }}"
       async: 7200
@@ -267,29 +253,10 @@
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async
-    - name: Wait for infranode instance creation to complete
-      async_status: jid={{ item.ansible_job_id }}
-      register: azureinfranodes
-      until: azureinfranodes.finished
-      retries: 900
-      with_items: "{{ azureinfranodes_async.results }}"
-    - set_fact:
-        routerpublicip: "{{ azureinfranodes.results[0].deployment.instances[0].ips[0].public_ip }}"
-    - debug: msg="the value of azure  {{ azure }}"
-    - debug: msg="the value of ip  {{ routerpublicip }}"
-
 ################################################
 #### Creating the application nodes.
 ####Todo, dyncamically add the list of infra nodes to group
 ################################################
-- hosts: localhost
-  serial: 3
-  strategy: free
-  connection: local
-  vars:
-      masterkey: "{{ lookup('file', '/tmp/id_rsa.tmp') }}"
-  gather_facts: no
-  tasks:
     - name: Create Nodes Deploy
       async: 7200
       poll: 0
@@ -325,12 +292,35 @@
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azurenodes_async
+
+
+### wait for masters 
+    - name: Wait for master instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azuremasternodes
+      until: azuremasternodes.finished
+      retries: 900
+      with_items: "{{ azuremasternodes_sync.results }}"
+
+## wait for infra nodes 
+    - name: Wait for infranode instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azureinfranodes
+      until: azureinfranodes.finished
+      retries: 900
+      with_items: "{{ azureinfranodes_async.results }}"
+    - set_fact:
+        routerpublicip: "{{ azureinfranodes.results[0].deployment.instances[0].ips[0].public_ip }}"
+    - debug: msg="the value of azure  {{ azure }}"
+    - debug: msg="the value of ip  {{ routerpublicip }}"
+## wait for  normal nodes 
     - name: Wait for node instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azurenodes
       until: azurenodes.finished
       retries: 900
       with_items: " {{ azurenodes_async.results }}"
+
 
 ################################################
 #### This is kinda messy, While you can technially jump onto the jump machine and  call ansible playbook
@@ -487,7 +477,7 @@
       line: "log_path = /tmp/ansible.log"
 
 #################################################
- #### Heres the real business. Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
+ ####  Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
 ################################################
 - hosts: gatewayed-masters:gatewayed-nodes
   gather_facts: False
@@ -545,8 +535,8 @@
  #### Heres the real business. Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
 ################################################
 - hosts: gatewayed-masters:gatewayed-nodes
+  name: setup docker on all masters and nodes 
   gather_facts: False
-  serial: 50
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
@@ -790,3 +780,4 @@
 #      with_items: azure.deployment.instances
 
 #https://docs.ansible.com/ansible/azure_rm_deployment_module.html
+

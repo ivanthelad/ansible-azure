@@ -15,6 +15,7 @@
 - debug: msg="creating project logging"
 - name: Set the node-selector for the default namespace
   shell: "oadm new-project logging "
+  ignore_errors: true
 
 - name: 
   action: command oc secrets new logging-deployer nothing=/dev/null -n logging

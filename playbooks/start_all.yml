@@ -1,0 +1,61 @@
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+#    - name: "Destroy Azure Deploy  Resource group {{ resource_group_name }}"
+#      azure_rm_deployment:
+ #       state: absent
+ #       subscription_id: "{{ subscriptionID }}"
+ #       resource_group_name: "{{ resource_group_name }}"
+#        location: "{{ region }}"
+################################################
+####  Create basic infra components
+################################################
+
+      
+
+################################################
+####  Create basic Master node, this exposes 8443 and 22 as a public ports on a public ip , in future this will be a jump host
+###   we use this node to jump into the other nodes
+################################################
+################################################
+#### Creating the masters nodes. these sit behind the jump host. no need to open public ports
+####Todo, dyncamically add the list of infra nodes to group
+################################################
+- hosts: localhost
+  strategy: free
+  serial: 20
+  connection: local
+  vars:
+      masterkey: "{{ lookup('file', '/tmp/id_rsa.tmp') }}"
+  gather_facts: no
+  tasks:
+    - name: Stating master
+      async: 7200
+      poll: 0
+      with_dict: "{{ masters }}"
+      command: "azure vm start  {{ resource_group_name }} {{ item.value.name }}"
+      register: azuremasternodes_sync
+
+
+    - name: Starting infra nodes 
+      async: 7200
+      poll: 0
+      with_dict: "{{ infranodes }}"
+      command: "azure vm start  {{ resource_group_name }} {{ item.value.name }}"
+      register: azureinfranodes_sync
+
+    - name: Starting nodes 
+      async: 7200
+      poll: 0
+      with_dict: "{{ nodes }}"
+      command: "azure vm start  {{ resource_group_name }} {{ item.value.name }}"
+      register: nodes_sync
+
+    - name: Starting jumphosts 
+      async: 7200
+      poll: 0
+      with_dict: "{{ jumphost }}"
+      command: "azure vm start {{ resource_group_name }} {{ item.value.name }}"
+      register: jumps_sync
+
