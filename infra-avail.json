@@ -85,7 +85,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-nameRouter'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-nameAPI'))]"
               }
             }
           }
@@ -133,7 +133,7 @@
         "inboundNatPools": [ ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-name'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-nameRouter'))]"
       ]
     },
   
@@ -201,7 +201,7 @@
         "inboundNatPools": [ ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-name'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-nameRouter'))]"
       ]
     },
 
