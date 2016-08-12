@@ -25,6 +25,10 @@
     "apiVersion": "2015-06-15",
     "backend-address-pool-name": "WebAPI",
 
+    "master-AvailSet": "masterAvailSet",
+    "infranode-AvailSet": "infranodeAvailSet",
+    "node-AvailSet": "nodeAvailSet",
+
     "vhdStorageType": "Standard_LRS",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "infranodeSubnetRef": "[concat(variables('vnetId'), '/subnets/', variables('infranodesubnetName'))]",
