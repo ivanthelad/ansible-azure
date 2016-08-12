@@ -19,6 +19,12 @@ This ansible script uses features only found in the latest version on ansible (n
  upgrade to ansible 2.1.0.0
 http://docs.ansible.com/ansible/intro_installation.html
 
+ Note: After upgrade to ansible 2.2 i encountered issues where the azure module attempts to pass two params to a function that expects one. this was resolved by upgrade the phyton msresrt module. " sudo pip install msrest --upgrade"
+  this upgrade from msrest 0.4.0  to 0.4.1
+ 
+ 
+ See http://docs.ansible.com/ansible/azure_rm_deployment_module.html for info how to configure the module
+
 ## run script 
 Update the group_vars/all variable. The following params exist. The script will support more masters  in the future. For now the script installs 1 master, 1 infra, x number of nodes. the nodes and infra are get labels which corrospond the tags in azure (consistent)
  - ansible-playbook -i inventory playbooks/setup.yml (warning, this may have been broken since the multi.master setup)
