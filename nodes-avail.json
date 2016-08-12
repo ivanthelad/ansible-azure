@@ -138,7 +138,7 @@
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
-        "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+        "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
 
 
       ],
