@@ -23,7 +23,7 @@
     "mastersubnetName": "masterSubnet",
     "mastersubnetPrefix": "10.0.0.0/24",
     "apiVersion": "2015-06-15",
-    "backend-address-pool-name": "WebAPI",
+
 
     "master-AvailSet": "masterAvailSet",
     "infranode-AvailSet": "infranodeAvailSet",
@@ -96,7 +96,7 @@
         ],
         "backendAddressPools": [
           {
-            "name": "[variables('backend-address-pool-name')]"
+            "name": "[variables('backend-address-pool-nameAPI')]"
           }
         ],
         "loadBalancingRules": [
@@ -164,7 +164,7 @@
         ],
         "backendAddressPools": [
           {
-            "name": "[variables('backend-address-pool-name')]"
+            "name": "[variables('backend-address-pool-nameRouter')]"
           }
         ],
         "loadBalancingRules": [

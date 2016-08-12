@@ -220,7 +220,7 @@
             value: "{{ sshkey }}"
           availabilitySetName:
             value: "master-AvailSet"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
 
@@ -264,7 +264,7 @@
             value: "{{ sshkey }}"
           availabilitySetName:
             value: "infranode-AvailSet"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode.json'
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async
 ################################################
