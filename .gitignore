@@ -1,1 +1,3 @@
+ansible-azure.iml
 .idea/
+*.retry
