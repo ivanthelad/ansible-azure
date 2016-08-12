@@ -4,7 +4,15 @@
   "parameters": {
 
 
-
+    "availabilitySetName": {
+      "type": "string"
+    },
+    "backend-address-pool-name": {
+      "type": "string"
+    },
+    "loadBalancerName": {
+      "type": "string"
+    },
     "vmName": {
       "type": "string"
     },
@@ -104,7 +112,12 @@
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[variables('subnetRef')]"
-              }
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers', parameters('LoadBalancer-name')), '/backendAddressPools/', parameters('backend-address-pool-name'))]"
+                }
+              ]
             }
           }
         ]

@@ -1,0 +1,212 @@
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+#    - name: "Destroy Azure Deploy  Resource group {{ resource_group_name }}"
+#      azure_rm_deployment:
+ #       state: absent
+ #       subscription_id: "{{ subscriptionID }}"
+ #       resource_group_name: "{{ resource_group_name }}"
+#        location: "{{ region }}"
+################################################
+####  Create basic infra components
+################################################
+    - name: "Create Azure Deploy {{ resource_group_name }}"
+      azure_rm_deployment:
+        state: present
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
+        resource_group_name: "{{ resource_group_name }}"
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra-avail.json'
+      #  template_link: 'file://Users/imckinle/Projects/openshift/azure-ansible/ansible-azure/infra-avail.json'
+
+        location: "{{ region }}"
+      register: azure_vm
+
+
+
+
+
+
+
+
+
+
+################################################
+####  Create basic Master node, this exposes 8443 and 22 as a public ports on a public ip , in future this will be a jump host
+###   we use this node to jump into the other nodes
+################################################
+################################################
+#### Creating the masters nodes. these sit behind the jump host. no need to open public ports
+####Todo, dyncamically add the list of infra nodes to group
+################################################
+- hosts: localhost
+  strategy: free
+  serial: 20
+  connection: local
+  vars:
+      masterkey: "{{ lookup('file', '/tmp/id_rsa.tmp') }}"
+  gather_facts: no
+  tasks:
+    - name: Create Masters Deploy
+      async: 7200
+      poll: 0
+      with_dict: "{{ masters }}"
+      azure_rm_deployment:
+        deployment_mode: incremental
+        state: present
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
+        resource_group_name: "{{ resource_group_name }}"
+        location: "{{ region }}"
+        deployment_name: "{{ item.value.name }}"
+        parameters:
+          subnetName:
+            value: masterSubnet
+          virtualNetworkName:
+            value: openshiftVnet
+          adminUsername:
+            value: "{{ adminUsername }}"
+          vmSize:
+            value: "{{ node_vmSize }}"
+          adminPassword:
+            value: "{{ adminPassword }}"
+          image:
+            value: rhel
+          masterKey:
+            value: "{{ masterkey }}"
+          tags:
+            value: "{{ item.value.tags }}"
+          vmName:
+            value: "{{ item.value.name }}"
+          sshKeyData:
+            value: "{{ sshkey }}"
+          availabilitySetName:
+            value: "master-AvailSet"
+          backend-address-pool-name:
+            value: "apiLB"
+          loadBalancerName:
+            value: "apiPool"
+
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
+        #i#template_link: 'ansible-azure/nodes.json'
+      register: azuremasternodes_sync
+
+################################################
+#### Creating the infrastrucute nodes.
+####Todo, dyncamically add the list of infra nodes to group
+################################################
+    - name: Create infra Nodes Deploy
+      with_dict: "{{ infranodes }}"
+      async: 7200
+      poll: 0
+      azure_rm_deployment:
+        deployment_mode: incremental
+        state: present
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
+        resource_group_name: "{{ resource_group_name }}"
+        location: "{{ region }}"
+        deployment_name: "{{ item.value.name }}"
+        parameters:
+          subnetName:
+            value: infranodeSubnet
+          virtualNetworkName:
+            value: openshiftVnet
+          adminUsername:
+            value: "{{ adminUsername }}"
+          vmSize:
+            value: "{{ node_vmSize }}"
+          adminPassword:
+            value: "{{ adminPassword }}"
+          image:
+            value: rhel
+          masterKey:
+            value: "{{ masterkey }}"
+          tags:
+            value: "{{ item.value.tags }}"
+          vmName:
+            value: "{{ item.value.name }}"
+          sshKeyData:
+            value: "{{ sshkey }}"
+          availabilitySetName:
+            value: "infranode-AvailSet"
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
+        #i#template_link: 'ansible-azure/nodes.json'
+      register: azureinfranodes_async
+################################################
+#### Creating the application nodes.
+####Todo, dyncamically add the list of infra nodes to group
+################################################
+    - name: Create Nodes Deploy
+      async: 7200
+      poll: 0
+      with_dict: "{{ nodes }}"
+      azure_rm_deployment:
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        deployment_mode: incremental
+        state: present
+        subscription_id: "{{ subscriptionID }}"
+        resource_group_name: "{{ resource_group_name }}"
+        location: "{{ region }}"
+        deployment_name: "{{ item.value.name }}"
+        parameters:
+          subnetName:
+            value: nodeSubnet
+          virtualNetworkName:
+            value: openshiftVnet
+          adminUsername:
+            value: "{{ adminUsername }}"
+          vmSize:
+            value: "{{ node_vmSize }}"
+          adminPassword:
+            value: "{{ adminPassword }}"
+          image:
+            value: rhel
+          masterKey:
+            value: "{{ masterkey }}"
+          tags:
+            value: "{{ item.value.tags }}"
+          vmName:
+            value: "{{ item.value.name }}"
+          sshKeyData:
+            value: "{{ sshkey }}"
+          availabilitySetName:
+            value: "node-AvailSet"
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
+        #i#template_link: 'ansible-azure/nodes.json'
+      register: azurenodes_async
+
+
+### wait for masters
+    - name: Wait for master instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azuremasternodes
+      until: azuremasternodes.finished
+      retries: 900
+      with_items: "{{ azuremasternodes_sync.results }}"
+
+## wait for infra nodes
+    - name: Wait for infranode instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azureinfranodes
+      until: azureinfranodes.finished
+      retries: 900
+      with_items: "{{ azureinfranodes_async.results }}"
+    - set_fact:
+        routerpublicip: "{{ azureinfranodes.results[0].deployment.instances[0].ips[0].public_ip }}"
+    - debug: msg="the value of azure  {{ azure }}"
+    - debug: msg="the value of ip  {{ routerpublicip }}"
+## wait for  normal nodes
+    - name: Wait for node instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azurenodes
+      until: azurenodes.finished
+      retries: 900
+      with_items: " {{ azurenodes_async.results }}"
+
+

@@ -92,13 +92,17 @@
       ####  Only setting these values so we can manually look up. bit of a hack
       ################################################
     - lineinfile:
-        dest: group_vars/all
+        dest: temp
         regexp: "^publicjumpdns:"
         line: "publicjumpdns: {{ publicjumpdns }}"
+        ignore_errors: yes
+
     - lineinfile:
-        dest: group_vars/all
+        dest: temp
         regexp: "^publicjumpip:"
         line: "publicjumpip: {{ publicjumpip }}"
+        ignore_errors: yes
+
     
 
 ################################################
@@ -139,21 +143,21 @@
 ################################################
 #### Subscribe the jump hosts. need to install bits like ansible and "atomic-openshift-utils"
 ################################################
-- hosts: azure_vms
-  user: "{{ adminUsername }}"
-  sudo: true
-  roles:
-     - { role: subscribe, rhnuser: "{{ rh_subcription_user }}", rhnpassword: "{{ rh_subcription_pass }}" }
-  tasks:
-    - name: Install Basic Preqes
-      yum:
-        name: "{{ item }}"
-        state: present
-      with_items:
-           - git
-           - vim
-           - ansible
-           - atomic-openshift-utils
+#- hosts: azure_vms
+#  user: "{{ adminUsername }}"
+#  sudo: true
+#  roles:
+#     - { role: subscribe, rhnuser: "{{ rh_subcription_user }}", rhnpassword: "{{ rh_subcription_pass }}" }
+#  tasks:
+#    - name: Install Basic Preqes
+#      yum:
+#        name: "{{ item }}"
+#        state: present
+#      with_items:
+#           - git
+#           - vim
+#           - ansible
+#           - atomic-openshift-utils
 
 
 ################################################
