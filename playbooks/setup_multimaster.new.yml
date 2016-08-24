@@ -606,7 +606,7 @@
     async: 7200
     ignore_errors: yes
     #notify: Get Ansible log files
-    shell: "ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml  "
+    shell: "ansible-playbook --become-method=sudo --become /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml  "
     #shell: "echo hello"
     args:
       chdir: /home/{{ adminUsername }}
