@@ -1,5 +1,5 @@
 #---
-resource_group_name: ose199
+resource_group_name: pirates
 ##  Azure AD user. 
 ad_username: XXXXXXXXXXXXXXXXXXX 
 ### Azure AD password 
