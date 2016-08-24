@@ -85,9 +85,7 @@
             value: "{{ sshkey }}"
           availabilitySetName:
             value: "masterAvailSet"
-          backend-address-pool-name:
-            value: "apiLB"
-          loadBalancerName:
+          loadBalancer:
             value: "apiPool"
 
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
@@ -134,6 +132,8 @@
             value: "{{ sshkey }}"
           availabilitySetName:
             value: "infranode-AvailSet"
+          loadBalancer:
+            value: "routerPool"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async

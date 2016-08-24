@@ -12,8 +12,12 @@
 ####  Create basic infra components
 ################################################
     - name: "Create Azure Deploy {{ resource_group_name }}"
+
       azure_rm_deployment:
         state: present
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra.json'
@@ -28,6 +32,9 @@
     - name: Create Jumphost Deployment
       with_dict: "{{ jumphost }}"
       azure_rm_deployment:
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
         deployment_mode: incremental
         state: present
         subscription_id: "{{ subscriptionID }}"
@@ -89,10 +96,14 @@
         dest: group_vars/all
         regexp: "^publicjumpdns:"
         line: "publicjumpdns: {{ publicjumpdns }}"
+      ignore_errors: yes
+
     - lineinfile:
         dest: group_vars/all
         regexp: "^publicjumpip:"
         line: "publicjumpip: {{ publicjumpip }}"
+      ignore_errors: yes
+
     
 
 ################################################
@@ -183,6 +194,9 @@
       poll: 0
       with_dict: "{{ masters }}"
       azure_rm_deployment:
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
         deployment_mode: incremental
         state: present
         subscription_id: "{{ subscriptionID }}"
@@ -223,6 +237,9 @@
       async: 7200
       poll: 0
       azure_rm_deployment:
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
         deployment_mode: incremental
         state: present
         subscription_id: "{{ subscriptionID }}"
@@ -262,6 +279,9 @@
       poll: 0
       with_dict: "{{ nodes }}"
       azure_rm_deployment:
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
         deployment_mode: incremental
         state: present
         subscription_id: "{{ subscriptionID }}"
