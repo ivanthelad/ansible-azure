@@ -8,22 +8,37 @@ The following outlines the settings that need to be configured. Please ensure th
  resource_group_name: ivancloud
  ##  Azure AD user.
  ad_username: XXXXXXXXXXXXXXXXXXX
+ 
  ### Azure AD password
+ 
  ad_password: XXXXXXXXXXXXXXXXXXX
+ 
  ### this is  your azure subscription id 
+ 
  subscriptionID:  XXXXXXXXXXXXXX
+ 
  ## user to login to the jump host. this user will only be created on the jumphost
+ 
  adminUsername: ivan
+ 
  ## user pwd for jump host
+ 
  ## Password for the jump host
+ 
  adminPassword: XXx_please_change_me_xXX
+ 
  ##### Public key for jump host
+ 
  sshkey: ssh-rsa XXXXXXXXXXXXX
 
  #### subscription information
+ 
  rh_subcription_user: XXXXXXXXXXX
+ 
  rh_subcription_pass: XXXXXXXXXXX
+ 
  openshift_pool_id: XXXXXXXXXXX
+ 
 
 
 For the azure creditials, i recommend created a "ansible" user instead of using your existing adming user. The following steps can be followed to perform this 
