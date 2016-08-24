@@ -6,6 +6,7 @@ https://azure.microsoft.com/en-us/documentation/articles/xplat-cli-install/
 The following outlines the settings that need to be configured. Please ensure that your groupname is unique as this is used as public dns name for the console 
 
  resource_group_name: ivancloud
+ 
  ##  Azure AD user.
  ad_username: XXXXXXXXXXXXXXXXXXX
  
