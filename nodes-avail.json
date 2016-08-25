@@ -89,6 +89,16 @@
     "vhdStorageType": "Standard_LRS"
   },
   "resources": [
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[parameters('availabilitySetName')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "platformFaultDomainCount": "3",
+        "platformUpdateDomainCount": "5"
+      }
+    },
 
     {
       "apiVersion": "[variables('apiVersion')]",
@@ -224,8 +234,8 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
-        "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+        
 
 
       ],
