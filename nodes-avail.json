@@ -235,7 +235,7 @@
         },
 
         "availabilitySet": {
-          "id": "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
         },
 
         "osProfile": {
