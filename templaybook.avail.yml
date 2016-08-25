@@ -85,7 +85,7 @@
             value: "{{ sshkey }}"
           availabilitySetName:
             value: "masterAvailSet"
-          loadBalancer:
+          LoadBalancer:
             value: "apiPool"
 
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'

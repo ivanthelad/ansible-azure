@@ -8,9 +8,7 @@
       "type": "string"
     },
 
-    "loadBalancerName": {
-      "type": "string"
-    },
+
     "vmName": {
       "type": "string"
     },
