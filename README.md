@@ -2,15 +2,47 @@
 ## install azure cli client
 https://azure.microsoft.com/en-us/documentation/articles/xplat-cli-install/
 
-## Configure azure creditals 
-under the file  ~/.azure/credentials, insert the following (or create a principle)
+## Configure setting  
+The following outlines the settings that need to be configured. Please ensure that your groupname is unique as this is used as public dns name for the console 
 
-* [default]
-* ad_user=ansible@xxxxxxx.onmicrosoft.com
-* password=XXXXXXX
-* subscription_id=XXXXXXXX
+ resource_group_name: ivancloud
+ 
+ ##  Azure AD user.
+ ad_username: XXXXXXXXXXXXXXXXXXX
+ 
+ ### Azure AD password
+ 
+ ad_password: XXXXXXXXXXXXXXXXXXX
+ 
+ ### this is  your azure subscription id 
+ 
+ subscriptionID:  XXXXXXXXXXXXXX
+ 
+ ## user to login to the jump host. this user will only be created on the jumphost
+ 
+ adminUsername: ivan
+ 
+ ## user pwd for jump host
+ 
+ ## Password for the jump host
+ 
+ adminPassword: XXx_please_change_me_xXX
+ 
+ ##### Public key for jump host
+ 
+ sshkey: ssh-rsa XXXXXXXXXXXXX
 
-For the above, i recommend created a "ansible" user instead of using your existing adming user. The following steps can be followed to perform this 
+ #### subscription information
+ 
+ rh_subcription_user: XXXXXXXXXXX
+ 
+ rh_subcription_pass: XXXXXXXXXXX
+ 
+ openshift_pool_id: XXXXXXXXXXX
+ 
+
+
+For the azure creditials, i recommend created a "ansible" user instead of using your existing adming user. The following steps can be followed to perform this 
 https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/
  - After creating a user as outlined in the above instructions. in the azure portal. go "settings"->"administrators", and then add user
 
@@ -28,7 +60,7 @@ http://docs.ansible.com/ansible/intro_installation.html
 ## run script 
 Update the group_vars/all variable. The following params exist. The script will support more masters  in the future. For now the script installs 1 master, 1 infra, x number of nodes. the nodes and infra are get labels which corrospond the tags in azure (consistent)
  - ansible-playbook -i inventory playbooks/setup.yml (warning, this may have been broken since the multi.master setup)
- - ansible-playbook  --forks=50 -i playbooks/setup_multimaster.yml
+ - ansible-playbook  --forks=50 -i playbooks/setup_multimaster.new.yml
 
 ## configuration of nodes 
 Under the groups/all there is a  list of vms that will get created. This list also has a attribute called tag which. The values get set to azure tags and also openshift node labels  
