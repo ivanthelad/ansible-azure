@@ -225,7 +225,7 @@
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
-        "[concat('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
+        "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
 
 
       ],
@@ -235,7 +235,7 @@
         },
 
         "availabilitySet": {
-          "id": "[concat('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
+          "id": "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
         },
 
         "osProfile": {
