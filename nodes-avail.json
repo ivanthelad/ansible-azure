@@ -39,7 +39,7 @@
       "type": "securestring"
     },
 
-    "LoadBalancer": {
+    "loadBalancer": {
       "type": "string"
     },
     "sshKeyData": {
@@ -63,9 +63,9 @@
   },
   "variables": {
 
-    "PublicIP-name" : "[concat(parameters('LoadBalancer'),'-publicip')]",
-    "LoadBalancer-name" : "[concat(parameters('LoadBalancer'),'-LoadbalancerName')]",
-    "backend-address-pool-name" : "[concat(parameters('LoadBalancer'),'-backendpool')]",
+    "PublicIP-name" : "[concat(parameters('loadBalancer'),'publicip')]",
+    "LoadBalancer-name" : "[concat(parameters('loadBalancer'),'LoadbalancerName')]",
+    "backend-address-pool-name" : "[concat(parameters('loadBalancer'),'backendpool')]",
 
     "apiVersion": "2015-06-15",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
@@ -118,7 +118,7 @@
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "tags": {
-        "displayName": "Load Balancer Router"
+        "displayName": "Load Balancer API"
       },
       "properties": {
         "frontendIPConfigurations": [
