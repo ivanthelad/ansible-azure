@@ -201,6 +201,11 @@
       "tags": {
         "displayName": "NetworkInterface"
       },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers', variables('loadbalancer-name'))]"
+
+
+      ],
       "properties": {
         "ipConfigurations": [
           {
