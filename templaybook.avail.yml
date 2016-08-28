@@ -89,6 +89,8 @@
             value: "masterAvailSet"
           loadBalancer:
             value: "apiPool"
+          publicip:
+            value: "apipublicip"
 
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'

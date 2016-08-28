@@ -42,6 +42,9 @@
     "loadBalancer": {
       "type": "string"
     },
+    "publicip": {
+      "type": "string"
+    },
     "sshKeyData": {
       "type": "string",
       "metadata": {
@@ -63,7 +66,7 @@
   },
   "variables": {
 
-    "PublicIP-name" : "[concat(parameters('loadBalancer'),'publicip')]",
+    "PublicIP-name" : "[parameters('publicip')]",
     "loadbalancer-name" : "[concat(parameters('loadBalancer'),'loadbalancername')]",
     "backend-address-pool-name" : "[concat(parameters('loadBalancer'),'backendpool')]",
 
@@ -100,7 +103,7 @@
       }
     },
 
-  
+
     {
       "type": "Microsoft.Network/loadBalancers",
       "name": "[variables('loadbalancer-name')]",
