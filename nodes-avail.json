@@ -202,7 +202,7 @@
         "displayName": "NetworkInterface"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/loadBalancers', variables('loadbalancer-name'))]"
+        "[concat('Microsoft.Network/loadBalancers/', variables('loadbalancer-name'))]"
 
 
       ],
