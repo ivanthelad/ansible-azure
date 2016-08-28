@@ -63,7 +63,7 @@
   },
   "variables": {
 
-    "PublicIP-name" : "PublicIP-nameAPI",
+    "PublicIP-name" : "[concat(parameters('loadBalancer'),'publicip')]",
     "loadbalancer-name" : "[concat(parameters('loadBalancer'),'loadbalancername')]",
     "backend-address-pool-name" : "[concat(parameters('loadBalancer'),'backendpool')]",
 
@@ -100,6 +100,18 @@
       }
     },
 
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('PublicIP-name')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "PublicIPAddress"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
     {
       "type": "Microsoft.Network/loadBalancers",
       "name": "[variables('loadbalancer-name')]",
@@ -162,8 +174,10 @@
         "inboundNatRules": [ ],
         "outboundNatRules": [ ],
         "inboundNatPools": [ ]
-      }
-
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-name'))]"
+      ]
     },
 
 
