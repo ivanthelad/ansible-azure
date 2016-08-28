@@ -64,7 +64,7 @@
   "variables": {
 
     "PublicIP-name" : "[concat(parameters('loadBalancer'),'publicip')]",
-    "LoadBalancer-name" : "[concat(parameters('loadBalancer'),'LoadbalancerName')]",
+    "loadbalancer-name" : "[concat(parameters('loadBalancer'),'loadbalancername')]",
     "backend-address-pool-name" : "[concat(parameters('loadBalancer'),'backendpool')]",
 
     "apiVersion": "2015-06-15",
@@ -114,7 +114,7 @@
     },
     {
       "type": "Microsoft.Network/loadBalancers",
-      "name": "[variables('LoadBalancer-name')]",
+      "name": "[variables('loadbalancer-name')]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "tags": {
@@ -142,7 +142,7 @@
             "name": "Http",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LoadBalancer-name')), '/frontendIPConfigurations/LoadBalancerFrontEnd')]"
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name')), '/frontendIPConfigurations/LoadBalancerFrontEnd')]"
               },
               "frontendPort": 8443,
               "backendPort": 8443,
@@ -151,10 +151,10 @@
               "protocol": "Tcp",
               "loadDistribution": "Default",
               "backendAddressPool": {
-                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LoadBalancer-name')), '/backendAddressPools/', variables('backend-address-pool-name'))]"
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name')), '/backendAddressPools/', variables('backend-address-pool-name'))]"
               },
               "probe": {
-                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LoadBalancer-name')), '/probes/TCP-ProbeHTTP')]"
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name')), '/probes/TCP-ProbeHTTP')]"
 
               }
             }
@@ -212,7 +212,7 @@
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LoadBalancer-name')), '/backendAddressPools/', variables('backend-address-pool-name'))]"
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name')), '/backendAddressPools/', variables('backend-address-pool-name'))]"
                 }
               ]
             }
