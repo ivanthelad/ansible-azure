@@ -162,10 +162,8 @@
         "inboundNatRules": [ ],
         "outboundNatRules": [ ],
         "inboundNatPools": [ ]
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-name'))]"
-      ]
+      }
+
     },
 
 
