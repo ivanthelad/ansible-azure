@@ -100,18 +100,7 @@
       }
     },
 
-    {
-      "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('PublicIP-name')]",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "PublicIPAddress"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Static"
-      }
-    },
+  
     {
       "type": "Microsoft.Network/loadBalancers",
       "name": "[variables('loadbalancer-name')]",
@@ -174,10 +163,8 @@
         "inboundNatRules": [ ],
         "outboundNatRules": [ ],
         "inboundNatPools": [ ]
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-name'))]"
-      ]
+      }
+
     },
 
 

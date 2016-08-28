@@ -54,6 +54,7 @@
       poll: 0
       with_dict: "{{ masters }}"
       delay: 30
+      retries: 1
       azure_rm_deployment:
         deployment_mode: incremental
         state: present
