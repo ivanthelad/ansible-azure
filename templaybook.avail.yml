@@ -20,7 +20,9 @@
         resource_group_name: "{{ resource_group_name }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra-avail.json'
       #  template_link: 'file://Users/imckinle/Projects/openshift/azure-ansible/ansible-azure/infra-avail.json'
-
+        parameters:
+          dnsNameAPI:
+            value: masterapi
         location: "{{ region }}"
       register: azure_vm
 

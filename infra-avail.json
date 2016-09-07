@@ -79,6 +79,9 @@
       },
       "properties": {
         "publicIPAllocationMethod": "Static"
+      },
+      "dnsSettings": {
+        "domainNameLabel": "[parameters('dnsNameAPI')]"
       }
     }
 ,

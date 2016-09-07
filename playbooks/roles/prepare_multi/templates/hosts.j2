@@ -42,6 +42,12 @@ openshift_master_cluster_public_hostname={{ publicjumpdns }}
 openshift_master_metrics_public_url=https://hawkular.apps.{{ routerpublicip }}.xip.io/hawkular/metrics
 openshift_master_logging_public_url=https://kibana.apps.{{ routerpublicip }}.xip.io
 
+osm_cluster_network_cidr=172.29.210.0/24
+# Configure number of bits to allocate to each hostb subnet e.g. 8
+# would mean a /24 network on the host.
+osm_host_subnet_length=6
+openshift_master_portal_net=172.29.211.0/24
+
 # Specify load balancer host
 [lb]
 {{ lbvmname }}
