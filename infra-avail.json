@@ -78,7 +78,7 @@
         "displayName": "PublicIPAddress"
       },
       "properties": {
-        "publicIPAllocationMethod": "Static"
+        "publicIPAllocationMethod": "Static",
    "dnsSettings": {
         "domainNameLabel": "[parameters('dnsNameAPI')]"
       }
