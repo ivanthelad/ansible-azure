@@ -122,7 +122,11 @@
             "name": "LoadBalancerFrontEnd",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('internalLoadbalancerip')]"
+              "privateIPAddress": "[variables('internalLoadbalancerip')]",
+
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
             }
           },
           {
