@@ -209,7 +209,7 @@
             "name": "Http",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name2')), '/frontendIPConfigurations/LoadBalancerFrontEnd')]"
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name2')), '/frontendIPConfigurations/LoadBalancerFrontback')]"
               },
               "frontendPort": 8443,
               "backendPort": 8443,
