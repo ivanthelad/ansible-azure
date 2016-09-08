@@ -100,10 +100,58 @@
           publicip:
             value: "apipublicip"
 
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/master-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
 
+
+
+################################################
+#### Creating the application nodes.
+####Todo, dyncamically add the list of infra nodes to group
+################################################
+    - name: Create Nodes Deploy
+      async: 7200
+      poll: 0
+      with_dict: "{{ nodes }}"
+      azure_rm_deployment:
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
+        deployment_mode: incremental
+        state: present
+        subscription_id: "{{ subscriptionID }}"
+        resource_group_name: "{{ resource_group_name }}"
+        location: "{{ region }}"
+        deployment_name: "{{ item.value.name }}"
+        parameters:
+          subnetName:
+            value: nodeSubnet
+          virtualNetworkName:
+            value: openshiftVnet
+          adminUsername:
+            value: "{{ adminUsername }}"
+          vmSize:
+            value: "{{ node_vmSize }}"
+          adminPassword:
+            value: "{{ adminPassword }}"
+          image:
+            value: rhel
+          masterKey:
+            value: "{{ masterkey }}"
+          tags:
+            value: "{{ item.value.tags }}"
+          vmName:
+            value: "{{ item.value.name }}"
+          sshKeyData:
+            value: "{{ sshkey }}"
+          availabilitySetName:
+            value: "nodeAvailSet"
+
+ ## simple nodes
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
+        #i#template_link: 'ansible-azure/nodes.json'
+      register: azurenodes_async
 
 
 ### wait for masters
