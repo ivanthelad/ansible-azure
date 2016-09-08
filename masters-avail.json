@@ -45,6 +45,9 @@
     "publicip": {
       "type": "string"
     },
+    "internalLoadbalancerip": {
+      "type": "string"
+    },
     "sshKeyData": {
       "type": "string",
       "metadata": {
@@ -77,6 +80,7 @@
     "sa": "[variables('storageName')]",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+    "internalLoadbalancerip" : "[parameters('internalLoadbalancerip')]",
     "centos": {
       "publisher": "Openlogic",
       "offer": "CentOS",
@@ -117,7 +121,8 @@
           {
             "name": "LoadBalancerFrontEnd",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('internalLoadbalancerip')]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-name'))]"
               }
@@ -297,12 +302,6 @@
       }
     }
   ],
-
   "outputs": {
-    "loadbalancer": {
-      "type": "object",
-      "value": "[reference(variables('loadbalancer-name'))]"
-    }
-
   }
 }
