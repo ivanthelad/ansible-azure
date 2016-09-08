@@ -23,7 +23,7 @@
     "nodesubnetName": "nodeSubnet",
     "nodesubnetPrefix": "10.0.1.0/24",
     "mastersubnetName": "masterSubnet",
-    "mastersubnetPrefix": "10.0.0.0/24",
+    "mastersubnetPrefix": "10.0.3.0/24",
     "apiVersion": "2015-06-15",
 
 
