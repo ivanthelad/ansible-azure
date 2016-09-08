@@ -61,7 +61,6 @@
   },
   "variables": {
 
-    "PublicIP-name" : "[parameters('publicip')]",
 
     "apiVersion": "2015-06-15",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",

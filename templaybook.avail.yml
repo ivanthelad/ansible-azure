@@ -100,7 +100,7 @@
           publicip:
             value: "apipublicip"
 
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/master-avail.json'
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
 
@@ -154,6 +154,15 @@
       register: azurenodes_async
 
 
+
+### wait for masters
+    - name: Wait for master instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azurenodes_async
+      until: azurenodes_async.finished
+      retries: 900
+      with_items: "{{ azurenodes_async.results }}"
+
 ### wait for masters
     - name: Wait for master instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
@@ -161,6 +170,8 @@
       until: azuremasternodes.finished
       retries: 900
       with_items: "{{ azuremasternodes_sync.results }}"
+
+
 
 
 
