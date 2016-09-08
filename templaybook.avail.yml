@@ -173,6 +173,12 @@
 
 
 
+    - debug: msg="the value of azuremasternodes {{ azuremasternodes }}"
+
+    - debug: msg="the value of azurenodes_async {{ azurenodes_async }}"
+
+
+
 
 
 
