@@ -4,7 +4,8 @@
   "parameters": {
   "dnsNameAPI": {
       "type": "string"
-    },
+    }
+
 
   },
   "variables": {
@@ -126,5 +127,16 @@
     }
 
 
-  ]
+  ],
+
+  "outputs": {
+    "apidns": {
+      "type": "string",
+      "value": "[reference('apipublicip').dnsSettings.fqdn]"
+    },
+    "apiip": {
+      "type": "string",
+      "value": "[reference('apipublicip').ipAddress]"
+    }
+  }
 }

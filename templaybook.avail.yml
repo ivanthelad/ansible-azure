@@ -24,7 +24,10 @@
           dnsNameAPI:
             value: masterapi
         location: "{{ region }}"
-      register: azure_vm
+      register: infrastruct
+
+    - debug: msg="the value of infrastruct  {{ infrastruct }}"
+    - debug: msg="the value of infrastruct {{ infrastruct }}"
 
 
 
