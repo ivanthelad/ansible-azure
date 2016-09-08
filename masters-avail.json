@@ -176,7 +176,6 @@
       }
 
     },
-#######
     {
       "type": "Microsoft.Network/loadBalancers",
       "name": "[variables('loadbalancer-name2')]",
