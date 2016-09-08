@@ -81,14 +81,39 @@
       },
       "properties": {
         "publicIPAllocationMethod": "Static",
-   "dnsSettings": {
-        "domainNameLabel": "[parameters('dnsNameAPI')]"
-      }
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('dnsNameAPI')]"
+        }
       }
 
     }
 ,
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "jumphostip",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "PublicIPAddress"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
 
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "routerip",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "PublicIPAddress"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+
+    },
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Network/virtualNetworks",
@@ -137,6 +162,14 @@
     "apiip": {
       "type": "string",
       "value": "[reference('apipublicip').ipAddress]"
+    },
+    "jumphostip": {
+      "type": "string",
+      "value": "[reference('jumphostip').ipAddress]"
+    },
+    "routerip": {
+      "type": "string",
+      "value": "[reference('routerip').ipAddress]"
     }
   }
 }

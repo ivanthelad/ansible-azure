@@ -22,20 +22,21 @@
       #  template_link: 'file://Users/imckinle/Projects/openshift/azure-ansible/ansible-azure/infra-avail.json'
         parameters:
           dnsNameAPI:
-            value: masterapi
+            value: "master-{{ resource_group_name }}"
         location: "{{ region }}"
       register: infrastruct
 
     - debug: msg="the value of infrastruct  {{ infrastruct }}"
     - debug: msg="the value of infrastruct {{ infrastruct }}"
-
-
-
-
-
-
-
-
+    - set_fact:
+        apiip: "{{ infrastruct.deployment.outputs.apiip.value }}"
+        apidns: "{{ infrastruct.deployment.outputs.apidns.value }}"
+        routerip: "{{ infrastruct.deployment.outputs.routerip.value }}"
+        jumphostip: "{{ infrastruct.deployment.outputs.jumphostip.value }}"
+    - debug: msg="{{ apiip }}"
+    - debug: msg="{{ publicjumpdns }}"
+    - debug: msg="{{ routerip }}"
+    - debug: msg="{{ jumphostip }}"
 
 
 ################################################
@@ -94,6 +95,8 @@
             value: "masterAvailSet"
           loadBalancer:
             value: "apiPool"
+
+## ip address has to be created before hand  for some reason i cannot fathom at the mo
           publicip:
             value: "apipublicip"
 
@@ -110,6 +113,16 @@
       until: azuremasternodes.finished
       retries: 900
       with_items: "{{ azuremasternodes_sync.results }}"
+
+
+
+
+
+
+
+
+
+
 
 
 
