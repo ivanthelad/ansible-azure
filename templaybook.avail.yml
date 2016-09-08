@@ -100,7 +100,7 @@
           publicip:
             value: "apipublicip"
           internalLoadbalancerip:
-            value: "10.0.3.10"
+            value: "10.0.3.11"
 
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'

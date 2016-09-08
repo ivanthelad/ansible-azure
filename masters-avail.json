@@ -75,7 +75,7 @@
 
     "apiVersion": "2015-06-15",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
-    "storageName": "[concat(uniqueString(resourceGroup().id), parameters('vmName'))]",
+    "storageName": "[concat(uniqueString(resourceGroup().id), 'storage')]",
     "location": "[resourceGroup().location]",
     "sa": "[variables('storageName')]",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
@@ -184,7 +184,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageName')]",
       "apiVersion": "[variables('apiVersion')]",
-      "location": "[variables('location')]",
+      "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "StorageAccount"
       },
