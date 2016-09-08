@@ -301,7 +301,7 @@
   "outputs": {
     "loadbalancer": {
       "type": "object",
-      "value": "[reference('variables('loadbalancer-name')')]"
+      "value": "[reference(variables('loadbalancer-name'))]"
     }
 
   }
