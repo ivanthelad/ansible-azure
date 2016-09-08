@@ -121,12 +121,20 @@
           {
             "name": "LoadBalancerFrontEnd",
             "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('internalLoadbalancerip')]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-name'))]"
               }
 
+            }
+          },
+          {
+            "name": "LoadBalancerFrontback",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('internalLoadbalancerip')]",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
             }
           }
 
