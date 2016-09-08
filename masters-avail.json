@@ -75,7 +75,7 @@
 
     "apiVersion": "2015-06-15",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
-    "storageName": "[concat(uniqueString(resourceGroup().id), 'storage')]",
+    "storageName": "[concat(uniqueString(resourceGroup().id), parameters('vmName'))]",
     "location": "[resourceGroup().location]",
     "sa": "[variables('storageName')]",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
