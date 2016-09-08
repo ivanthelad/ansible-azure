@@ -121,7 +121,7 @@
           {
             "name": "LoadBalancerFrontEnd",
             "properties": {
-   
+
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-name'))]"
               },
