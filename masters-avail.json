@@ -71,6 +71,8 @@
 
     "PublicIP-name" : "[parameters('publicip')]",
     "loadbalancer-name" : "[concat(parameters('loadBalancer'),'loadbalancername')]",
+    "loadbalancer-name2" : "[concat(parameters('loadBalancer'),'loadbalancername2')]",
+
     "backend-address-pool-name" : "[concat(parameters('loadBalancer'),'backendpool')]",
 
     "apiVersion": "2015-06-15",
@@ -126,16 +128,6 @@
               }
 
             }
-          },
-          {
-            "name": "LoadBalancerFrontback",
-            "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('internalLoadbalancerip')]",
-              "subnet": {
-                "id": "[variables('subnetRef')]"
-              }
-            }
           }
 
         ],
@@ -184,7 +176,75 @@
       }
 
     },
+#######
+    {
+      "type": "Microsoft.Network/loadBalancers",
+      "name": "[variables('loadbalancer-name2')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "Load Balancer API"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
 
+          {
+            "name": "LoadBalancerFrontback",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('internalLoadbalancerip')]",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('backend-address-pool-name')]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "Http",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name2')), '/frontendIPConfigurations/LoadBalancerFrontEnd')]"
+              },
+              "frontendPort": 8443,
+              "backendPort": 8443,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "loadDistribution": "Default",
+              "backendAddressPool": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name2')), '/backendAddressPools/', variables('backend-address-pool-name'))]"
+              },
+              "probe": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name2')), '/probes/TCP-ProbeHTTP')]"
+
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "TCP-ProbeHTTP",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 8443,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ],
+        "inboundNatRules": [ ],
+        "outboundNatRules": [ ],
+        "inboundNatPools": [ ]
+      }
+
+    },
 
     {
       "type": "Microsoft.Storage/storageAccounts",
