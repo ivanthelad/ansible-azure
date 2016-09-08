@@ -123,6 +123,12 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[variables('internalLoadbalancerip')]",
+            }
+          },
+          {
+            "name": "LoadBalancerFrontBackend",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-name'))]"
               }
