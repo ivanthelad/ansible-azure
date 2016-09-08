@@ -246,10 +246,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
 
-        "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
 
-        },
 
         "osProfile": {
           "computerName": "[parameters('vmName')]",
