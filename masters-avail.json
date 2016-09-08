@@ -241,9 +241,6 @@
 
 
       ],
-      "availabilitySet": {
-        "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
-      },
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
