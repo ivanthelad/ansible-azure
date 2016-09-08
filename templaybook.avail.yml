@@ -34,7 +34,7 @@
         routerip: "{{ infrastruct.deployment.outputs.routerip.value }}"
         jumphostip: "{{ infrastruct.deployment.outputs.jumphostip.value }}"
     - debug: msg="{{ apiip }}"
-    - debug: msg="{{ publicjumpdns }}"
+    - debug: msg="{{ apidns }}"
     - debug: msg="{{ routerip }}"
     - debug: msg="{{ jumphostip }}"
 
