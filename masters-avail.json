@@ -210,7 +210,9 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('internalLoadbalancerip')]",
+
               "subnet": {
                 "id": "[variables('subnetRef')]"
               },
