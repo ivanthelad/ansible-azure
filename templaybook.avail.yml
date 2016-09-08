@@ -99,8 +99,6 @@
 ## ip address has to be created before hand  for some reason i cannot fathom at the mo
           publicip:
             value: "apipublicip"
-          internalLoadbalancerip:
-            value: "10.0.3.10"
 
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
