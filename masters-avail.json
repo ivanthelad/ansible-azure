@@ -296,12 +296,7 @@
         }
       }
     }
-  ],
+  ]
 
-  "outputs": {
-    "loadbalancer": {
-      "value": "[reference('variables('loadbalancer-name')')]"
-    }
 
-  }
 }
