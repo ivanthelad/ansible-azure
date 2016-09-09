@@ -51,26 +51,7 @@
   },
   "resources": [
 
-    {
-      "type": "Microsoft.Compute/availabilitySets",
-      "name": "[variables('infranode-AvailSet')]",
-      "apiVersion": "[variables('apiVersion')]",
-      "location": "[variables('location')]",
-      "properties": {
-        "platformFaultDomainCount": "3",
-        "platformUpdateDomainCount": "5"
-      }
-    },
-    {
-      "type": "Microsoft.Compute/availabilitySets",
-      "name": "[variables('node-AvailSet')]",
-      "apiVersion": "[variables('apiVersion')]",
-      "location": "[variables('location')]",
-      "properties": {
-        "platformFaultDomainCount": "3",
-        "platformUpdateDomainCount": "5"
-      }
-    },
+
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Network/publicIPAddresses",

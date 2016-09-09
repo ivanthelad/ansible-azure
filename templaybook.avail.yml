@@ -38,6 +38,63 @@
     - debug: msg="{{ routerip }}"
     - debug: msg="{{ jumphostip }}"
 
+    ################################################
+ #### Create the jump host
+      ################################################
+
+
+################################################
+####  Create basic humphost node, this exposes 8443 and 22 as a public ports on a public ip , in future this will be a jump host and also entry point for the masters
+###   we use this node to jump into the other nodes
+################################################
+    - name: Create Jumphost Deployment
+      with_dict: "{{ jumphost }}"
+      azure_rm_deployment:
+        deployment_mode: incremental
+        state: present
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
+        resource_group_name: "{{ resource_group_name }}"
+        location: "{{ region }}"
+        #### We add it to the master subnet but really don't matter
+        deployment_name: "{{ item.value.name }}"
+        parameters:
+          image:
+            value: rhel
+          subnetName:
+            value: masterSubnet
+          virtualNetworkName:
+            value: openshiftVnet
+          dnsName:
+            value: "master-{{ resource_group_name }}"
+          adminUsername:
+            value: "{{ adminUsername }}"
+          vmSize:
+            value: "Standard_D1"
+          adminPassword:
+            value: "{{ adminPassword }}"
+          vmName:
+            value:  "{{ item.value.name }}"
+          tags:
+            value: "{{ item.value.tags }}"
+          sshKeyData:
+            value: "{{ sshkey }}"
+## ip address has to be created before hand  for some reason i cannot fathom at the mo
+          publicip:
+            value: "jumphostip"
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/jumphost-avail.json'
+      register: azure_async
+      async: 7200
+      poll: 0
+    - name: Wait for jump instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azure
+      until: azure.finished
+      retries: 320
+      with_items: "{{ azure_async.results }}"
+
+
 
 ################################################
 ####  Create basic Master node, this exposes 8443 and 22 as a public ports on a public ip , in future this will be a jump host
