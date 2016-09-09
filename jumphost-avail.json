@@ -34,6 +34,9 @@
         "description": "SSH rsa public key file as a string."
       }
     },
+    "publicip": {
+      "type": "string"
+    },
     "image": {
       "type": "string",
       "allowedValues": [

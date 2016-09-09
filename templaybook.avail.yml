@@ -66,8 +66,6 @@
             value: masterSubnet
           virtualNetworkName:
             value: openshiftVnet
-          dnsName:
-            value: "master-{{ resource_group_name }}"
           adminUsername:
             value: "{{ adminUsername }}"
           vmSize:
