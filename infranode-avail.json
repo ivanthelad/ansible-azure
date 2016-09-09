@@ -181,7 +181,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageName')]",
       "apiVersion": "[variables('apiVersion')]",
-      "location": "[variables('location')]",
+      "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "StorageAccount"
       },
@@ -241,15 +241,10 @@
 
 
       ],
-      "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
-      },
-
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
-
         "availabilitySet": {
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
 
@@ -308,9 +303,5 @@
     }
   ],
   "outputs": {
-    "pip": {
-      "type": "string",
-      "value": "[reference(concat(parameters('vmName'), 'pip')).ipAddress]"
-    }
   }
 }

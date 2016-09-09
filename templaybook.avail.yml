@@ -107,7 +107,97 @@
       register: azuremasternodes_sync
 
 
+################################################
+#### Creating the infrastrucute nodes.
+####Todo, dyncamically add the list of infra nodes to group
+################################################
+    - name: Create infra Nodes Deploy
+      with_dict: "{{ infranodes }}"
+      async: 7200
+      poll: 0
+      azure_rm_deployment:
+        deployment_mode: incremental
+        state: present
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
+        resource_group_name: "{{ resource_group_name }}"
+        location: "{{ region }}"
+        deployment_name: "{{ item.value.name }}"
+        parameters:
+          subnetName:
+            value: infranodeSubnet
+          virtualNetworkName:
+            value: openshiftVnet
+          adminUsername:
+            value: "{{ adminUsername }}"
+          vmSize:
+            value: "{{ node_vmSize }}"
+          adminPassword:
+            value: "{{ adminPassword }}"
+          image:
+            value: rhel
+          masterKey:
+            value: "{{ masterkey }}"
+          tags:
+            value: "{{ item.value.tags }}"
+          vmName:
+            value: "{{ item.value.name }}"
+          sshKeyData:
+            value: "{{ sshkey }}"
+          availabilitySetName:
+            value: "infranode-AvailSet"
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
+        #i#template_link: 'ansible-azure/nodes.json'
+      register: azureinfranodes_async
 
+
+################################################
+#### Creating the application nodes.
+####Todo, dyncamically add the list of infra nodes to group
+################################################
+    - name: Create Nodes Deploy
+      async: 7200
+      poll: 0
+      with_dict: "{{ nodes }}"
+      azure_rm_deployment:
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
+        deployment_mode: incremental
+        state: present
+        subscription_id: "{{ subscriptionID }}"
+        resource_group_name: "{{ resource_group_name }}"
+        location: "{{ region }}"
+        deployment_name: "{{ item.value.name }}"
+        parameters:
+          subnetName:
+            value: nodeSubnet
+          virtualNetworkName:
+            value: openshiftVnet
+          adminUsername:
+            value: "{{ adminUsername }}"
+          vmSize:
+            value: "{{ node_vmSize }}"
+          adminPassword:
+            value: "{{ adminPassword }}"
+          image:
+            value: rhel
+          masterKey:
+            value: "{{ masterkey }}"
+          tags:
+            value: "{{ item.value.tags }}"
+          vmName:
+            value: "{{ item.value.name }}"
+          sshKeyData:
+            value: "{{ sshkey }}"
+          availabilitySetName:
+            value: "nodeAvailSet"
+
+ ## simple nodes
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
+        #i#template_link: 'ansible-azure/nodes.json'
+      register: azurenodes_async
 
 ### wait for masters
     - name: Wait for master instance creation to complete
@@ -117,11 +207,32 @@
       retries: 900
       with_items: "{{ azuremasternodes_sync.results }}"
 
+## wait for infra nodes
+    - name: Wait for infranode instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azureinfranodes
+      until: azureinfranodes.finished
+      retries: 900
+      with_items: "{{ azureinfranodes_async.results }}"
+    - debug: msg="the value of azure  {{ azure }}"
+    - debug: msg="the value of ip  {{ routerpublicip }}"
+
+### wait for nodes
+    - name: Wait for nodes instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azurenodes
+      until: azurenodes_async.finished
+      retries: 900
+      with_items: "{{ azurenodes_async.results }}"
 
 
-    - debug: msg="the value of azuremasternodes {{ azuremasternodes }}"
 
-    - debug: msg="the value of azurenodes_async {{ azurenodes_async }}"
+
+
+    - debug: msg="the value of (MASTERS)azuremasternodes {{ azuremasternodes }}"
+    - debug: msg="the value of (NODES)azurenodes {{ azurenodes }}"
+    - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
+
 
 
 
