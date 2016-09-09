@@ -147,6 +147,12 @@
             value: "{{ sshkey }}"
           availabilitySetName:
             value: "infranode-AvailSet"
+          loadBalancer:
+            value: "router"
+
+            ## ip address has to be created before hand  for some reason i cannot fathom at the mo
+          publicip:
+            value: "routerip"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async
@@ -199,6 +205,15 @@
         #i#template_link: 'ansible-azure/nodes.json'
       register: azurenodes_async
 
+
+## wait for infra nodes
+    - name: Wait for infranode instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azureinfranodes
+      until: azureinfranodes.finished
+      retries: 900
+      with_items: "{{ azureinfranodes_async.results }}"
+
 ### wait for masters
     - name: Wait for master instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
@@ -214,8 +229,6 @@
       until: azureinfranodes.finished
       retries: 900
       with_items: "{{ azureinfranodes_async.results }}"
-    - debug: msg="the value of azure  {{ azure }}"
-    - debug: msg="the value of ip  {{ routerpublicip }}"
 
 ### wait for nodes
     - name: Wait for nodes instance creation to complete
@@ -227,6 +240,7 @@
 
 
 
+    - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
 
 
     - debug: msg="the value of (MASTERS)azuremasternodes {{ azuremasternodes }}"
