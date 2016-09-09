@@ -46,9 +46,6 @@
     "publicip": {
       "type": "string"
     },
-    "internalLoadbalancerip": {
-      "type": "string"
-    },
     "sshKeyData": {
       "type": "string",
       "metadata": {
