@@ -2,3 +2,4 @@ group_vars/all
 ansible-azure.iml
 .idea/
 *.retry
+*.DS_Store
