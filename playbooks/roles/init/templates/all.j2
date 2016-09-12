@@ -16,14 +16,11 @@ sshkey: "{{ sshkey }}"
 
 # see https://azure.microsoft.com/en-us/documentation/articles/cloud-services-sizes-specs/
 ### Size for the master
-master_vmSize: Standard_DS3_v2
-#master_vmSize: Standard_D2_v2
-#master_vmSize: Standard_D1_v2
+master_vmSize: "{{ lookup('env','AZURE_VM_SIZE_MASTER') }}"
 
 ### Size for the nodes
-node_vmSize: Standard_DS3_v2
-#node_vmSize: Standard_D2_v2
-#node_vmSize: Standard_D1_v2
+node_vmSize: "{{ lookup('env','AZURE_VM_SIZE_NODE') }}"
+
 
 #### Region to deploy in
 region: "{{ lookup('env','AZURE_REGION') }}"
