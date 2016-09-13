@@ -1,0 +1,10 @@
+- name: Read public key
+  shell: cat ~/.ssh/id_rsa.pub
+  register: publickey
+- name: Set key as fact
+  set_fact:
+    sshkey: "{{ publickey.stdout }}"
+- name: Initilize settings from envs
+  template:
+    src: all.j2
+    dest: /ansible-azure/group_vars/all

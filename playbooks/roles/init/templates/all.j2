@@ -1,0 +1,97 @@
+resource_group_name: "{{ lookup('env','RESOURCE_GROUP_NAME') }}"
+##  Azure AD user.
+ad_username: "{{ lookup('env','AZURE_AD_USERNAME') }}"
+### Azure AD password
+ad_password: "{{ lookup('env','AZURE_AD_PASSWORD') }}"
+#### Azure Subscription ID
+subscriptionID: "{{ lookup('env','AZURE_SUBS_ID') }}"
+## user to login to the jump host. this user will only be created on the jumphost
+adminUsername: "{{ lookup('env','ADMIN_USERNAME') }}"
+## user pwd for jump host
+## Password for the jump host
+adminPassword: "{{ lookup('env','ADMIN_PASSWORD') }}"
+##### Public key for jump host
+sshkey: "{{ sshkey }}"
+
+
+# see https://azure.microsoft.com/en-us/documentation/articles/cloud-services-sizes-specs/
+### Size for the master
+master_vmSize: "{{ lookup('env','AZURE_VM_SIZE_MASTER') }}"
+
+### Size for the nodes
+node_vmSize: "{{ lookup('env','AZURE_VM_SIZE_NODE') }}"
+
+
+#### Region to deploy in
+region: "{{ lookup('env','AZURE_REGION') }}"
+
+## docker info
+docker_storage_device: /dev/sdc
+create_vgname: docker_vg
+filesystem: 'xfs'
+create_lvsize: '80%FREE'
+#create_lvsize: '2g'
+
+#### subscription information
+rh_subcription_user: "{{ lookup('env','RH_SUBS_USER') }}"
+rh_subcription_pass: "{{ lookup('env','RH_SUBS_PASSWORD') }}"
+openshift_pool_id: "{{ lookup('env','RH_OPENSHIFT_POOL_ID') }}"
+
+########### list of node  ###########
+### Warning, you currently cannot create more infra nodes ####
+### this will change in the future
+### You can add as many nodes as you want
+#####################################
+jumphost:
+  jumphost1:
+    name: jumphost1
+    tags:
+      region: northeurope
+      zone: jumphost
+      stage: jumphost
+
+masters:
+  master1:
+    name: master1
+    tags:
+      region: northeurope
+      zone: infra
+      stage: none
+  master2:
+    name: master2
+    tags:
+      region: northeurope
+      zone: infra
+      stage: none
+  master3:
+    name: master3
+    tags:
+      region: northeurope
+      zone: infra
+      stage: none
+
+infranodes:
+  infranode1:
+    name: infranode1
+    tags:
+      region: northeurope
+      zone: infra
+      stage: dev
+nodes:
+  node1:
+    name: node1
+    tags:
+      region: northeurope
+      zone: frontend
+      stage: dev
+  node2:
+    name: node2
+    tags:
+      region: northeurope
+      zone: backend
+      stage: dev
+#i#nodes:
+#  name: node1
+#  name: node2
+publicjumpdns:
+publicjumpip:
