@@ -52,7 +52,7 @@
 
 - name: Waiting 100 seconds  until the logging-support-template template is available before executing next comand
   command: oc get template logging-support-template -n logging
-  retries: 20
+  retries: 50
   delay: 10
   until: result|success
   register: result

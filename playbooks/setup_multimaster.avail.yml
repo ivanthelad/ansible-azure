@@ -13,6 +13,8 @@
 ################################################
     - name: "Create Azure Deploy {{ resource_group_name }}"
       azure_rm_deployment:
+        deployment_mode: incremental
+
         state: present
         ad_user: "{{ ad_username }}"
         password: "{{ ad_password }}"
@@ -20,13 +22,37 @@
         resource_group_name: "{{ resource_group_name }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra-avail.json'
       #  template_link: 'file://Users/imckinle/Projects/openshift/azure-ansible/ansible-azure/infra-avail.json'
-
+        parameters:
+          dnsNameAPI:
+            value: "master-{{ resource_group_name }}"
         location: "{{ region }}"
-      register: azure_vm
-      
-      
+      register: infrastruct
+
+    - debug: msg="the value of infrastruct  {{ infrastruct }}"
+    - debug: msg="the value of infrastruct {{ infrastruct }}"
+    - set_fact:
+        publicjumpip: "{{ infrastruct.deployment.outputs.apiip.value }}"
+        publicjumpdns: "{{ infrastruct.deployment.outputs.apidns.value }}"
+        routerpublicip: "{{ infrastruct.deployment.outputs.routerip.value }}"
+        publicjumpip: "{{ infrastruct.deployment.outputs.jumphostip.value }}"
+    - debug: msg="public api  {{ publicjumpip }}"
+    - debug: msg="public dns {{ publicjumpdns }}"
+    - debug: msg=" router ip {{ routerpublicip }}"
+ #   - debug: msg=" jumphostip {{ jumphostip }}"
+
+    ################################################
+ #### Create the jump host
+      ################################################
+
+
+  # - set_fact:
+  #      publicjumpdns: "{{ azure.results[0].deployment.instances[0].ips[0].dns_settings.fqdn }}"
+    #    publicjumpip: "{{ azure.results[0].deployment.instances[0].ips[0].public_ip }}"
+
+
+
 ################################################
-####  Create basic humphost node, this exposes 8443 and 22 as a public ports on a public ip , in future this will be a jump host and also entry point for the masters 
+####  Create basic humphost node, this exposes 8443 and 22 as a public ports on a public ip , in future this will be a jump host and also entry point for the masters
 ###   we use this node to jump into the other nodes
 ################################################
     - name: Create Jumphost Deployment
@@ -38,8 +64,8 @@
         password: "{{ ad_password }}"
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        location: "{{ region }}" 
-        #### We add it to the master subnet but really don't matter 
+        location: "{{ region }}"
+        #### We add it to the master subnet but really don't matter
         deployment_name: "{{ item.value.name }}"
         parameters:
           image:
@@ -48,8 +74,6 @@
             value: masterSubnet
           virtualNetworkName:
             value: openshiftVnet
-          dnsName:
-            value: "master-{{ resource_group_name }}"
           adminUsername:
             value: "{{ adminUsername }}"
           vmSize:
@@ -62,7 +86,10 @@
             value: "{{ item.value.tags }}"
           sshKeyData:
             value: "{{ sshkey }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/master.json'
+## ip address has to be created before hand  for some reason i cannot fathom at the mo
+          publicip:
+            value: "jumphostip"
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/jumphost-avail.json'
       register: azure_async
       async: 7200
       poll: 0
@@ -72,38 +99,17 @@
       until: azure.finished
       retries: 320
       with_items: "{{ azure_async.results }}"
-
-
     - debug: msg="the value of azure  {{ azure }}"
     - debug: msg="the value of azure_async {{ azure_async }}"
 
     - name: Add new instance to host group
       add_host: hostname={{ item['ips'][0].public_ip }} groupname=azure_vms
       with_items: azure.results[0].deployment.instances
-    - set_fact:
-        publicjumpdns: "{{ azure.results[0].deployment.instances[0].ips[0].dns_settings.fqdn }}"
-        publicjumpip: "{{ azure.results[0].deployment.instances[0].ips[0].public_ip }}"
-        lbvmname: "{{ azure.results[0].deployment.instances[0].vm_name }}"
 
-    - debug: msg="the value of azure  {{ azure }}"
-    - debug: msg="the value of dns  {{ publicjumpdns }}"
-    - debug: msg="the value of ip  {{ publicjumpip }}"
+
       ################################################
       ####  Only setting these values so we can manually look up. bit of a hack
       ################################################
-    - lineinfile:
-        dest: temp
-        regexp: "^publicjumpdns:"
-        line: "publicjumpdns: {{ publicjumpdns }}"
-        ignore_errors: yes
-
-    - lineinfile:
-        dest: temp
-        regexp: "^publicjumpip:"
-        line: "publicjumpip: {{ publicjumpip }}"
-        ignore_errors: yes
-
-    
 
 ################################################
 ####  Adding the jump host to our local know hosts
@@ -125,7 +131,6 @@
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
 
   user: "{{ adminUsername }}"
   tasks:
@@ -140,24 +145,6 @@
     - authorized_key: user="{{ adminUsername }}" key="{{ lookup('file', '/tmp/id_rsa.tmp') }}"
 
 
-################################################
-#### Subscribe the jump hosts. need to install bits like ansible and "atomic-openshift-utils"
-################################################
-#- hosts: azure_vms
-#  user: "{{ adminUsername }}"
-#  sudo: true
-#  roles:
-#     - { role: subscribe, rhnuser: "{{ rh_subcription_user }}", rhnpassword: "{{ rh_subcription_pass }}" }
-#  tasks:
-#    - name: Install Basic Preqes
-#      yum:
-#        name: "{{ item }}"
-#        state: present
-#      with_items:
-#           - git
-#           - vim
-#           - ansible
-#           - atomic-openshift-utils
 
 
 ################################################
@@ -170,6 +157,9 @@
   tasks:
     - debug: msg="the value of foo.txt is {{ contents }}"
 ### infra here
+
+
+
 
 
 ################################################
@@ -192,6 +182,8 @@
       async: 7200
       poll: 0
       with_dict: "{{ masters }}"
+      delay: 30
+      retries: 1
       azure_rm_deployment:
         deployment_mode: incremental
         state: present
@@ -223,10 +215,20 @@
           sshKeyData:
             value: "{{ sshkey }}"
           availabilitySetName:
-            value: "master-AvailSet"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
+            value: "masterAvailSet"
+          loadBalancer:
+            value: "apiPool"
+
+## ip address has to be created before hand  for some reason i cannot fathom at the mo
+          publicip:
+            value: "apipublicip"
+          internalLoadbalancerip:
+            value: "10.0.3.11"
+
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
+
 
 ################################################
 #### Creating the infrastrucute nodes.
@@ -243,7 +245,7 @@
         password: "{{ ad_password }}"
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        location: "{{ region }}" 
+        location: "{{ region }}"
         deployment_name: "{{ item.value.name }}"
         parameters:
           subnetName:
@@ -267,10 +269,18 @@
           sshKeyData:
             value: "{{ sshkey }}"
           availabilitySetName:
-            value: "infranode-AvailSet"
+            value: "infranodeavailSet"
+          loadBalancer:
+            value: "router"
+
+            ## ip address has to be created before hand  for some reason i cannot fathom at the mo
+          publicip:
+            value: "routerip"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async
+
+
 ################################################
 #### Creating the application nodes.
 ####Todo, dyncamically add the list of infra nodes to group
@@ -282,11 +292,11 @@
       azure_rm_deployment:
         ad_user: "{{ ad_username }}"
         password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
         deployment_mode: incremental
         state: present
-        subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        location: "{{ region }}" 
+        location: "{{ region }}"
         deployment_name: "{{ item.value.name }}"
         parameters:
           subnetName:
@@ -310,13 +320,17 @@
           sshKeyData:
             value: "{{ sshkey }}"
           availabilitySetName:
-            value: "node-AvailSet"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
+            value: "nodeAvailSet"
+
+ ## simple nodes
+        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azurenodes_async
 
 
-### wait for masters 
+
+
+### wait for masters
     - name: Wait for master instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azuremasternodes
@@ -324,24 +338,52 @@
       retries: 900
       with_items: "{{ azuremasternodes_sync.results }}"
 
-## wait for infra nodes 
+## wait for infra nodes
     - name: Wait for infranode instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azureinfranodes
       until: azureinfranodes.finished
       retries: 900
       with_items: "{{ azureinfranodes_async.results }}"
-    - set_fact:
-        routerpublicip: "{{ azureinfranodes.results[0].deployment.instances[0].ips[0].public_ip }}"
-    - debug: msg="the value of azure  {{ azure }}"
-    - debug: msg="the value of ip  {{ routerpublicip }}"
-## wait for  normal nodes 
-    - name: Wait for node instance creation to complete
+
+### wait for nodes
+    - name: Wait for nodes instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azurenodes
       until: azurenodes.finished
       retries: 900
-      with_items: " {{ azurenodes_async.results }}"
+      with_items: "{{ azurenodes_async.results }}"
+
+
+
+    - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
+
+
+    - debug: msg="the value of (MASTERS)azuremasternodes {{ azuremasternodes }}"
+    - debug: msg="the value of (NODES)azurenodes {{ azurenodes }}"
+    - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
+
+
+
+################################################
+#### Subscribe the jump hosts. need to install bits like ansible and "atomic-openshift-utils"
+################################################
+- hosts: azure_vms
+  user: "{{ adminUsername }}"
+  sudo: true
+  roles:
+     - { role: subscribe, rhnuser: "{{ rh_subcription_user }}", rhnpassword: "{{ rh_subcription_pass }}" }
+  tasks:
+    - name: Install Basic Preqes
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+           - git
+           - vim
+           - ansible
+           - atomic-openshift-utils
+
 
 
 ################################################
@@ -411,6 +453,11 @@
       with_dict: "{{ jumphost }}"
 
 
+
+
+
+
+
 ## copy the ansible templated file (this is step 2 )
 #################################################
  #### This may not be needed but its preparing the njumphost/master
@@ -421,12 +468,11 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
 
   user: "{{ adminUsername }}"
   sudo: true
   roles:
-     - { role: prepare_multi }
+     - { role: prepare_multi_avail }
   tasks:
      - lineinfile:
          dest: /etc/ansible/ansible.cfg
@@ -460,7 +506,6 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
 
   user: "{{ adminUsername }}"
   sudo: true
@@ -481,7 +526,6 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
   user: "{{ adminUsername }}"
   sudo: true
   tasks:
@@ -508,7 +552,6 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
 
   user: "{{ adminUsername }}"
   sudo: true
@@ -525,7 +568,6 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
 
   user: "{{ adminUsername }}"
   sudo: true
@@ -543,7 +585,6 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
 
   user: "{{ adminUsername }}"
   sudo: true
@@ -557,13 +598,12 @@
  #### Heres the real business. Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
 ################################################
 - hosts: gatewayed-masters:gatewayed-nodes
-  name: setup docker on all masters and nodes 
+  name: setup docker on all masters and nodes
   gather_facts: False
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
 
   user: "{{ adminUsername }}"
   sudo: true
@@ -591,13 +631,12 @@
 - hosts: azure_vms
   gather_facts: False
   user: "{{ adminUsername }}"
- # sudo: true  
+ # sudo: true
   force_handlers: yes
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
   tags:
     - installopenshift
   tasks:
@@ -608,7 +647,7 @@
     async: 7200
     ignore_errors: yes
     #notify: Get Ansible log files
-    shell: "ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml  "
+    shell: "ansible-playbook --become-method=sudo --become /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml  "
     #shell: "echo hello"
     args:
       chdir: /home/{{ adminUsername }}
@@ -643,9 +682,9 @@
 #      until: resultmaster.stdout.find("ok") != -1
 #      retries: 10
 #      delay: 3
- 
 
- 
+
+
 
 - hosts: gatewayed-masters
   name: restart masters after ose install
@@ -659,9 +698,8 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
   tasks:
- 
+
     - service: name=atomic-openshift-master-controllers state=restarted
     - service: name=atomic-openshift-master-api state=restarted
 #    - command: curl  --insecure --silent https://localhost:8443/healthz/ready
@@ -682,17 +720,16 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
   tasks:
     - service: name=atomic-openshift-node  state=restarted
     - service: name=docker  state=restarted
 - hosts: localhost
   connection: local
-  name: waiting 2 mins for nodes to come back 
-  tasks: 
+  name: waiting 2 mins for nodes to come back
+  tasks:
     - command: "sleep 120"
 #- hosts: gatewayed-masters
-- hosts: gatewayed-masters[0] 
+- hosts: gatewayed-masters[0]
   name: postinstall
   user: "{{ adminUsername }}"
   sudo: true
@@ -702,9 +739,8 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
     routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
-  roles: 
+  roles:
      - { role: postinstall }
 
 - hosts: gatewayed-masters[0]
@@ -717,9 +753,8 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
     routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
-  roles: 
+  roles:
      - { role: metrics,run_once: true, image_version: "latest", master_url: "https://{{ publicjumpdns }}:8443", hawkular_metrics_hostname: "hawkular.apps.{{ routerpublicip }}.xip.io", persistent: "false" }
      - { role: logging,run_once: true, master_url: "https://{{ publicjumpdns }}:8443", kibana_hostname: "kibana.apps.{{ routerpublicip }}.xip.io", image_version: "latest", public_master_url: "https://{{ publicjumpdns }}:8443" }
 
@@ -731,14 +766,14 @@
 #  sudo: true
 #  tags:
 #    - postinstall
-#    - restart 
+#    - restart
 #    - restart-master
 #  vars:
 #    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
 #    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
 #    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
 #    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
-#  tasks: 
+#  tasks:
 #    - service: name=atomic-openshift-master-controllers state=restarted
 #    - service: name=atomic-openshift-master-api state=restarted
 #
@@ -760,7 +795,7 @@
 #    - service: name=docker  state=restarted
 
 - hosts: localhost
-  connection: local 
+  connection: local
   name: Success message
   tasks:
     - debug: msg="Congrats. Openshift should be now up and running under https://{{ publicjumpdns }}:8443/"
@@ -802,5 +837,4 @@
 #      with_items: azure.deployment.instances
 
 #https://docs.ansible.com/ansible/azure_rm_deployment_module.html
-
 

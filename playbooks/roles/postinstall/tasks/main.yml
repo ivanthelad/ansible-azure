@@ -37,5 +37,9 @@
   when: reg.rc != 0
 - command: "chown 1001:root /mnt/registry"
   when: reg.rc != 0
+- command: "oc create serviceaccount registry"
+  ignore_errors: yes
+- command: "oadm policy add-scc-to-user privileged -z registry"
+  ignore_errors: yes
 - command: "oadm registry  --service-account=registry --config=/etc/origin/master/admin.kubeconfig  --credentials=/etc/origin/master/openshift-registry.kubeconfig  --images='registry.access.redhat.com/openshift3/ose-${component}:${version}' --selector='stage=dev,zone=infra'    --mount-host=/mnt/registry"
   when: reg.rc != 0
