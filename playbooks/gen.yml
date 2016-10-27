@@ -1,0 +1,4 @@
+- hosts: localhost
+  connection: localhost
+  roles:
+     - { role: generateinventory }

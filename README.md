@@ -59,9 +59,7 @@ http://docs.ansible.com/ansible/intro_installation.html
 
 ## run script 
 Update the group_vars/all variable. The following params exist. The script will support more masters  in the future. For now the script installs 1 master, 1 infra, x number of nodes. the nodes and infra are get labels which corrospond the tags in azure (consistent)
- - ansible-playbook -i inventory playbooks/setup.yml (warning, this may have been broken since the multi.master setup)
- - ansible-playbook  --forks=50 -i playbooks/setup_multimaster.new.yml
-
+ - ansible-playbook --forks=50 -i inventory playbooks/setup_multimaster.avail.yml
 ## configuration of nodes 
 Under the groups/all there is a  list of vms that will get created. This list also has a attribute called tag which. The values get set to azure tags and also openshift node labels  
   - jump node : this is required. all actions are performed via this node. This node needs to come up first before any of the other nodes can be created. this is because we generate a key on the jump node which is distributed to all subsequent nodes. For convience sake the LB infront of the master is also placed on this node.(opens port 8443 and 22). In the future this will be a azure loadbalancer

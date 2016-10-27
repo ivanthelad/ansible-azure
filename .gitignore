@@ -1,4 +1,5 @@
 group_vars/all
+playbooks/inventory
 ansible-azure.iml
 .idea/
 *.retry

@@ -1,0 +1,26 @@
+[all:vars]
+publicjumpip: {{ publicjumpip }}
+publicjumpdns: {{ publicjumpdns }}
+routerpublicip: {{ routerpublicip }}
+publicjumpip: {{  publicjumpip  }}
+[azure_vms]
+${{ publicjumpip }}
+
+[gatewayed-masters]
+[masters]
+{% for key, value in masters.iteritems() %}
+{{ value.name }}
+{% endfor %}
+[gatewayed-nodes]
+## nodes 
+{% for key, value in nodes.iteritems() %}
+{{ value.name }}
+{% endfor %}
+## infra
+{% for key, value in infranodes.iteritems() %}
+{{ value.name }}
+{% endfor %}
+## nodes 
+{% for key, value in masters.iteritems() %}
+{{ value.name }}
+{% endfor %}

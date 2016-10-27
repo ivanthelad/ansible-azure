@@ -18,6 +18,7 @@
         state: present
         ad_user: "{{ ad_username }}"
         password: "{{ ad_password }}"
+        tenant: "72f988bf-86f1-41af-91ab-2d7cd011db47"
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra-avail.json'
@@ -363,7 +364,10 @@
     - debug: msg="the value of (NODES)azurenodes {{ azurenodes }}"
     - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
 
-
+- hosts: localhost
+  connection: localhost
+  roles: 
+     - { role: generateinventory } 
 
 ################################################
 #### Subscribe the jump hosts. need to install bits like ansible and "atomic-openshift-utils"
@@ -506,7 +510,8 @@
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-
+  tags:
+   - subscribemynodes 
   user: "{{ adminUsername }}"
   sudo: true
   tasks:
@@ -743,20 +748,19 @@
   roles:
      - { role: postinstall }
 
-- hosts: gatewayed-masters[0]
-  name: postinstall-log-metrics
-  user: "{{ adminUsername }}"
-  sudo: true
-  tags:
-    - postinstall
-  vars:
-    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
-    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
-    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
-  roles:
-     - { role: metrics,run_once: true, image_version: "latest", master_url: "https://{{ publicjumpdns }}:8443", hawkular_metrics_hostname: "hawkular.apps.{{ routerpublicip }}.xip.io", persistent: "false" }
-     - { role: logging,run_once: true, master_url: "https://{{ publicjumpdns }}:8443", kibana_hostname: "kibana.apps.{{ routerpublicip }}.xip.io", image_version: "latest", public_master_url: "https://{{ publicjumpdns }}:8443" }
+#- hosts: gatewayed-masters[0]
+#  name: postinstall-log-metrics
+#  user: "{{ adminUsername }}"
+#  sudo: true
+#  tags:
+#    - postinstall
+#  vars:
+#    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+#    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+#    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+#    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+#  roles:
+#     - { role: logging,run_once: true, master_url: "https://{{ publicjumpdns }}:8443", kibana_hostname: "kibana.apps.{{ routerpublicip }}.xip.io", image_version: "latest", public_master_url: "https://{{ publicjumpdns }}:8443" }
 
 
 

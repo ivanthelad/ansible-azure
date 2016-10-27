@@ -14,5 +14,5 @@
 - name: disable
   command: subscription-manager repos --disable="*"
 - name: enable
-  command:  subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.2-rpms"
+  command:  subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.3-rpms"
 

@@ -12,7 +12,7 @@
   shell: "oc patch ns/openshift-infra --api-version=v1 -p '{\"metadata\": {\"annotations\": {\"openshift.io/node-selector\":\"zone=infra\"}}}'"
 
 - name: Create service account for metrics deployer
-  action: command oc create -n openshift-infra -f metrics-service-account.yaml
+  action: command oc create serviceaccount  metrics-deployer -n openshift-infra 
   ignore_errors: yes
   tags: hawkular-metrics
 
