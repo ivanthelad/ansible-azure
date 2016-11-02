@@ -1,0 +1,4 @@
+---
+- include: provision_infrastructure.yml
+- include: perform_prereqs.yml
+- include: install_openshift.yml

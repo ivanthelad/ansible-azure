@@ -1,0 +1,42 @@
+---
+################################################
+ #### Installing openshift
+################################################
+- hosts: azure_vms
+  gather_facts: False
+  user: "{{ adminUsername }}"
+ # sudo: true
+  force_handlers: yes
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+  tags:
+    - installopenshift
+  tasks:
+  - debug: msg="Beginning openshift install. This can take some time. Do not cancel this step"
+  - debug: msg="To following the progress of the install, You can login using your user {{ adminUsername }}@{{ publicjumpip }} and tail the log file /tmp/ansible.logi"
+  - debug: msg="After installation, the router, registry, metrics and logging are installed"
+ 
+  - command: rm /tmp/ansible.log
+  - name: install openshift
+    async: 7200
+    ignore_errors: yes
+    #notify: Get Ansible log files
+    shell: "ansible-playbook --become-method=sudo --become /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml  "
+    #shell: "echo hello"
+    args:
+      chdir: /home/{{ adminUsername }}
+  - name: "Checking output of ansible log"
+#    command: curl  --insecure --silent https://{{ publicjumpdns }}:8443/healthz/ready
+    command: grep 'PLAY RECAP' /tmp/ansible.log
+    register: result_file
+    until: result_file.stdout.find("PLAY RECAP") != -1
+    retries: 400
+    delay: 30
+  - name: "Checking loadbalancer api"
+    command: curl  --insecure --silent https://{{ publicjumpdns }}:8443/healthz/ready
+    register: resultapi
+    until: resultapi.stdout.find("ok") != -1
+    retries: 10
+    delay: 3

@@ -1,10 +1,10 @@
 [all:vars]
-publicjumpip: {{ publicjumpip }}
-publicjumpdns: {{ publicjumpdns }}
-routerpublicip: {{ routerpublicip }}
-publicjumpip: {{  publicjumpip  }}
+publicjumpip={{ publicjumpip }}
+publicjumpdns={{ publicjumpdns }}
+routerpublicip={{ routerpublicip }}
+publicjumpip={{  publicjumpip  }}
 [azure_vms]
-${{ publicjumpip }}
+{{ publicjumpip }}
 
 [gatewayed-masters]
 [masters]

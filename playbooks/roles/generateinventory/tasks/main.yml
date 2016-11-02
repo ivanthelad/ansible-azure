@@ -1,5 +1,5 @@
 - name: Create Inventory file based on dynamic hosts 
   template:
     src: inventory.j2
-    dest: ./inventory
+    dest: ../inventory
   tags: ose
