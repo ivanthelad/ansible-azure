@@ -657,14 +657,14 @@
     args:
       chdir: /home/{{ adminUsername }}
   - name: "Checking output of ansible log"
-#    command: curl  --insecure --silent https://{{ publicjumpdns }}:8443/healthz/ready
+#    command: curl  --insecure --silent https://{{ publicjumpdns }}:443/healthz/ready
     command: grep 'PLAY RECAP' /tmp/ansible.log
     register: result_file
     until: result_file.stdout.find("PLAY RECAP") != -1
     retries: 400
     delay: 30
   - name: "Checking loadbalancer api"
-    command: curl  --insecure --silent https://{{ publicjumpdns }}:8443/healthz/ready
+    command: curl  --insecure --silent https://{{ publicjumpdns }}:443/healthz/ready
     register: resultapi
     until: resultapi.stdout.find("ok") != -1
     retries: 10
@@ -681,7 +681,7 @@
 #    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
 #    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
 #  tasks:
-#    - command: curl  --insecure --silent https://localhost:8443/healthz/ready
+#    - command: curl  --insecure --silent https://localhost:443/healthz/ready
 #      name: "Check if master apis are up"
 #      register: resultmaster
 #      until: resultmaster.stdout.find("ok") != -1
@@ -802,7 +802,7 @@
   connection: local
   name: Success message
   tasks:
-    - debug: msg="Congrats. Openshift should be now up and running under https://{{ publicjumpdns }}:8443/"
+    - debug: msg="Congrats. Openshift should be now up and running under https://{{ publicjumpdns }}:443/"
     - debug: msg="You can login using your user {{ adminUsername }}@{{ publicjumpip }}"
     - debug: msg="You will need to configure your dns to talk to the openshift router under  {{ routerpublicip }}"
   handlers:

@@ -29,14 +29,14 @@
     args:
       chdir: /home/{{ adminUsername }}
   - name: "Checking output of ansible log"
-#    command: curl  --insecure --silent https://{{ publicjumpdns }}:8443/healthz/ready
+#    command: curl  --insecure --silent https://{{ publicjumpdns }}:443/healthz/ready
     command: grep 'PLAY RECAP' /tmp/ansible.log
     register: result_file
     until: result_file.stdout.find("PLAY RECAP") != -1
     retries: 400
     delay: 30
   - name: "Checking loadbalancer api"
-    command: curl  --insecure --silent https://{{ publicjumpdns }}:8443/healthz/ready
+    command: curl  --insecure --silent https://{{ publicjumpdns }}:443/healthz/ready
     register: resultapi
     until: resultapi.stdout.find("ok") != -1
     retries: 10
