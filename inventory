@@ -1,12 +1,10 @@
 [all:vars]
-publicjumpip=13.69.15.75
-publicjumpdns=master-osems3129.westeurope.cloudapp.azure.com
-routerpublicip=13.69.9.59
-publicjumpip=13.69.15.75
-adminUsername=ivan
-
+publicjumpip=104.40.214.129
+publicjumpdns=master-osems3130.westeurope.cloudapp.azure.com
+routerpublicip=104.40.212.123
+publicjumpip=104.40.214.129
 [azure_vms]
-13.69.15.75
+104.40.214.129
 
 [gatewayed-masters]
 [masters]

@@ -19,6 +19,7 @@
   - debug: msg="After installation, the router, registry, metrics and logging are installed"
  
   - command: rm /tmp/ansible.log
+    ignore_errors: yes
   - name: install openshift
     async: 7200
     ignore_errors: yes

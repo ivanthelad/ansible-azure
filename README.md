@@ -66,14 +66,17 @@ Update the group_vars/all variable. The following params exist. The script will 
 After the initial installation has been run and openshift is up and runnin it is possible to had extra node to the cluster. Add the additional node definition to the groups_var/all file and run the ansible script
   - ansible-playbook --forks=50    playbooks/provision_infrastructure.yml
 This script is whats run in the playbook playbooks/setupeverything.yml
-## configuration of nodes
+
+
+
+### configuration of nodes
 Under the groups/all there is a  list of vms that will get created. This list also has a attribute called tag which. The values get set to azure tags and also openshift node labels  
   - jump node : this is required. all actions are performed via this node. This node needs to come up first before any of the other nodes can be created. this is because we generate a key on the jump node which is distributed to all subsequent nodes. For convience sake the LB infront of the master is also placed on this node.(opens port 8443 and 22). In the future this will be a azure loadbalancer
   - master: we create 3 of these. no ports facing the outside. Loadbalanced by the jump node
   - infra node: currently hosts the registry and the router. not tested with multiple infra nodes yet. should work
   - node: bunch of nodes to host applications
 
- ## Post install 
+ ## Post install
   The installation of openshift is performed on the jump node. The local ansible script (setup_multimaster) execute another ansible script on the jump host(advanced install). The host file has already been placed under /etc/ansible/host by this stage and is dynamically build based on the template sitting under
    -  playbooks/roles/prepare_multi/templates/hosts.j2
  The execution of the advanced install is executed in async manner (to avoid timeouts as the advanced install can take time ). The local ansible script(setup_multimaster) polls the jump host for completion.

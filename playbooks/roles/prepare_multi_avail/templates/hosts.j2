@@ -35,9 +35,11 @@ openshift_use_dnsmasq=true
 openshift_master_cluster_method=native
 openshift_master_cluster_hostname={{ publicjumpdns }}
 openshift_master_cluster_public_hostname={{ publicjumpdns }}
+openshift_master_api_port=443
+openshift_master_console_port=443
 
-### 
-### metrics 
+###
+### metrics
 # Metrics deployment
 # See: https://docs.openshift.com/enterprise/latest/install_config/cluster_metrics.html
 #
@@ -63,9 +65,9 @@ openshift_hosted_metrics_storage_volume_name=metrics
 openshift_hosted_metrics_storage_volume_size=10Gi
 
 
-openshift_master_metrics_public_url=https://hawkular.apps.{{ routerpublicip }}.xip.io/hawkular/metrics
+openshift_master_metrics_public_url=https://hawkular-metrics.{{ routerpublicip }}.xip.io/hawkular/metrics
 
-##### logging 
+##### logging
 # Logging deployment
 #
 # Currently logging deployment is disabled by default, enable it by setting this
@@ -84,7 +86,7 @@ openshift_hosted_logging_storage_volume_name=logging
 openshift_hosted_logging_storage_volume_size=10Gi
 #
 
-openshift_master_logging_public_url=https://kibana.apps.{{ routerpublicip }}.xip.io
+openshift_master_logging_public_url=https://kibana.{{ routerpublicip }}.xip.io
 
 #osm_cluster_network_cidr=172.29.210.0/24
 # Configure number of bits to allocate to each hostb subnet e.g. 8
@@ -127,11 +129,11 @@ jumphost1
 {% endfor %}
 
 ##############################
-## applications  
+## applications
 # local_quota_per_fsgroup (quoata i)
 # https://docs.openshift.com/enterprise/3.2/install_config/master_node_configuration.html
 #  https://github.com/openshift/openshift-ansible/blob/eab842f5b6e5c04cda06c94cf8db3281d82c8ad6/roles/openshift_node/tasks/main.yml
-############################ 
+############################
 # host group for nodes, includes region info
 [nodes]
 {% for key, value in nodes.iteritems() %}

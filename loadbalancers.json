@@ -106,8 +106,8 @@
               "frontendIPConfiguration": {
                 "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LoadBalancer-nameAPI')), '/frontendIPConfigurations/LoadBalancerFrontEnd')]"
               },
-              "frontendPort": 8443,
-              "backendPort": 8443,
+              "frontendPort": 443,
+              "backendPort": 443,
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 4,
               "protocol": "Tcp",
@@ -126,7 +126,7 @@
             "name": "TCP-Probe",
             "properties": {
               "protocol": "Tcp",
-              "port": 8443,
+              "port": 443,
               "intervalInSeconds": 5,
               "numberOfProbes": 2
             }
@@ -187,7 +187,7 @@
                 "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LoadBalancer-nameRouter')), '/probes/TCP-Probe')]"
               }
             }
-          },      
+          },
     {
             "name": "Https",
             "properties": {
