@@ -291,38 +291,6 @@
     },
     {
       "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(parameters('vmName'), 'nic2')]",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "NetworkInterface"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Network/loadBalancers/', variables('loadbalancer-name'))]"
-
-
-      ],
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "subnet": {
-                "id": "[variables('subnetRef')]"
-              },
-              "loadBalancerBackendAddressPools": [
-                {
-                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name2')), '/backendAddressPools/', variables('backend-address-pool-name'))]"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
@@ -396,16 +364,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "properties": {
-             "primary": true
-             },
               "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName'), 'nic'))]"
-            },
-            {
-              "properties": {
-             "primary": false
-             },
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName'), 'nic2'))]"
             }
           ]
         }
@@ -415,3 +374,4 @@
   "outputs": {
   }
 }
+
