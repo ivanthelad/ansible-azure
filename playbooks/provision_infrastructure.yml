@@ -11,7 +11,9 @@
 #        location: "{{ region }}"
 ################################################
 ####  Create basic infra components
+## https://blogs.technet.microsoft.com/stefan_stranger/2016/10/21/using-the-azure-arm-rest-apin-get-access-token/
 ################################################
+    - debug: msg="Provisioning with ad_user {{ ad_username }} "
     - name: "Create Azure Deploy {{ resource_group_name }}"
       azure_rm_deployment:
         deployment_mode: incremental
@@ -19,7 +21,9 @@
         state: present
         ad_user: "{{ ad_username }}"
         password: "{{ ad_password }}"
-        tenant: "72f988bf-86f1-41af-91ab-2d7cd011db47"
+  #      client_id: tenc0157244-5527-46e9-a379-57bf3f83050b
+  #      tenant: 806a3527-ec8c-42b7-a080-e648814b0275
+  #      tenant: "72f988bf-86f1-41af-91ab-2d7cd011db47"
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra-avail.json'
@@ -103,10 +107,21 @@
       with_items: "{{ azure_async.results }}"
     - debug: msg="the value of azure  {{ azure }}"
     - debug: msg="the value of azure_async {{ azure_async }}"
+    - debug: msg="the value of dddd {{ azure.results[0].deployment.instances }}"
+    - debug: msg="the value of dddd {{ azure.results[0].deployment.instances[0].ips[0].public_ip }}"
 
     - name: Add new instance to host group
-      add_host: hostname={{ item['ips'][0].public_ip }} groupname=azure_vms
-      with_items: azure.results[0].deployment.instances
+      add_host: name={{  azure.results[0].deployment.instances[0].ips[0].public_ip }} groups=azure_vms
+  #    with_items: azure.results[0].deployment.instances[0]
+#      add_host: hostname={{ item['ips'][0].public_ip }} groupname=azure_vms
+#      with_items: azure.results[0].deployment.instances
+    - name: Scan the public key for master and added it to known hosts
+      debug: "arggg  {{ item }}  "
+      with_items: "{{ groups['azure_vms'] }}"
+
+    - name: Scan the public key for master and added it to known hosts
+      shell: "ssh-keyscan -H -T 10  {{ item }} >> ~/.ssh/known_hosts "
+      with_items: "{{ groups['azure_vms'] }}"
 
 
       ################################################
@@ -116,12 +131,17 @@
 ################################################
 ####  Adding the jump host to our local know hosts
 ################################################
-- hosts: localhost
-  connection: local
-  tasks:
-    - name: Scan the public key for master and added it to known hosts
-      shell: "ssh-keyscan -H -T 10  {{ item }} >> ~/.ssh/known_hosts "
-      with_items: groups['azure_vms']
+#- hosts: localhost
+#  connection: local#
+#  tasks:
+#    - debug: msg="the value of dddd {{ azure_vms }}"
+#    - name: Scan the public key for master and added it to known hosts#
+#      debug: "arggg  {{ item }}  "
+#      with_items: groups['azure_vms']
+#
+#    - name: Scan the public key for master and added it to known hosts
+#      shell: "ssh-keyscan -H -T 10  {{ item }} >> ~/.ssh/known_hosts "
+#      with_items: groups['azure_vms']
 
 
 
@@ -356,9 +376,9 @@
       retries: 900
       with_items: "{{ azurenodes_async.results }}"
 
+    - debug: msg="Waiting a min and a half, to ensure ports are all up on nodes"
+    - command: "sleep 110"
 
-
-    - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
 
 
     - debug: msg="the value of (MASTERS)azuremasternodes {{ azuremasternodes }}"
@@ -369,3 +389,69 @@
   connection: localhost
   roles:
      - { role: generateinventory }
+
+################################################
+#### This is kinda messy, While you can technially jump onto the jump machine and  call ansible playbook
+####    ---  /bin/ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml
+####  In this case i'm using to jump host as a 'gatewayed' ansible proxy. basically proxying my ansible commands via the jump host.
+#### To do this seamlessly the local machine requires the hosts to be added to know hosts
+#### This the funky stuff that going on below... ohh forgive me
+####
+################################################
+- hosts: azure_vms
+  user: "{{ adminUsername }}"
+  tasks:
+## From the jumphost scan the keys for all app nodes  and print to file
+    - name: From the jumphost scan the keys for all app nodes  and print to file
+      shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
+      with_dict: "{{ nodes }}"
+## From the jumphost fetch the keys for all app nodes  and save locally
+    - name: From the jumphost fetch the keys for all app nodes  and save locally
+      fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
+      with_dict: "{{ nodes }}"
+
+## From the jumphost scan the keys for all infranodes  and print to file
+    - name:  From the jumphost scan the keys for all infranodes  and print to file
+      shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
+      with_dict: "{{ infranodes }}"
+## From the jumphost fetch the keys for all infra nodes  and save locally
+    - name: From the jumphost fetch the keys for all infra nodes  and save locally
+      fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
+      with_dict: "{{ infranodes }}"
+
+## From the jumphost scan the keys for all masters  and print to file
+    - name: From the jumphost scan the keys for all masters  and print to file
+      shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
+      with_dict: "{{ masters }}"
+## From the jumphost fetch the keys for all master nodes  and save locally
+    - name:  From the jumphost fetch the keys for all master nodes  and save locally
+      fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
+      with_dict: "{{ masters }}"
+
+## From the jumphost scan the keys for all jumphost  and print to file
+    - name: From the jumphost scan the keys for all jumphost  and print to file
+      shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
+      with_dict: "{{ jumphost }}"
+## From the jumphost fetch the keys for all jumphost nodes  and save locally
+    - name:  From the jumphost fetch the keys for all jumphost nodes  and save locally
+      fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
+      with_dict: "{{ jumphost }}"
+
+#################################################
+ #### This is kinda messy, I'm appending all known hosts to local file. We fetched these in the previous step
+################################################
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Assemble nodes knownhosts locally
+      shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
+      with_dict: "{{ nodes }}"
+    - name:  Assemble masters knownhosts locally
+      shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
+      with_dict: "{{ masters }}"
+    - name:  Assemble infranodes knownhosts locally
+      shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
+      with_dict: "{{ infranodes }}"
+    - name:  Assemble jumphost knownhosts locally
+      shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
+      with_dict: "{{ jumphost }}"

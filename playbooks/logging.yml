@@ -1,0 +1,13 @@
+- hosts: gatewayed-masters[0]
+  name: postinstall
+  user: "{{ adminUsername }}"
+  sudo: true
+  tags:
+    - postinstall
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+  roles:
+     - { role: logging, public_master_url: "https://{{ publicjumpdns }}", kibana_hostname: "logging.{{ routerpublicip }}.xip.io" }

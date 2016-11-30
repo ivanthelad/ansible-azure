@@ -1,0 +1,32 @@
+- hosts: gatewayed-masters
+  name: Replace bugging publicmetrics url with a inline. because, bugs
+  user: "{{ adminUsername }}"
+  sudo: true
+  tags:
+    - postinstall
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+  tasks:
+     - lineinfile: "dest=/etc/origin/master/master-config.yaml
+                   regexp='^  metricsPublicURL'
+                   line='  metricsPublicURL: https://hawkular-metrics.{{ routerpublicip }}.xip.io/hawkular/metrics'"
+- hosts: gatewayed-masters[0]
+  name: postinstall, install flipping metrics
+  user: "{{ adminUsername }}"
+  sudo: true
+  tags:
+    - postinstall
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+  tasks:
+     - lineinfile: "dest=/etc/origin/master/master-config.yaml
+                   regexp='^  metricsPublicURL'
+                   line='  metricsPublicURL: https://hawkular-metrics.{{ routerpublicip }}.xip.io/hawkular/metrics'"
+  roles:
+     - { role: metrics, hawkular_metrics_hostname: "hawkular-metrics.{{ routerpublicip }}.xip.io" }

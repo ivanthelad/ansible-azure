@@ -1,0 +1,32 @@
+- hosts: localhost
+  connection: local
+  strategy: free
+  tasks:
+  - name: Tagging Masters
+    with_dict: "{{ masters }}"
+#    async: 7200
+#    poll: 0
+    azure_rm_virtualmachine:
+      state: present
+      ad_user: "{{ ad_username }}"
+      password: "{{ ad_password }}"
+      subscription_id: "{{ subscriptionID }}"
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ item.value.name }}"
+      append_tags: true
+      tags:
+        mething2: "again"
+        mething2: "again"
+
+  - name: Restart Masters
+    with_dict: "{{ masters }}"
+    async: 7200
+    poll: 0
+    azure_rm_virtualmachine:
+      state: present
+      ad_user: "{{ ad_username }}"
+      password: "{{ ad_password }}"
+      subscription_id: "{{ subscriptionID }}"
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ item.value.name }}"
+      restarted: yes

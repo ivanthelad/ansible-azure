@@ -1,0 +1,56 @@
+
+
+- hosts: localhost
+  connection: local
+  strategy: free
+  gather_facts: no
+  tasks:
+  - name: Restart jump
+    with_dict: "{{ jumphost }}"
+  #  async: 7200
+  #  poll: 0
+    azure_rm_virtualmachine:
+      ad_user: "{{ ad_username }}"
+      password: "{{ ad_password }}"
+      subscription_id: "{{ subscriptionID }}"
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ item.value.name }}"
+      started: yes
+      allocated: yes
+
+  - name: Restart Masters
+    with_dict: "{{ masters }}"
+    async: 7200
+    poll: 0
+    azure_rm_virtualmachine:
+      ad_user: "{{ ad_username }}"
+      password: "{{ ad_password }}"
+      subscription_id: "{{ subscriptionID }}"
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ item.value.name }}"
+      started: yes
+
+
+  - name: Restart InfraNodes
+    with_dict: "{{ infranodes }}"
+    async: 7200
+    poll: 0
+    azure_rm_virtualmachine:
+      ad_user: "{{ ad_username }}"
+      password: "{{ ad_password }}"
+      subscription_id: "{{ subscriptionID }}"
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ item.value.name }}"
+      started: yes
+
+  - name: Restart Nodes
+    with_dict: "{{ nodes }}"
+    async: 7200
+    poll: 0
+    azure_rm_virtualmachine:
+      ad_user: "{{ ad_username }}"
+      password: "{{ ad_password }}"
+      subscription_id: "{{ subscriptionID }}"
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ item.value.name }}"
+      started: yes

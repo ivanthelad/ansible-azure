@@ -97,22 +97,22 @@
 #################################################
  #### This may not be needed but its preparing the njumphost/master
 ################################################
-- hosts: azure_vms
-  gather_facts: False
-  vars:
-    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
-    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
-    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
-
-  user: "{{ adminUsername }}"
-  sudo: true
-  roles:
-     - { role: prepare_multi_avail }
-  tasks:
-     - lineinfile:
-         dest: /etc/ansible/ansible.cfg
-         regexp: "^#log_path"
-         line: "log_path = /tmp/ansible.log"
+#- hosts: azure_vms
+#  gather_facts: False
+#  vars:
+#    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+#    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+#    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+#
+#  user: "{{ adminUsername }}"
+#  sudo: true
+#  roles:
+#     - { role: prepare_multi_avail }
+#  tasks:
+#     - lineinfile:
+#         dest: /etc/ansible/ansible.cfg
+#         regexp: "^#log_path"
+#         line: "log_path = /tmp/ansible.log"
 
 #################################################
  #### Prepare dynamic group

@@ -1,5 +1,5 @@
 ---
-- name: Copy the pc file 
+- name: Copy the pc file
   copy: src="cassandra-pv.yaml" dest="."
   tags: hawkular-metrics
 
@@ -12,18 +12,16 @@
   shell: "oc patch ns/openshift-infra --api-version=v1 -p '{\"metadata\": {\"annotations\": {\"openshift.io/node-selector\":\"zone=infra\"}}}'"
 
 - name: Create service account for metrics deployer
-  action: command oc create serviceaccount  metrics-deployer -n openshift-infra 
+  action: command oc create serviceaccount  metrics-deployer -n openshift-infra
   ignore_errors: yes
   tags: hawkular-metrics
 
 - name: Grant edit permission on project openshift-infra for the service account metric-deployer
-  action: command oadm policy add-role-to-user \
-          edit system:serviceaccount:openshift-infra:metrics-deployer -n openshift-infra
+  action: command oadm policy add-role-to-user  edit system:serviceaccount:openshift-infra:metrics-deployer -n openshift-infra
   tags: hawkular-metrics
 
 - name: Grant Heapster service account the cluster-reader permission to read the stats
-  action: command oadm policy add-cluster-role-to-user \
-          cluster-reader system:serviceaccount:openshift-infra:heapster -n openshift-infra
+  action: command oadm policy add-cluster-role-to-user cluster-reader system:serviceaccount:openshift-infra:heapster -n openshift-infra
   tags: hawkular-metrics
 
 - name: Create a "dummy" secret that does not specify a certificate value for the metrics deployer
@@ -31,13 +29,12 @@
   tags: hawkular-metrics
 
 
-#- name: create the PV required by metric  
+#- name: create the PV required by metric
 #  action: command oc create -f cassandra-pv.yaml -n openshift-infra
 #  tags: hawkular-metrics
 
 - name: Process the metrics deployer
-  shell: command oc process metrics-deployer-template -n openshift -v \
-          IMAGE_VERSION={{ image_version }},MASTER_URL={{ master_url }},HAWKULAR_METRICS_HOSTNAME={{ hawkular_metrics_hostname }},USE_PERSISTENT_STORAGE={{ persistent }} | oc create -n openshift-infra -f -
+  shell: command oc process metrics-deployer-template -n openshift -v HAWKULAR_METRICS_HOSTNAME={{ hawkular_metrics_hostname }},USE_PERSISTENT_STORAGE=true,CASSANDRA_PV_SIZE=10Gi | oc create -n openshift-infra -f -
   tags: hawkular-metrics
 
 

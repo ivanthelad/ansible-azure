@@ -1,4 +1,53 @@
 ---
+- hosts: localhost
+  connection: local
+  name: Sanity check
+  gather_facts: no
+  vars:
+    mastercount: "{{ masters | length }}"
+  tasks:
+    - debug: msg="Checking if master size is correct either 1,3 or 5. Current size={{ mastercount }} "
+    - name: 'check parm is null or invalid'
+      fail: msg="Openshift installation supports either 1, 3, or 5 masters because of etcd's qourm. Your corrent number of masters is {{ masters | length }}. Please ensure your master size fulfills this requirement. Update the dict/array called masters in the file groups/all"
+      when:
+        - mastercount  != '1'
+        - mastercount  != '3'
+        - mastercount  != '5'
+
+
+#- hosts: localhost
+#  connection: local
+#  gather_facts: no
+
+#  tasks:
+#    - fail: msg="Bailing out. this play requires 'bar'"
+#      when: bar is undefined
+
+## pip install  msrestazure --upgrade
+## pip show azure
+## pip install  msrest --upgrade
+## pip install ansible --upgrade
+ ## sudo pip install -U pyOpenSSL
+## https://blogs.technet.microsoft.com/stefan_stranger/2016/10/21/using-the-azure-arm-rest-apin-get-access-token/
+
 - include: provision_infrastructure.yml
 - include: perform_prereqs.yml
 - include: install_openshift.yml
+#- include: temp.yml
+- include: metrics.yml
+- include: logging.yml
+- include: restart.yml
+
+- hosts: localhost
+  connection: local
+  name: Success message
+  tasks:
+    - debug: msg="Congrats. Openshift should be now up and running under https://{{ publicjumpdns }}:443/"
+    - debug: msg="You can login using your user {{ adminUsername }}@{{ publicjumpip }}"
+    - debug: msg="You will need to configure your dns to talk to the openshift router under  {{ routerpublicip }}"
+  handlers:
+    - name: Get Ansible log files
+      fetch:
+        src: /tmp/ansible.log
+        dest: "{{ resource_group_name }}_ansible.log"
+        flat: yes

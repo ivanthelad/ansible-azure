@@ -1,0 +1,40 @@
+- hosts: localhost
+  connection: local 
+  strategy: free
+  tasks: 
+  - name: Stopping Masters 
+    with_dict: "{{ masters }}"
+#    async: 7200
+#    poll: 0
+    azure_rm_virtualmachine:
+      state: present
+      ad_user: "{{ ad_username }}"
+      password: "{{ ad_password }}"
+      tenant: "72f988bf-86f1-41af-91ab-2d7cd011db47"
+      subscription_id: "{{ subscriptionID }}"
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ item.value.name }}"
+      allocated: false
+
+  - name: Stopping InfraNodes
+    with_dict: "{{ infranodes }}"
+    azure_rm_virtualmachine:
+      state: present
+      ad_user: "{{ ad_username }}"
+      password: "{{ ad_password }}"
+      tenant: "72f988bf-86f1-41af-91ab-2d7cd011db47"
+      subscription_id: "{{ subscriptionID }}"
+      resource_group: "{{ resource_group_name }}"
+      name: "{{ item.value.name }}"
+      allocated: false
+  - name: Stopping Nodes
+    with_dict: "{{ nodes }}"
+    azure_rm_virtualmachine:
+      state: present
+      ad_user: "{{ ad_username }}"
+      password: "{{ ad_password }}"
+      tenant: "72f988bf-86f1-41af-91ab-2d7cd011db47"
+      subscription_id: "{{ subscriptionID }}"
+      resource_group: "{{ resource_group_name }}"
+      allocated: false
+      name: "{{ item.value.name }}"

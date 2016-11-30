@@ -1,8 +1,10 @@
 [OSEv3:children]
 masters
 nodes
-etcd
 nfs
+{% if masters | length  > 1  %}
+etcd
+{% endif %}
 [OSEv3:vars]
 # SSH user, this user should allow ssh based auth without requiring a password
 ansible_ssh_user={{ adminUsername }}
@@ -118,16 +120,16 @@ jumphost1
 #[etcd:vars]
 #etcd_interface=eth1
 # host group for masters
-
 [masters]
 {% for key, value in masters.iteritems() %}
 {{ value.name }} openshift_hostname={{ value.name }}  openshift_public_hostname={{ value.name }}
 {% endfor %}
-
+{% if masters | length  > 1  %}
 [etcd]
 {% for key, value in masters.iteritems() %}
 {{ value.name }} openshift_hostname={{ value.name }}  openshift_public_hostname={{ value.name }}
 {% endfor %}
+{% endif %}
 
 ##############################
 ## applications
@@ -146,8 +148,3 @@ jumphost1
 {% for key, value in infranodes.iteritems() %}
 {{ value.name }} openshift_hostname={{ value.name }}  openshift_public_hostname={{ value.name }}  openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
 {% endfor %}
-
-### [somegroup]
-###{% for host in groups['gatewayed-nodes'] %}
-##   {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }},  {{ hostvars[host]['ansible_hostname'] }}, {{ hostvars[host]['inventory_hostname_short'] }}
-## {% endfor %}

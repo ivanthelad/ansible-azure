@@ -1,0 +1,16 @@
+- hosts: localhost
+  connection: local
+#  gather_facts: no
+  tasks:
+    - name: Add new instance to host group
+      add_host: name=10.10.10.1 groups=azure_vms
+  #    with_items: azure.results[0].deployment.instances[0]
+#      add_host: hostname={{ item['ips'][0].public_ip }} groupname=azure_vms
+#      with_items: azure.results[0].deployment.instances
+    - name: Scan the public key for master and added it to known hosts
+      debug: "arggg  {{ item }}  "
+      with_items: "{{ groups['azure_vms'] }}"
+
+#i#    - name: Scan the public key for master and added it to known hosts
+#      shell: "ssh-keyscan -H -T 10  {{ item }} >> ~/.ssh/known_hosts "
+#      with_items: groups['azure_vms']

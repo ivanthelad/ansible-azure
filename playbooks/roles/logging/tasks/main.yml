@@ -1,90 +1,41 @@
 ---
-- name: Copy the pc file
-  copy: src="logging-service.yml" dest="."
-  tags: logging
-
-- name: Copy the PV file
-  copy: src="es-pv.json" dest="."
-  tags: logging
-
-- name: Copy the PVC file
-  copy: src="es-pvc.json" dest="."
-  tags: logging
-
 
 - debug: msg="creating project logging"
+  tags: logging
+
 - name: Set the node-selector for the default namespace
-  shell: "oadm new-project logging "
+  shell: "oadm new-project logging --node-selector='' "
   ignore_errors: true
-
-- name: 
-  action: command oc secrets new logging-deployer nothing=/dev/null -n logging
-  ignore_errors: yes
   tags: logging
 
-- name:
-  action: command oc create -f logging-service.yml -n logging
+- name: Set the node-selector for the default namespace
+  shell: "oc new-app logging-deployer-account-template -n logging"
+  ignore_errors: true
   tags: logging
 
-- name:
-  action: command  oc policy add-role-to-user edit --serviceaccount logging-deployer -n logging
+- name: Set the node-selector for the default namespace
+  shell: "oadm policy add-cluster-role-to-user oauth-editor system:serviceaccount:logging:logging-deployer -n logging"
+  ignore_errors: true
   tags: logging
 
-- name:
-  action: command  oadm policy add-scc-to-user  privileged system:serviceaccount:logging:aggregated-logging-fluentd -n logging
+- name: Set the node-selector for the default namespace
+  shell: " oadm policy add-scc-to-user privileged  system:serviceaccount:logging:aggregated-logging-fluentd -n logging"
+  ignore_errors: true
   tags: logging
 
-- name: 
-  action: command oadm policy add-cluster-role-to-user cluster-reader system:serviceaccount:logging:aggregated-logging-fluentd -n logging 
+- name: Set the node-selector for the default namespace
+  shell: "oadm policy add-cluster-role-to-user cluster-reader  system:serviceaccount:logging:aggregated-logging-fluentd -n logging"
+  ignore_errors: true
   tags: logging
 
-#- name: Creating ES PV
-#  action: command oc create -f es-pv.json
-#  tags: logging
+- name: create config map
+  #shell: "oc create configmap logging-deployer  --from-literal kibana-hostname=logging.{{ routerpublicip }}.xip.io --from-literal public-master-url=https://{{ publicjumpdns }}  --from-literal es-cluster-size=1 --from-literal es-instance-ram=4G  --from-literal es-pvc-size=10G -n logging"
+  shell: "oc create configmap logging-deployer  --from-literal kibana-hostname={{ kibana_hostname }} --from-literal public-master-url={{ public_master_url }}  --from-literal es-cluster-size=1 --from-literal es-instance-ram=4G  --from-literal es-pvc-size=10G -n logging"
 
-- name:  deploy logging-deployer-template  
-  action: command  oc new-app logging-deployer-template --param KIBANA_HOSTNAME={{ kibana_hostname }} \
-             --param MASTER_URL={{ master_url }} \
-             --param ES_CLUSTER_SIZE=1 \
-             --param IMAGE_VERSION={{ image_version }} \
-             --param PUBLIC_MASTER_URL={{ public_master_url }} -n logging
   tags: logging
-
-- name: Waiting 100 seconds  until the logging-support-template template is available before executing next comand
-  command: oc get template logging-support-template -n logging
-  retries: 50
-  delay: 10
-  until: result|success
-  register: result
-
-#- name: ES Volume Claim
-#  action: command oc create -f es-pvc.json -n logging
-#  tags: logging
-
-- name: oc new-app logging-support-template -n logging
-  command: oc new-app logging-support-template -n logging
-  tags: logging 
-
-- name: get dc 
-  command:  oc get dc -n logging
-  tags: logging 
-  retries: 5
-  delay: 5
-  until: result|success
-  register: result
-
-- shell: "echo sleeping for 100 seconds "
-- shell: sleep 100
-- name: grep
-  shell: "oc get dc -n logging | awk '{print $1}' | grep logging-es "
-  register: result
-- debug: msg="{{ result.stdout  }}"
-- shell: " oc get dc {{ result.stdout  }} -n logging "
-  register: dc
-- debug: msg=" changing deployment config  {{ dc  }}"
-- shell: "oc get nodes  --no-headers  | wc -l"
-  register: replicas
-#i#- shell: "oc volume deploymentconfigs {{ result.stdout  }}  --add --overwrite --name=elasticsearch-storage --type=persistentVolumeClaim --claim-name=elastic-search-claim"
-- shell: "oc scale dc/logging-fluentd --replicas={{ replicas.stdout  }} -n logging"
-  name: "Scalling to fluentd  replicas"
-  
+- name: Set the node-selector for the default namespace
+  shell: " oc label node --all logging-infra-fluentd=true --overwrite=true "
+  tags: logging
+- name: Set the node-selector for the default namespace
+  shell: " oc new-app logging-deployer-template -n logging "
+  tags: logging

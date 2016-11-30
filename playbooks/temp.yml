@@ -1,0 +1,40 @@
+- hosts: gatewayed-masters:gatewayed-nodes
+  name: "Restart network service on nodes and masters"
+  gather_facts: False
+  user: "{{ adminUsername }}"
+  sudo: true
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+  tasks:
+    - debug: msg="Restarting network, this is because cluster hostname resolution does not work. This effect the mounting of the nfs shares for registry, ES and cassandra"
+  #  - service: name=NetworkManager state=restarted
+    - service: name=network state=restarted
+#    - command: "echo hello"
+
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+    - debug: msg="Waiting a min and a half, to ensure ports are all up on nodes"
+    - command: "sleep 10"
+      name: sleeping, zzz, zzz, zzz,
+- hosts: gatewayed-masters[0]
+  name: postinstall
+  user: "{{ adminUsername }}"
+  sudo: true
+  tags:
+    - postinstall
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+  tasks:
+    - command: "oc deploy docker-registry --cancel -n default"
+      name: "Cancel docker-registry deploy"
+      ignore_errors: true
+    - command: "oc deploy docker-registry --latest -n default"
+      name: "Docker-registry deploy"
+      ignore_errors: true

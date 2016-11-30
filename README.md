@@ -52,7 +52,11 @@ This ansible script uses features only found in the latest version on ansible (n
 http://docs.ansible.com/ansible/intro_installation.html
 
  Note: After upgrade to ansible 2.2 i encountered issues where the azure module attempts to pass two params to a function that expects one. this was resolved by upgrade the phyton msresrt module. " sudo pip install msrest --upgrade"
+
   this upgrade from msrest 0.4.0  to 0.4.1
+    - pip install ansible
+    - pip install  msrestazure --upgrade
+    - pip install  msrest --upgrade
 
 
  See http://docs.ansible.com/ansible/azure_rm_deployment_module.html for info how to configure the module
@@ -60,6 +64,18 @@ http://docs.ansible.com/ansible/intro_installation.html
 ## run script
 Update the group_vars/all variable. The following params exist. The script will support more masters  in the future. For now the script installs 1 master, 1 infra, x number of nodes. the nodes and infra are get labels which corrospond the tags in azure (consistent)
  - ansible-playbook --forks=50 -i inventory playbooks/setupeverything.yml
+
+## Script modules
+The scripting has now been split into more granular operations. The playbook setupeverything inlcudes has 3 main playbooks
+
+### - provision_infrastructure.yml
+Simply Provisions the basic infrastructure base on the Node Arrays defined in the group_vars/all file. This includes loadbalancer , availabilitySets and multiple subnets
+
+ ### perform_prereqs.yml
+ Configure all outline prereqs from the documention. Addition configures storage based on best practises to ensure if storage of logs, etc, openshift.volumes is exceeded it does not corrupt the rest of the node. Configures docker and installs required base packages
+### install_openshift.single.yml(single master) or install_openshift.yml (multimaster)
+Creates dynamic ansible hosts file based on the contents of groups_var/all and the contents of the config under the prepare_multi roles
+#### TODO: merge the single and install_openshift playbooks into one, with a check if one or more masters are deployed then it should create a multi master environment . Possible abort if only two are defined 
 
 
 ## scaling out
