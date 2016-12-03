@@ -1,0 +1,88 @@
+### Just label all nodes for now.
+- name: Labeling all nodes with type=core
+  command:  oc label nodes --selector="zone=infra" type=core --overwrite
+  tags: rhmap-install
+
+- name: Create new project called rhmap-core
+  tags: rhmap-install
+  command:  oc new-project rhmap-core
+
+- name: Patching default selector for rhmap-core
+  tags: rhmap-install
+  shell: "oc patch ns/rhmap-core --api-version=v1 -p '{\"metadata\": {\"annotations\": {\"openshift.io/node-selector\":\"type=core\"}}}'"
+- name: Creating service account nagios
+  tags: rhmap-install
+  command:  oc create serviceaccount nagios  -n rhmap-core
+
+- name: Added adming role to nagios
+  tags: rhmap-install
+  command:  oc policy add-role-to-user admin -z nagios  -n rhmap-core
+
+- name: Creating monitoring for rhmap-core
+  tags: rhmap-install
+  command:  oc new-app -f /opt/rhmap/templates/core/fh-core-monitoring.json  -n rhmap-core
+
+- name: cleanup
+  command: rm /tmp/repoadmin_id_rsa /tmp/repoadmin_id_rsa /tmp/gitlab_shell_id_rsa /tmp/gitlab_shell_id_rsa
+  ignore_errors: true
+
+- name: keygen repoadmin
+  tags: rhmap-install
+  command: ssh-keygen -q -N '' -C "/tmp/repoadmin_id_rsa" -f "/tmp/repoadmin_id_rsa"
+
+- name: Kegen gitlab
+  tags: rhmap-install
+  command:  ssh-keygen -q -N '' -C "/tmp/gitlab_shell_id_rsa" -f "/tmp/gitlab_shell_id_rsa"
+
+- name: Creating Secret
+  tags: rhmap-install
+  command: oc secrets new gitlab-ssh repoadmin-id-rsa=/tmp/repoadmin_id_rsa repoadmin-id-rsa-pub=/tmp/repoadmin_id_rsa.pub gitlab-shell-id-rsa=/tmp/gitlab_shell_id_rsa gitlab-shell-id-rsa-pub=/tmp/gitlab_shell_id_rsa.pub -n rhmap-core
+
+- name: Create a SecurityContextConstraint with the anyuid SCC
+  tags: rhmap-install
+  command: oc apply -f /opt/rhmap/templates/core/scc-anyuid-with-chroot.json -n rhmap-core
+
+- name: Add the new SecurityContextConstraint to the default ServiceAccount for the project
+  tags: rhmap-install
+  command: oc adm policy add-scc-to-user anyuid-with-chroot system:serviceaccount:rhmap-core:default
+
+- name: Create the Core infrastructure resources.
+  tags: rhmap-install
+  command: oc new-app -f /opt/rhmap/templates/core/fh-core-infra.json -n rhmap-core
+
+
+- name: Create the Core backend resources.
+  tags: rhmap-install
+  command: oc new-app -f /opt/rhmap/templates/core/fh-core-backend.json  -n rhmap-core
+
+
+
+### Begin front end
+- name: getting the route for the Git route
+  command: oc get route git --template={% raw %}{{.spec.host}}{% endraw %} -n rhmap-core
+  register: temp
+- debug: msg=" Git host = {{ temp.stdout }}"
+
+
+- name: Creating the front end
+  command: oc new-app -f /opt/rhmap/templates/core/fh-core-frontend.json   -p CLUSTER_DOMAIN="{{ temp.stdout }}"   -p GIT_EXTERNAL_HOST="{{ routerpublicip }}".xip.io   -p SMTP_SERVER="{{ rhmap_smtp_server }}"   -p SMTP_USERNAME="{{ rhmap_smtp_usernane }}" -p SMTP_PASSWORD="{{ rhmap_smtp_password }}" -p EMAIL_REPLYTO="{{  rhmap_smtp_replyto }}" -p SMTP_PORT="{{ rhmap_smtp_port }}" -p SMTP_AUTH="{{ rhmap_smtp_auth }}" -p SMTP_TLS="{{ rhmap_smtp_tls }}" -p BUILDER_ANDROID_SERVICE_HOST="{{ feedhenry_androidbuilder_service_host }}" -p BUILDER_IPHONE_SERVICE_HOST="{{ feedhenry_iosbuilder_service_host }}" -n rhmap-core
+
+- name: "Getting username and pwd "
+  command: "oc env dc nagios  --list"
+  register: nagios
+- name: Get RHMAP endpoint
+  command: oc get route rhmap --template https://{% raw %}{{.spec.host}}{% endraw %}
+  register: rhmap_endpoint
+- name: Get RHMAP creditials
+  command: "oc env dc millicore --list"
+  register: rhnmap_creditials
+
+
+
+
+- name: Print summary, Nagios login details
+  debug: msg="Nagios login details {{ nagios }}"
+- name: Print summary, RHMAP login page
+  debug: msg="RHMAP login page {{ rhmap_endpoint }}"
+- name: Print summary,RHMAP login details
+  debug: msg="RHMAP login details  {{ rhnmap_creditials }}"

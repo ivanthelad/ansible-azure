@@ -1,0 +1,36 @@
+
+- hosts: gatewayed-masters[0]
+  vars:
+#    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+  gather_facts: true
+  user: "{{ adminUsername }}"
+  sudo: true
+  tasks:
+    - name: "Getting username and pwd "
+      command: "oc env dc/nagios --list -n rhmap-core | grep NAGIOS"
+      register: nagios
+    - name: Get RHMAP endpoint
+      command: oc get route rhmap --template https://{% raw %}{{.spec.host}}{% endraw %}
+      register: rhmap_endpoint
+    - name: Get RHMAP creditials
+      command: oc env dc/millicore --list| grep FH_ADMIN
+      register: rhnmap_creditials
+
+
+
+
+    - name: Print summary, Nagios login details
+      debug: msg="Nagios login details {{ nagios }}"
+    - name: Print summary, RHMAP login page
+      debug: msg="RHMAP login page {{ rhmap_endpoint }}"
+    - name: Print summary,RHMAP login details
+      debug: msg="RHMAP login details  {{ rhnmap_creditials }}"
+
+
+
+
+
+
+
+    #### Create

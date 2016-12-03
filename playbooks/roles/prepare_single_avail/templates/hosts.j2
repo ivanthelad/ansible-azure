@@ -24,7 +24,7 @@ openshift_node_kubelet_args={'maximum-dead-containers': ['100'], 'maximum-dead-c
 #osm_default_node_selector="region=primary"
 openshift_docker_options="--log-driver json-file --log-opt max-size=1M --log-opt max-file=3"
 #i#openshift_router_selector='stage=dev,zone=infra'
-#openshift_registry_selector='stage=dev,zone=infra'
+openshift_hosted_registry_selector='stage=dev,zone=infra,registry=true'
 openshift_node_iptables_sync_period=5s
 #openshift_hosted_router_selector='stage=dev,zone=infra'
 openshift_master_pod_eviction_timeout=3m

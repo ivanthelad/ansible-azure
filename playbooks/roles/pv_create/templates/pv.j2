@@ -1,0 +1,18 @@
+{
+  "apiVersion": "v1",
+  "kind": "PersistentVolume",
+  "metadata": {
+    "name": "{{ pvname }}-{{ item }}"
+  },
+  "spec": {
+    "capacity": {
+        "storage": "{{ size }}"
+    },
+    "accessModes": [ "ReadWriteOnce", "ReadWriteMany" ],
+    "nfs": {
+        "path": "{{ path }}/{{ pvname }}-{{ item }}",
+        "server": "{{ nfshost }}"
+    },
+    "persistentVolumeReclaimPolicy": "Recycle"
+  }
+}

@@ -1,0 +1,35 @@
+- name: RHMAP INSTALL prereqs
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - subscription-manager-plugin-container
+
+- command: sudo /usr/libexec/rhsmcertd-worker
+  name: Executing rhsmcertd worker
+
+
+- stat: path=/etc/docker/certs.d/access.redhat.com
+  register: acess
+
+- fail:
+    msg: "make sure folder /etc/docker/certs.d/access.redhat.com  exists"
+  when: acess.stat.exists == false
+
+
+- stat: path=/etc/docker/certs.d/registry.access.redhat.com
+  register: registry
+- fail:
+    msg: "make sure folder /etc/docker/certs.d/registry.access.redhat.com  exists"
+  when: registry.stat.exists == false
+
+
+
+
+  ## install only on the jumphost
+# https://access.redhat.com/documentation/en/red-hat-mobile-application-platform/4.2/single/core-administration-and-installation-guide/#provisioning-rhmap-core-prerequisites
+
+
+
+
+ ## https://access.redhat.com/documentation/en/red-hat-mobile-application-platform/4.2/paged/installing-rhmap/chapter-2-preparing-infrastructure-for-installation

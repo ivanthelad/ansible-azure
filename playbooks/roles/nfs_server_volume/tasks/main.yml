@@ -1,0 +1,16 @@
+- name: Create a directory for NFS
+  file: path={{ path }} state=directory owner=nfsnobody group=nfsnobody mode=0775
+  tags: nfs-vols
+- name: Create sub directories for NFS
+  file: path={{ path }}/{{ pvname }}-{{ item }} state=directory owner=nfsnobody group=nfsnobody mode=0775
+  with_sequence: count={{ number }}
+  tags: nfs-vols
+
+# Add a line to a file if it does not exist, without passing regexp
+
+- file: path=/etc/exports.d/pv.vols.exports state=touch mode="u=rw,g=r,o=r"
+
+- lineinfile:
+    dest: /etc/exports.d/pv.vols.exports
+    line: '{{ path }}/{{ pvname }}-{{ item }} *(rw,root_squash,no_wdelay)'
+  with_sequence: count={{ number }}

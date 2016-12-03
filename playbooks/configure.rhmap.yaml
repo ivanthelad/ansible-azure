@@ -1,0 +1,38 @@
+
+# ## https://access.redhat.com/documentation/en/red-hat-mobile-application-platform/4.2/single/core-administration-and-installation-guide/
+### Creating PVS entries for RHMAP on premise deployments
+### The expectation is the nfs server has these entries already
+- hosts: gatewayed-masters:gatewayed-nodes
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+
+  gather_facts: true
+  user: "{{ adminUsername }}"
+  sudo: true
+  roles:
+    - { role: rhmap_subscribe }
+    - { role: rhmap_prereqs }
+- hosts: gatewayed-masters[0]
+  vars:
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+  gather_facts: false
+  user: "{{ adminUsername }}"
+  sudo: true
+  roles:
+    - { role: rhmap_installtemplates }
+    - { role: rhmap_install }
+
+
+#  next step https://access.redhat.com/documentation/en/red-hat-mobile-application-platform/4.2/single/mbaas-administration-and-installation-guide/#manual-installation
+#
+
+
+
+
+#### Create

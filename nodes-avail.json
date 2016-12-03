@@ -78,7 +78,7 @@
     "rhel": {
       "publisher": "RedHat",
       "offer": "RHEL",
-      "sku": "7.2",
+      "sku": "7.3",
       "version": "latest"
     },
     "vhdStorageType": "Standard_LRS"
@@ -188,7 +188,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '.vhd')]"
+              "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), 'osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"

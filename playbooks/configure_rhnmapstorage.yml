@@ -1,0 +1,32 @@
+
+- hosts: azure_vms
+  gather_facts: false
+  user: "{{ adminUsername }}"
+  sudo: true
+  roles:
+    - { role: nfs_server_volume, pvname: "25gb-rhmap", number: "15", path: "/exports" }
+    - { role: nfs_server_volume, pvname: "5gb-rhmap", number: "15", path: "/exports" }
+    - { role: nfs_server_volume, pvname: "1gb-rhmap", number: "15", path: "/exports" }
+
+
+### https://access.redhat.com/documentation/en/red-hat-mobile-application-platform/4.2/single/core-administration-and-installation-guide/
+### Creating PVS entries for RHMAP on premise deployments
+### The expectation is the nfs server has these entries already
+- hosts: gatewayed-masters[0]
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+
+  gather_facts: false
+  user: "{{ adminUsername }}"
+  sudo: true
+  roles:
+#### Create
+    - { role: pv_create, pvname: "25gb-rhmap", number: "15", size: '25Gi', nfshost: 'jumphost1', path: '/exports' }
+    - { role: pv_create, pvname: "5gb-rhmap", number: "15", size: '5Gi', nfshost: 'jumphost1', path: '/exports' }
+    - { role: pv_create, pvname: "1gb-rhmap", number: "15", size: '1Gi', nfshost: 'jumphost1', path: '/exports' }
+
+
+#### Create

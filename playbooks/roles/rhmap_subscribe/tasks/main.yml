@@ -1,0 +1,15 @@
+- redhat_subscription: state=absent
+- redhat_subscription: state=present username={{ rh_subcription_user }} password={{ rh_subcription_pass }}
+  ignore_errors: yes
+#- name: Retrieve the OpenShift Pool ID
+#  command: subscription-manager list --available --matches="Employee SKU" --pool-only
+#  register: openshift_pool_id
+# # ignore_errors: yes
+#  changed_when: False
+
+- name: Attach to OpenShift Pool
+  ignore_errors: yes
+  command: subscription-manager attach --pool={{ openshift_pool_id }}
+  #command: subscription-manager attach --pool=8a85f9843e3d687a013e3ddd471a083e
+- name: enable
+  command:  subscription-manager repos --enable="rhel-7-server-optional-rpms" --enable="rhel-7-server-rhmap-4.2-rpms"

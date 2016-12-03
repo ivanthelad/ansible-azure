@@ -1,0 +1,6 @@
+- name: Install rhmap-fh-openshift-templates templates
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - rhmap-fh-openshift-templates

@@ -1,0 +1,10 @@
+- name: Set pv Template
+  template:
+    src: pv.j2
+    dest: /tmp/{{ pvname }}-{{ item }}.yml
+  with_sequence: count={{ number }}
+  tags: persistent-volumes
+- name: Create persitent volumes
+  command:  oc apply -f /tmp/{{ pvname }}-{{ item }}.yml
+  tags: persistent-volumes
+  with_sequence: count={{ number }}

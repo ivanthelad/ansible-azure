@@ -33,9 +33,11 @@
 - include: provision_infrastructure.yml
 - include: perform_prereqs.yml
 - include: install_openshift.yml
-- include: metrics.yml
-- include: logging.yml
+#- include: metrics.yml
+#- include: logging.yml
 #- include: restart.yml
+- include: configure_rhnmapstorage.yml
+- include: configure.rhmap.yaml
 
 - hosts: localhost
   connection: local

@@ -1,0 +1,10 @@
+feedhenry_androidbuilder_service_host: "https://androidbuild.feedhenry.com"
+feedhenry_iosbuilder_service_host: "https://iosbuild.feedhenry.com"
+
+rhmap_smtp_server: "localhost"
+rhmap_smtp_usernane: "username"
+rhmap_smtp_password: "password"
+rhmap_smtp_port: "25"
+rhmap_smtp_auth: "false"
+rhmap_smtp_tls: "false"
+rhmap_smtp_replyto: "noreply@localhost"
