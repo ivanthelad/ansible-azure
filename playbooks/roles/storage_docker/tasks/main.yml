@@ -1,4 +1,6 @@
 ---
+- debug: msg="Performing Docker Storage with device, docker_storage_device={{docker_storage_device}}"
+
 - name: Ensure docker is installed
   action: "yum  name={{ item }} state=present"
   with_items:
@@ -98,6 +100,3 @@
 
 - debug:
     msg: "{{ dockerinfo }}"
-
-
-

@@ -1,0 +1,39 @@
+- hosts: gatewayed-nodes
+  user: "{{ adminUsername }}"
+  strategy: free
+  sudo: true
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    docker_storage_device: "/dev/sdc"
+
+  name: test play
+  tasks:
+  - name: application container
+    command: docker pull {{item}}
+#    docker:
+#      name: myapplication
+#      image: someuser/appimage
+#      state: reloaded
+#      pull: always
+    with_items:
+      - rhmap42/fh-aaa:1.0.2-2
+      - rhmap42/fh-appstore:2.0.1-3
+      - rhmap42/fh-messaging:3.0.1-3
+      - rhmap42/fh-metrics:3.0.1-4
+      - rhmap42/fh-ngui:5.4.22-1
+      - rhmap42/fh-scm:1.0.5-3
+      - rhmap42/fh-supercore:4.5.5-2
+      - rhmap42/gitlab-shell:2.1.1-4
+      - rhmap42/httpd:2.4-12
+      - rhmap42/memcached:1.4.15-8
+      - rhmap42/millicore:7.34.16-1
+      - rhmap42/httpd:2.4-12
+      - rhmap42/fh-sdks:1.0.0-6
+      - rhmap42/mongodb:3.2-9
+      - rhmap42/mysql:5.5-6
+      - rhmap42/nagios:4.0.8-25
+      - rhmap42/redis:2.8.21-19
+      - rhmap42/ups-eap:1.1.4-7
