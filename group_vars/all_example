@@ -1,33 +1,33 @@
 #---
 resource_group_name: pirates
-##  Azure AD user. 
-ad_username: XXXXXXXXXXXXXXXXXXX 
-### Azure AD password 
+##  Azure AD user.
+ad_username: XXXXXXXXXXXXXXXXXXX
+### Azure AD password
 ad_password: XXXXXXXXXXXXXXXXXXX
 #resource_group_name: oscp
-#### Azure Subscription ID 
-subscriptionID: "XXXXXXXXXXXXXXXXXXX" 
-## user to login to the jump host. this user will only be created on the jumphost 
+#### Azure Subscription ID
+subscriptionID: "XXXXXXXXXXXXXXXXXXX"
+## user to login to the jump host. this user will only be created on the jumphost
 adminUsername: ivan
-## user pwd for jump host 
-## Password for the jump host 
+## user pwd for jump host
+## Password for the jump host
 adminPassword: XXx_please_change_me_xXX
 ##### Public key for jump host
 sshkey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCdC20wMbD9vmCPDD6VP6u3eYHCznqKOm+aPZi3EgUZIM7r91X7MFzuVS5U6gHXnOa4m7yh26zceh68T6FqIKby1WAGTShLFDCU6czEe0Pa5yMAV6Q4dQ34HyioTIu4HmXi4504ZxneLNJP2AHc+eJkV0ANcXIHSqoaleVyWt7HLNltFNO349GZMj01TSchBYzqZpYqSGIDsTIXwF6+/NosMLfmg6WF0J4M7A34Gn/YTXD8r2oWeSs3O+MdTMH2Zdt4j9Q8MPCgic6xDPiONpCvEdt5pkzrwaK9ZJEV4wZsV7CSy+5a+poOl/a/5F+Mj3Fc2IRJiDkScuV07qWthKH
 
 
 # see https://azure.microsoft.com/en-us/documentation/articles/cloud-services-sizes-specs/
-### Size for the master 
-master_vmSize: Standard_DS3_v2 
+### Size for the master
+master_vmSize: Standard_DS3_v2
 #master_vmSize: Standard_D2_v2
 #master_vmSize: Standard_D1_v2
 
-### Size for the nodes 
-node_vmSize: Standard_DS3_v2 
-#node_vmSize: Standard_D2_v2 
+### Size for the nodes
+node_vmSize: Standard_DS3_v2
+#node_vmSize: Standard_D2_v2
 #node_vmSize: Standard_D1_v2
 
-#### Region to deploy in 
+#### Region to deploy in
 region: northeurope
 
 ## docker info
@@ -38,14 +38,14 @@ create_lvsize: '80%FREE'
 #create_lvsize: '2g'
 
 #### subscription information
-rh_subcription_user: XXXXXXXXXXX 
+rh_subcription_user: XXXXXXXXXXX
 rh_subcription_pass: XXXXXXXXXXX
-openshift_pool_id: XXXXXXXXXXX 
+openshift_pool_id: XXXXXXXXXXX
 
 ########### list of node  ###########
-### Warning, you currently cannot create more infra nodes #### 
+### Warning, you currently cannot create more infra nodes ####
 ### this will change in the future
-### You can add as many nodes as you want 
+### You can add as many nodes as you want
 #####################################
 jumphost:
   jumphost1:
@@ -62,18 +62,18 @@ masters:
       region: northeurope
       zone: infra
       stage: none
-  master2:
-    name: master2
-    tags:
-      region: northeurope
-      zone: infra
-      stage: none
-  master3:
-    name: master3
-    tags:
-      region: northeurope
-      zone: infra
-      stage: none
+#  master2:
+#    name: master2
+#    tags:
+#      region: northeurope
+#      zone: infra
+#      stage: none
+#  master3:
+#    name: master3
+#    tags:
+#      region: northeurope
+#      zone: infra
+#      stage: none
 
 infranodes:
   infranode1:
@@ -82,13 +82,33 @@ infranodes:
       region: northeurope
       zone: infra
       stage: dev
+      type: core
+      infratype: registry
+      mbaas_id: mbaas1
+  infranode2:
+    name: infranode2
+    tags:
+      region: northeurope
+      zone: infra
+      stage: dev
+      type: core
+      mbaas_id: mbaas2
+  infranode3:
+    name: infranode3
+    tags:
+      region: northeurope
+      zone: infra
+      stage: dev
+      type: core
+      mbaas_id: mbaas3
 nodes:
   node1:
     name: node1
     tags:
-      region: northeurope 
+      region: northeurope
       zone: frontend
       stage: dev
+
 
 #  node2:
 #    name: node2
@@ -99,5 +119,3 @@ nodes:
 #i#nodes:
 #  name: node1
 #  name: node2
-publicjumpdns: master-ose186.northeurope.cloudapp.azure.com
-publicjumpip: 52.169.107.204
