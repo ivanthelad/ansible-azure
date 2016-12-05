@@ -1,5 +1,5 @@
 - name: Create Inventory file based on dynamic hosts
   template:
     src: inventory.j2
-    dest: ../inventory.{{ resource_group_name }}
+    dest: ../group_vars/inventory.{{ resource_group_name }}
   tags: ose
