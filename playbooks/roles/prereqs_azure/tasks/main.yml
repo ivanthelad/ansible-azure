@@ -2,6 +2,7 @@
 # file: prep.yml
 # Playbook to prep OpenShift Enterprise hosts for installation. Run this before
 # the openshift-ansible byo playbook.
+
 - name: Install Basic Preqes
   yum:
     name: "{{ item }}"
@@ -15,7 +16,7 @@
     - iptables-services
     - bridge-utils
     - bash-completion
-    - httpd-tools 
+    - httpd-tools
     - docker
     - vim
 - name: upgrade all packages

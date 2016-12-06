@@ -7,6 +7,14 @@
     - { role: nfs_server_volume, pvname: "25gb-rhmap", number: "15", path: "/exports" }
     - { role: nfs_server_volume, pvname: "5gb-rhmap", number: "15", path: "/exports" }
     - { role: nfs_server_volume, pvname: "1gb-rhmap", number: "15", path: "/exports" }
+- hosts: azure_vms
+  gather_facts: false
+  user: "{{ adminUsername }}"
+  sudo: true
+  name: Restart NFS Server
+  tasks:
+    - service: name=nfs state=restarted
+      name: Restart NFS Server 
 
 
 ### https://access.redhat.com/documentation/en/red-hat-mobile-application-platform/4.2/single/core-administration-and-installation-guide/

@@ -8,7 +8,7 @@
   tasks:
     - debug: msg="Checking if master size is correct either 1,3 or 5. Current size={{ mastercount }} "
     - name: 'check parm is null or invalid'
-      fail: msg="Openshift installation supports either 1, 3, or 5 masters because of etcd's qourm. Your corrent number of masters is {{ masters | length }}. Please ensure your master size fulfills this requirement. Update the dict/array called masters in the file groups/all"
+      fail: msg="Openshift installation supports either 1, 3, or 5 masters because of etcd's qourm. Your corrent number of masters is \"{{ masters | length }}\". Please ensure your master size fulfills this requirement. Update the dict/array called masters in the file groups/all"
       when:
         - mastercount  != '1'
         - mastercount  != '3'
@@ -33,11 +33,11 @@
 - include: provision_infrastructure.yml
 - include: perform_prereqs.yml
 - include: install_openshift.yml
-#- include: metrics.yml
-#- include: logging.yml
+- include: metrics.yml
+- include: logging.yml
 #- include: restart.yml
-- include: configure_rhnmapstorage.yml
-- include: configure.rhmap.yaml
+#- include: configure_rhnmapstorage.yml
+#- include: configure.rhmap.yaml
 
 - hosts: localhost
   connection: local

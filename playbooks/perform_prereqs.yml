@@ -6,8 +6,15 @@
 - hosts: azure_vms
   user: "{{ adminUsername }}"
   sudo: true
+  name: "Performing Subscribe, basically disabling batch mode cos in the past subscriptiopn manager can throw SQL lock excatpions with concurrent access"
+  serial: 1
   roles:
      - { role: subscribe, rhnuser: "{{ rh_subcription_user }}", rhnpassword: "{{ rh_subcription_pass }}" }
+     - { role: enable_repos }
+- hosts: azure_vms
+  user: "{{ adminUsername }}"
+  sudo: true
+  strategy: free
   tasks:
     - name: Install Basic Preqes
       yum:
@@ -18,7 +25,6 @@
            - vim
            - ansible
            - atomic-openshift-utils
-
 
 
 ################################################
@@ -136,7 +142,9 @@
 ################################################
 - hosts: gatewayed-masters:gatewayed-nodes
   strategy: free
-  serial: 50
+  serial: 3
+  name: "Performing Subscribe for nodes and masters, basically disabling batch mode cos in the past subscriptiopn manager can throw SQL lock excatpions with concurrent access"
+
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
@@ -149,7 +157,25 @@
       - debug : msg=" {{ ansible_ssh_common_args }} "
   roles:
     - { role: subscribe, rhnuser: "{{ rh_subcription_user }}", rhnpassword: "{{ rh_subcription_pass }}" }
+#################################################
+ #### Heres the real business. Subscribing all nodes and masters Via jump host
+################################################
+- hosts: gatewayed-masters:gatewayed-nodes
+  strategy: free
+  name: "Performing Subscribe for nodes and masters, basically disabling batch mode cos in the past subscriptiopn manager can throw SQL lock excatpions with concurrent access"
 
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+  tags:
+   - subscribemynodes
+  user: "{{ adminUsername }}"
+  sudo: true
+  tasks:
+      - debug : msg=" {{ ansible_ssh_common_args }} "
+  roles:
+     - { role: enable_repos }
 #################################################
  #### Heres the real business. Preparing only master. Via jump host
  #### Prepare separate mount points for things like etcd
@@ -259,7 +285,7 @@
   user: "{{ adminUsername }}"
   sudo: true
   roles:
-    ### this crappy role tries to figure out what device it should use 
+    ### this crappy role tries to figure out what device it should use
     - { role: figureout_device_ms_hack }
     - { role: storage_docker }
 
