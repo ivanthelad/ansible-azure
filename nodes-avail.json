@@ -16,7 +16,7 @@
       "type": "object",
       "defaultValue": {
         "region": "NorthEurope",
-        "zone": "apps",
+        "zone": "zone1",
         "type": "apps"
       }
     },

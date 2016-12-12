@@ -1,7 +1,7 @@
 ##### Start Hack to determin storage device #####
 - shell: findmnt -no SOURCE
   register: sdccheck
-- debug: msg="The /dev/sdc is already in use. This is because microsoft has the /mnt/resource temp directory  which ordinarly should be using the device /dev/sdb but for some reason unbeknownst to me the MS gods have decided, 'no, screw this. today i wana use /dev/sdc, you figure something else out'. Anyway. what this means is now is gota have this hacky check to see if sdc is already in use, if it is i gota tell docker to use sdb which is where my flipping storage is. Get you crap together MS. this is probably longer that a debug statement should be.  "
+- debug: msg="The /dev/sdc is already in use. This is because microsoft has the /mnt/resource temp directory  which ordinarly should be using the device /dev/sdb sometimes can be mounted under  /dev/sdc  "
   when: sdccheck.stdout.find('sdc') != -1
 - set_fact:
     docker_storage_device: "/dev/sdb"

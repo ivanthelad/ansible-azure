@@ -3,22 +3,37 @@
 ### Creating PVS entries for RHMAP on premise deployments
 ### The expectation is the nfs server has these entries already
 - hosts: gatewayed-masters:gatewayed-nodes
+  strategy: free
+  serial: 3
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
 
-  gather_facts: true
+  gather_facts: false
   user: "{{ adminUsername }}"
   sudo: true
   roles:
     - { role: rhmap_subscribe }
+- hosts: gatewayed-masters:gatewayed-nodes
+  strategy: free
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+
+  gather_facts: false
+  user: "{{ adminUsername }}"
+  sudo: true
+  roles:
     - { role: rhmap_prereqs }
 
 - hosts: gatewayed-nodes
   strategy: free
   serial: 50
+  gather_facts: false
 
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"

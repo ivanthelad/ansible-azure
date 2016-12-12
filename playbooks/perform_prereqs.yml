@@ -210,36 +210,22 @@
 - hosts: gatewayed-masters:gatewayed-nodes
   gather_facts: False
   strategy: free
+  serial: 50
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    docker_storage_device: "/dev/sdc"
-
   user: "{{ adminUsername }}"
   sudo: true
-  tasks:
-    - name: upgrade all packages
-      yum: name=* state=latest
-    ##### Start Hack to determin storage device #####
-    - shell: findmnt -no SOURCE
-      register: sdccheck
-    - debug: msg="The /dev/sdc is already in use. This is because microsoft has the /mnt/resource temp directory  which ordinarly should be using the device /dev/sdb but for some reason unbeknownst to me the MS gods have decided, 'no, screw this. today i wana use /dev/sdc, you figure something else out'. Anyway. what this means is now is gota have this hacky check to see if sdc is already in use, if it is i gota tell docker to use sdb which is where my flipping storage is. Get you crap together MS. this is probably longer that a debug statement should be.  "
-      when: sdccheck.stdout.find('sdc') != -1
-    - set_fact:
-        docker_storage_device: "/dev/sdb"
-      when: sdccheck.stdout.find('sdc') != -1
-    - debug: msg="Ok new device set, docker_storage_device={{docker_storage_device}}"
-    ##### End Hack to determin storage device #####
-
-    - name: creating new LVM volume group
-      lvg: vg={{ create_vgname }} pvs={{ docker_storage_device }} state=present
+  roles:
+    - { role: prereqs_azure  }
 #################################################
  #### Heres the real business. Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
 ################################################
 - hosts: gatewayed-nodes
   gather_facts: False
   strategy: free
+  serial: 50
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
@@ -248,16 +234,16 @@
   user: "{{ adminUsername }}"
   sudo: true
   roles:
-    - { role: prereqs_azure  }
     - { role: lv_create, filesystem: "xfs", create_lvname: 'origin', create_vgname: 'docker_vg', new_mntp: '/var/lib/origin', create_lvsize: '5G' }
     - { role: lv_create, filesystem: "xfs", create_lvname: 'logs', create_vgname: 'docker_vg', new_mntp: '/var/log', create_lvsize: '10G' }
-
+    ### this crappy role tries to figure out what device it should use
 #################################################
  #### Heres the real business. Preparing only master. Via jump host
 ################################################
 - hosts: gatewayed-masters
   strategy: free
   gather_facts: False
+  serial: 50
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
@@ -267,11 +253,9 @@
   sudo: true
   ## TODO, need to check this. stopped working
   roles:
-    - { role: prereqs_azure  }
     - { role: lv_create, filesystem: "xfs", create_lvname: 'origin', create_vgname: 'docker_vg', new_mntp: '/var/lib/origin', create_lvsize: '5G' }
     - { role: lv_create, filesystem: "xfs", create_lvname: 'logs', create_vgname: 'docker_vg', new_mntp: '/var/log', create_lvsize: '10G' }
     - { role: lv_create, filesystem: "xfs", create_lvname: 'etcd', create_vgname: 'docker_vg', new_mntp: '/var/lib/etcd', create_lvsize: '5G' }
-
 
 #################################################
  #### Heres the real business. Preparing nodes(including infra).  See prereqs_azure for details. Via jump host

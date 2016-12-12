@@ -36,8 +36,8 @@
 - include: metrics.yml
 - include: logging.yml
 #- include: restart.yml
-#- include: configure_rhnmapstorage.yml
-#- include: configure.rhmap.yaml
+- include: configure_rhnmapstorage.yml
+- include: configure.rhmap.yaml
 
 - hosts: localhost
   connection: local
