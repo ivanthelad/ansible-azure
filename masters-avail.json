@@ -17,7 +17,7 @@
       "defaultValue": {
         "region": "NorthEurope",
         "zone": "apps",
-        "stage": "dev"
+        "type": "apps"
       }
     },
     "masterKey": {
@@ -296,10 +296,10 @@
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "VirtualMachine",
-        "openshift": "3.2",
+        "openshift": "3.3",
         "region": "[parameters('tags').region]",
         "zone": "[parameters('tags').zone]",
-        "stage": "[parameters('tags').stage]"
+        "type": "[parameters('tags').type]"
       },
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]",
@@ -374,4 +374,3 @@
   "outputs": {
   }
 }
-

@@ -162,7 +162,7 @@
 ################################################
 - hosts: gatewayed-masters:gatewayed-nodes
   strategy: free
-  name: "Performing Subscribe for nodes and masters, basically disabling batch mode cos in the past subscriptiopn manager can throw SQL lock excatpions with concurrent access"
+  name: "oPerforming enable_repos"
 
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
@@ -219,6 +219,8 @@
   user: "{{ adminUsername }}"
   sudo: true
   tasks:
+    - name: upgrade all packages
+      yum: name=* state=latest
     ##### Start Hack to determin storage device #####
     - shell: findmnt -no SOURCE
       register: sdccheck

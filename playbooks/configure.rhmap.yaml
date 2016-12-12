@@ -18,6 +18,7 @@
 
 - hosts: gatewayed-nodes
   strategy: free
+  serial: 50
 
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
@@ -37,24 +38,24 @@
     #      state: reloaded
     #      pull: always
       with_items:
-        - rhmap42/fh-aaa:1.0.2-2
-        - rhmap42/fh-appstore:2.0.1-3
-        - rhmap42/fh-messaging:3.0.1-3
-        - rhmap42/fh-metrics:3.0.1-4
-        - rhmap42/fh-ngui:5.4.22-1
-        - rhmap42/fh-scm:1.0.5-3
-        - rhmap42/fh-supercore:4.5.5-2
-        - rhmap42/gitlab-shell:2.1.1-4
-        - rhmap42/httpd:2.4-12
-        - rhmap42/memcached:1.4.15-8
-        - rhmap42/millicore:7.34.16-1
-        - rhmap42/httpd:2.4-12
-        - rhmap42/fh-sdks:1.0.0-6
-        - rhmap42/mongodb:3.2-9
-        - rhmap42/mysql:5.5-6
-        - rhmap42/nagios:4.0.8-25
-        - rhmap42/redis:2.8.21-19
-        - rhmap42/ups-eap:1.1.4-7
+        - rhmap42/fh-aaa:latest
+        - rhmap42/fh-appstore:latest
+        - rhmap42/fh-messaging:latest
+        - rhmap42/fh-metrics:latest
+        - rhmap42/fh-ngui:latest
+        - rhmap42/fh-scm:latest
+        - rhmap42/fh-supercore:latest
+        - rhmap42/gitlab-shell:latest
+        - rhmap42/httpd:latest
+        - rhmap42/memcached:latest
+        - rhmap42/millicore:latest
+        - rhmap42/httpd:latest
+        - rhmap42/fh-sdks:latest
+        - rhmap42/mongodb:latest
+        - rhmap42/mysql:latest
+        - rhmap42/nagios:latest
+        - rhmap42/redis:latest
+        - rhmap42/ups-eap:latest
 - hosts: gatewayed-masters[0]
   vars:
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
