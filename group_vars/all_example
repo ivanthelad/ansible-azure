@@ -54,14 +54,15 @@ jumphost:
       region: northeurope
       zone: jumphost
       stage: jumphost
+      type: jumphost
 
 masters:
   master1:
     name: master1
     tags:
       region: northeurope
-      zone: infra
-      stage: none
+      zone: zone1
+      type: infra
 #  master2:
 #    name: master2
 #    tags:
@@ -80,8 +81,8 @@ infranodes:
     name: infranode1
     tags:
       region: northeurope
-      zone: infra
-      stage: dev
+      zone: zone1
+      infra: true
       type: core
       infratype: registry
       mbaas_id: mbaas1
@@ -89,16 +90,16 @@ infranodes:
     name: infranode2
     tags:
       region: northeurope
-      zone: infra
-      stage: dev
+      zone: zone2
+      infra: true
       type: core
       mbaas_id: mbaas2
   infranode3:
     name: infranode3
     tags:
       region: northeurope
-      zone: infra
-      stage: dev
+      zone: zone3
+      infra: true
       type: core
       mbaas_id: mbaas3
 nodes:
@@ -106,8 +107,18 @@ nodes:
     name: node1
     tags:
       region: northeurope
-      zone: frontend
+      zone: zone1
+      infra: false
       stage: dev
+      type: apps
+  node2:
+    name: node2
+    tags:
+      region: northeurope
+      zone: zone2
+      infra: false
+      stage: dev
+      type: apps
 
 
 #  node2:
