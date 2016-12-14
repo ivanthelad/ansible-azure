@@ -9,7 +9,7 @@
 
 - debug: msg="Updating the node selector for the default namespace"
 - name: Set the node-selector for the default namespace
-  shell: "oc patch ns/openshift-infra --api-version=v1 -p '{\"metadata\": {\"annotations\": {\"openshift.io/node-selector\":\"zone=infra\"}}}'"
+  shell: "oc patch ns/openshift-infra --api-version=v1 -p '{\"metadata\": {\"annotations\": {\"openshift.io/node-selector\":\"infra=true\"}}}'"
 
 - name: Create service account for metrics deployer
   action: command oc create serviceaccount  metrics-deployer -n openshift-infra

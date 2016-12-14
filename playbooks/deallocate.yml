@@ -1,6 +1,7 @@
 - hosts: localhost
   connection: local 
   strategy: free
+  gather_facts: false
   tasks: 
   - name: Stopping Masters 
     with_dict: "{{ masters }}"
