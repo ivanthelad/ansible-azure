@@ -47,6 +47,7 @@ openshift_pool_id: XXXXXXXXXXX
 ### this will change in the future
 ### You can add as many nodes as you want
 #####################################
+
 jumphost:
   jumphost1:
     name: jumphost1
@@ -82,7 +83,7 @@ infranodes:
     tags:
       region: northeurope
       zone: zone1
-      infra: true
+      infra: "true"
       type: core
       infratype: registry
       mbaas_id: mbaas1
@@ -91,7 +92,7 @@ infranodes:
     tags:
       region: northeurope
       zone: zone2
-      infra: true
+      infra: "true"
       type: core
       mbaas_id: mbaas2
   infranode3:
@@ -99,7 +100,7 @@ infranodes:
     tags:
       region: northeurope
       zone: zone3
-      infra: true
+      infra: "true"
       type: core
       mbaas_id: mbaas3
 nodes:
@@ -108,7 +109,7 @@ nodes:
     tags:
       region: northeurope
       zone: zone1
-      infra: false
+      infra: "false"
       stage: dev
       type: apps
   node2:
@@ -116,17 +117,10 @@ nodes:
     tags:
       region: northeurope
       zone: zone2
-      infra: false
+      infra: "false"
       stage: dev
       type: apps
 
-
-#  node2:
-#    name: node2
-#    tags:
-#      region: northeurope
-#      zone: backend
-#      stage: dev
 #i#nodes:
 #  name: node1
 #  name: node2
