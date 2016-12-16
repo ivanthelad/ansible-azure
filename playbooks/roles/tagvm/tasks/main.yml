@@ -1,0 +1,14 @@
+##tags: "{% for key1, value1 in item.value.tags.iteritems() %}{{ key1 }}={{ value1 }}{% if not loop.last %}, {% endif %}{% endfor %}"
+- debug: msg=" tagging vm {{ vmname }}, tags '{{ tags }}' "
+- name: Tagging AZURE VM
+  with_dict: "{{ masters }}"
+#    async: 7200
+#    poll: 0
+  azure_rm_virtualmachine:
+    state: present
+    ad_user: "{{ ad_username }}"
+    password: "{{ ad_password }}"
+    subscription_id: "{{ subscriptionID }}"
+    resource_group: "{{ resource_group_name }}"
+    name: "{{ item.value.name }}"
+    tags: "{% for key1, value1 in item.value.tags.iteritems() %}{{ key1 }}={{ value1 }}{% if not loop.last %}, {% endif %}{% endfor %}"

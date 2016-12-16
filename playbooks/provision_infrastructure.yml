@@ -378,7 +378,8 @@
 
     - debug: msg="Waiting a min and a half, to ensure ports are all up on nodes"
     - command: "sleep 110"
-
+#    async: 7200
+#    poll: 0
 
 
     - debug: msg="the value of (MASTERS)azuremasternodes {{ azuremasternodes }}"
@@ -388,6 +389,9 @@
 - hosts: localhost
   connection: localhost
   roles:
+     - { role: tagvm, machines: "{{ masters }}" }
+     - { role: tagvm, machines: "{{ nodes }}" }
+     - { role: tagvm, machines: "{{ infranodes }}" }
      - { role: generateinventory }
 
 ################################################
