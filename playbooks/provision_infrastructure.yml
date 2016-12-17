@@ -123,10 +123,7 @@
       shell: "ssh-keyscan -H -T 10  {{ item }} >> ~/.ssh/known_hosts "
       with_items: "{{ groups['azure_vms'] }}"
 
-- hosts: localhost
-  connection: localhost
-  roles:
-     - { role: tagvm, machines: "{{ jumphost }}" }
+
 
       ################################################
       ####  Only setting these values so we can manually look up. bit of a hack
@@ -185,11 +182,11 @@
 ### infra here
 
 
+
 - hosts: localhost
   connection: localhost
   roles:
      - { role: tagvm, machines: "{{ jumphost }}" }
-
 
 
 ################################################
