@@ -175,8 +175,16 @@ To setup the following params are required
  - rh_subcription_pass
  - openshift_pool_id
 
-### Debugging nodes
+#### Example All Files 
 
+Under the directory all_example is a collection of sample all files. They are supplied as guidance on how to setup different variants of a openshift cluster 
+ - all_mega_cluster : A example of a production like cluster. wwith 3 masters, 3 infra nodes, 2 dev nodes and 2 production nodes 
+ - all_rhmap_core: A example demostrating a single master cluster that is labeled wit the expectation of RHMAP core been deployed ontoop (there is supplied playbooks to deploy RHMAP core, note you need relevent subscriptions )
+ - all_multi_master: a example to demostration how to bring up a multi master cluster 
+ - all_single_master_small: A example of a bare-min cluster. with 1 master, 1 infra node, 1 application node  
+
+
+### Debugging nodes
 to debug stuff on nodes your first need to ssh to the jump node. ssh $adminUsername@jumpnodeip. The jump node ip should be written to groups/all file(only for later debugging purposes) but it is also writen to console as the ansible script is been executed. the jump nodes acts as a gateway for all vms created in azure. once logged into the jump node the user $adminUsername should have preconfigured ssh acces to all openshift nodes.  Simply execute  ``` ssh master1 ``` . The user $adminUsername also has sudo rights on all machines
 
 #### monitoring openshift install

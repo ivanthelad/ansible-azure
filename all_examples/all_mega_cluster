@@ -1,4 +1,11 @@
 #---
+################
+### This example is a  3 node multi master
+###  with 3 infra nodes
+###  and 2 app nodes for development.
+##   and 2 app nodes for production. These are labeled with stage=production
+
+#########################
 resource_group_name: pirates
 ##  Azure AD user.
 ad_username: XXXXXXXXXXXXXXXXXXX
@@ -52,7 +59,7 @@ jumphost:
   jumphost1:
     name: jumphost1
     tags:
-      region: northeurope
+      region: "{{ region }}"
       zone: jumphost
       stage: jumphost
       type: jumphost
@@ -61,65 +68,73 @@ masters:
   master1:
     name: master1
     tags:
-      region: northeurope
+      region: "{{ region }}"
       zone: zone1
       type: infra
-#  master2:
-#    name: master2
-#    tags:
-#      region: northeurope
-#      zone: infra
-#      stage: none
-#  master3:
-#    name: master3
-#    tags:
-#      region: northeurope
-#      zone: infra
-#      stage: none
+  master2:
+    name: master2
+    tags:
+      region: "{{ region }}"
+      zone: infra
+      type: infra
+  master3:
+    name: master3
+    tags:
+      region: "{{ region }}"
+      zone: infra
+      type: infra
 
 infranodes:
   infranode1:
     name: infranode1
     tags:
-      region: northeurope
+      region: "{{ region }}"
       zone: zone1
       infra: "true"
-      type: core
       infratype: registry
-      mbaas_id: mbaas1
   infranode2:
     name: infranode2
     tags:
-      region: northeurope
+      region: "{{ region }}"
       zone: zone2
       infra: "true"
-      type: core
-      mbaas_id: mbaas2
   infranode3:
     name: infranode3
     tags:
-      region: northeurope
+      region: "{{ region }}"
       zone: zone3
       infra: "true"
-      type: core
-      mbaas_id: mbaas3
 nodes:
   node1:
     name: node1
     tags:
-      region: northeurope
+      region: "{{ region }}"
       zone: zone1
       infra: "false"
       stage: dev
-      type: apps
   node2:
     name: node2
     tags:
-      region: northeurope
+      region: "{{ region }}"
       zone: zone2
       infra: "false"
       stage: dev
-      type: apps
+
+  node3prod:
+    name: node3prod
+    tags:
+      region: "{{ region }}"
+      zone: zone1
+      infra: "false"
+      stage: prod
+
+  node3prod:
+    name: node2
+    tags:
+      region: "{{ region }}"
+      zone: zone2
+      infra: "false"
+      stage: prod
 
 #i#nodes:
 #  name: node1
