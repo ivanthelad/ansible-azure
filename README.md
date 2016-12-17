@@ -68,14 +68,13 @@ Update the group_vars/all variable. The following params exist. The script will 
 ## Script modules
 The scripting has now been split into more granular operations. The playbook setupeverything inlcudes has 3 main playbooks
 
-### - provision_infrastructure.yml
+### provision_infrastructure.yml
 Simply Provisions the basic infrastructure base on the Node Arrays defined in the group_vars/all file. This includes loadbalancer , availabilitySets and multiple subnets
 
  ### perform_prereqs.yml
  Configure all outline prereqs from the documention. Addition configures storage based on best practises to ensure if storage of logs, etc, openshift.volumes is exceeded it does not corrupt the rest of the node. Configures docker and installs required base packages
-### install_openshift.single.yml(single master) or install_openshift.yml (multimaster)
+### install_openshift.yml
 Creates dynamic ansible hosts file based on the contents of groups_var/all and the contents of the config under the prepare_multi roles
-#### TODO: merge the single and install_openshift playbooks into one, with a check if one or more masters are deployed then it should create a multi master environment . Possible abort if only two are defined 
 
 
 ## scaling out
@@ -92,80 +91,89 @@ Under the groups/all there is a  list of vms that will get created. This list al
   - infra node: currently hosts the registry and the router. not tested with multiple infra nodes yet. should work
   - node: bunch of nodes to host applications
 
- ## Post install
+## Post install
   The installation of openshift is performed on the jump node. The local ansible script (setup_multimaster) execute another ansible script on the jump host(advanced install). The host file has already been placed under /etc/ansible/host by this stage and is dynamically build based on the template sitting under
    -  playbooks/roles/prepare_multi/templates/hosts.j2
  The execution of the advanced install is executed in async manner (to avoid timeouts as the advanced install can take time ). The local ansible script(setup_multimaster) polls the jump host for completion.
 
-Once installation is complete the following is configured
+### Once installation is complete the following is configured
  - router ( is not deployed by default because the region=infra is not used)
  - Register: (is  not deployed by default because the region=infra is not used) currently a bug exist with regard to local permisions on dir /mnt/registry to fix jump on to infranode1 and perform  ```sudo chown 1001:root /mnt/registry/ ```(is are not deployed by default because the region=infra is not used)
  - metrics,
  - logging : waits untils everything is ready before scaling out the fluentd nodes
  ### example node setup under groupvars/all
+## Example group_vars/all file
+
+The following snippet is a brief example of how the ansible scripts are configured to bring up a set of nodes
+
 ```
-#### jump host
+
 jumphost:
   jumphost1:
     name: jumphost1
     tags:
-      region: northeurope
+      region: "{{ region }}"
       zone: jumphost
       stage: jumphost
-### List of masters including tags/labels to be applied. Azure gets tags while ose gets labels
+      type: jumphost
+
 masters:
   master1:
     name: master1
     tags:
-      region: northeurope
-      zone: infra
-      stage: none
-  master2:
-    name: master2
-    tags:
-      region: northeurope
-      zone: infra
-      stage: none
-  master3:
-    name: master3
-    tags:
-      region: northeurope
-      zone: infra
-      stage: none
-### infra node, user for exposing router ###
-### have not tested with multiple infra nodes yet
+      region: "{{ region }}"
+      zone: zone1
+      type: infra
+
 infranodes:
   infranode1:
     name: infranode1
     tags:
-      region: northeurope
-      zone: infra
-      stage: dev
-### add as many nodes here as you like
-## does not split across region yet. thats a todo
+      region: "{{ region }}"
+      zone: zone1
+      infra: "true"
+      type: core
+      infratype: registry
+      mbaas_id: mbaas1
+  infranode2:
+    name: infranode2
+    tags:
+      region: "{{ region }}"
+      zone: zone2
+      infra: "true"
+      type: core
+      mbaas_id: mbaas2
+  infranode3:
+    name: infranode3
+    tags:
+      region: "{{ region }}"
+      zone: zone3
+      infra: "true"
+      type: core
+      mbaas_id: mbaas3
 nodes:
   node1:
     name: node1
     tags:
-      region: northeurope
-      zone: frontend
+      region: "{{ region }}"
+      zone: zone1
+      infra: "false"
       stage: dev
-
-#  node2:
-#    name: node2
-#    tags:
-#      region: northeurope
-#      zone: backend
-#      stage: dev
-#i#nodes:
-#  name: node1
-#  name: node2
+      type: apps
+  node2:
+    name: node2
+    tags:
+      region: "{{ region }}"
+      zone: zone2
+      infra: "false"
+      stage: dev
+      type: apps
 
 ```
 
 ### Required params
 
-To setup the following params are required
+To setup the following params are required to be added to the group_vars/all file
  - resource_group_name: ose86
  - subscriptionID: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
  - adminUsername: userforjumphost
@@ -175,12 +183,12 @@ To setup the following params are required
  - rh_subcription_pass
  - openshift_pool_id
 
-#### Example All Files 
+#### Example All Files
 
 Under the directory all_example is a collection of sample all files. They are supplied as guidance on how to setup different variants of a openshift cluster 
- - all_mega_cluster : A example of a production like cluster. wwith 3 masters, 3 infra nodes, 2 dev nodes and 2 production nodes 
+ - all_mega_cluster : A example of a production like cluster. wwith 3 masters, 3 infra nodes, 2 dev nodes and 2 production nodes
  - all_rhmap_core: A example demostrating a single master cluster that is labeled wit the expectation of RHMAP core been deployed ontoop (there is supplied playbooks to deploy RHMAP core, note you need relevent subscriptions )
- - all_multi_master: a example to demostration how to bring up a multi master cluster 
+ - all_multi_master: a example to demostration how to bring up a multi master cluster
  - all_single_master_small: A example of a bare-min cluster. with 1 master, 1 infra node, 1 application node  
 
 
