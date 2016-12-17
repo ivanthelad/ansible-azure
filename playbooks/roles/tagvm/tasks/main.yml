@@ -1,7 +1,7 @@
 ##tags: "{% for key1, value1 in item.value.tags.iteritems() %}{{ key1 }}={{ value1 }}{% if not loop.last %}, {% endif %}{% endfor %}"
-- debug: msg=" tagging vm {{ vmname }}, tags '{{ tags }}' "
+- debug: msg=" tagging vms {{ machines }}, tags '{{ tags }}' "
 - name: Tagging AZURE VM
-  with_dict: "{{ masters }}"
+  with_dict: "{{ machines }}"
 #    async: 7200
 #    poll: 0
   azure_rm_virtualmachine:
@@ -11,4 +11,4 @@
     subscription_id: "{{ subscriptionID }}"
     resource_group: "{{ resource_group_name }}"
     name: "{{ item.value.name }}"
-    tags: "{% for key1, value1 in item.value.tags.iteritems() %}{{ key1 }}={{ value1 }}{% if not loop.last %}, {% endif %}{% endfor %}"
+    tags: "displayName=VirtualMachine, openshift=3.3, {% for key1, value1 in item.value.tags.iteritems() %}{{ key1 }}={{ value1 }}{% if not loop.last %}, {% endif %}{% endfor %}"

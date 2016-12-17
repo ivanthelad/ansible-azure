@@ -139,13 +139,7 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "VirtualMachine",
-        "openshift": "3.3",
-        "region": "[parameters('tags').region]",
-        "zone": "[parameters('tags').zone]",
-        "type": "[parameters('tags').type]"
-      },
+    
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
