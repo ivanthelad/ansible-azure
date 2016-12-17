@@ -148,9 +148,11 @@
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
-    ansible_ssh_common_args:  -F ./ssh_config -o ControlMaster=auto -o ControlPersist=5m -o LogLevel=QUIET -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
   tags:
    - subscribemynodes
+   - subscribemaster
+   - subscribernode
   user: "{{ adminUsername }}"
   sudo: true
   tasks:
@@ -167,8 +169,7 @@
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
-    ansible_ssh_common_args:  -F ./ssh_config -o ControlMaster=auto -o ControlPersist=5m -o LogLevel=QUIET -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-#    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
   tags:
    - subscribemynodes
   user: "{{ adminUsername }}"
@@ -188,8 +189,7 @@
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
-    ansible_ssh_common_args:  -F ./ssh_config -o ControlMaster=auto -o ControlPersist=5m -o LogLevel=QUIET -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-#    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
   user: "{{ adminUsername }}"
   sudo: true
   tasks:
@@ -216,8 +216,7 @@
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
-    ansible_ssh_common_args:  -F ./ssh_config -o ControlMaster=auto -o ControlPersist=5m -o LogLevel=QUIET -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-#    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
   user: "{{ adminUsername }}"
   sudo: true
   roles:
@@ -232,8 +231,7 @@
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
-    ansible_ssh_common_args:  -F ./ssh_config -o ControlMaster=auto -o ControlPersist=5m -o LogLevel=QUIET -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-#    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
 
   user: "{{ adminUsername }}"
   sudo: true
@@ -251,8 +249,7 @@
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
-    ansible_ssh_common_args:  -F ./ssh_config -o ControlMaster=auto -o ControlPersist=5m -o LogLevel=QUIET -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-#    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
 
   user: "{{ adminUsername }}"
   sudo: true
@@ -271,8 +268,7 @@
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
     publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
-#    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
-    ansible_ssh_common_args:  -F ./ssh_config -o ControlMaster=auto -o ControlPersist=5m -o LogLevel=QUIET -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
   user: "{{ adminUsername }}"
   sudo: true
   roles:
