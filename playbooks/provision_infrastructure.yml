@@ -381,8 +381,6 @@
       retries: 900
       with_items: "{{ azurenodes_async.results }}"
 
-    - debug: msg="Waiting a min and a half, to ensure ports are all up on nodes"
-    - command: "sleep 110"
 #    async: 7200
 #    poll: 0
 
@@ -400,7 +398,7 @@
      - { role: generateinventory }
 
 ################################################
-#### This is kinda messy, While you can technially jump onto the jump machine and  call ansible playbook
+#### This is kinda messy, Whi„le you can technially jump onto the jump machine and  call ansible playbook
 ####    ---  /bin/ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml
 ####  In this case i'm using to jump host as a 'gatewayed' ansible proxy. basically proxying my ansible commands via the jump host.
 #### To do this seamlessly the local machine requires the hosts to be added to know hosts
@@ -410,6 +408,9 @@
 - hosts: azure_vms
   user: "{{ adminUsername }}"
   tasks:
+
+    - debug: msg="Waiting a min and a half, to ensure ports are all up on nodes"
+    - command: "sleep 110"
 ## From the jumphost scan the keys for all app nodes  and print to file
     - name: From the jumphost scan the keys for all app nodes  and print to file
       shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "

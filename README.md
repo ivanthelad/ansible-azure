@@ -98,7 +98,7 @@ Under the groups/all there is a  list of vms that will get created. This list al
 
 ### Once installation is complete the following is configured
  - router ( is not deployed by default because the region=infra is not used)
- - Register: (is  not deployed by default because the region=infra is not used) currently a bug exist with regard to local permisions on dir /mnt/registry to fix jump on to infranode1 and perform  ```sudo chown 1001:root /mnt/registry/ ```(is are not deployed by default because the region=infra is not used)
+ - Register: (is  not deployed by default because the region=infra is not used)
  - metrics,
  - logging : waits untils everything is ready before scaling out the fluentd nodes
  ### example node setup under groupvars/all
@@ -185,7 +185,7 @@ To setup the following params are required to be added to the group_vars/all fil
 
 #### Example All Files
 
-Under the directory all_example is a collection of sample all files. They are supplied as guidance on how to setup different variants of a openshift cluster 
+Under the directory all_example is a collection of sample all files. They are supplied as guidance on how to setup different variants of a openshift cluster
  - all_mega_cluster : A example of a production like cluster. wwith 3 masters, 3 infra nodes, 2 dev nodes and 2 production nodes
  - all_rhmap_core: A example demostrating a single master cluster that is labeled wit the expectation of RHMAP core been deployed ontoop (there is supplied playbooks to deploy RHMAP core, note you need relevent subscriptions )
  - all_multi_master: a example to demostration how to bring up a multi master cluster

@@ -175,7 +175,7 @@ The docker container searches a directory /exports. It expects the following fil
 
 To Perform a installation successfully the following is required
   - A volume, /exports ,to export the generated keys and inventory (this will allow you to ssh into your VMS ). And to supply a 'all configuration'
-   - the container accepts a BRANCH env variable. if supplied it will download the latest version of the branch from the ansible azure install directory 
+   - the container accepts a BRANCH env variable. if supplied it will download the latest version of the branch from the ansible azure install directory
 
 in the below example. the folder  /Users/imckinle/Projects/openshift/azure-ansible/temp/mountexport contains the all directory
 
@@ -185,8 +185,9 @@ in the below example. the folder  /Users/imckinle/Projects/openshift/azure-ansib
 # start container
  docker run -v /Users/imckinle/Projects/openshift/azure-ansible/temp/mountexport:/exports/ -it ocpazure "/bin/bash"
 
-## Start a installation based on 3.2 version of openshift.
- docker run -e BRANCH=3.2 -v /Users/imckinle/Projects/openshift/azure-ansible/temp/mountexport:/exports/ -it ocpazure
+## Start a installation based on 3.3 version of openshift.
+ docker run -e BRANCH=master -v /Users/imckinle/Projects/openshift/azure-ansible/temp/mountexport:/exports/ -it 
+
 ```
 
 
