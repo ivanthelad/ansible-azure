@@ -184,9 +184,10 @@ in the below example. the folder  /Users/imckinle/Projects/openshift/azure-ansib
  docker run -v /Users/imckinle/Projects/openshift/azure-ansible/temp/mountexport:/exports/ -it ocpazure
 # start container
  docker run -v /Users/imckinle/Projects/openshift/azure-ansible/temp/mountexport:/exports/ -it ocpazure "/bin/bash"
+ ## You can then start the install within the container by executing the ./install.sh script
 
 ## Start a installation based on 3.3 version of openshift.
- docker run -e BRANCH=master -v /Users/imckinle/Projects/openshift/azure-ansible/temp/mountexport:/exports/ -it 
+ docker run -e BRANCH=master -v /Users/imckinle/Projects/openshift/azure-ansible/temp/mountexport:/exports/ -it
 
 ```
 
@@ -194,7 +195,7 @@ in the below example. the folder  /Users/imckinle/Projects/openshift/azure-ansib
 ## Post install stuff
 
 You need newly create SSH key to access jumphost. This key is exported to given host directory, /exports ,or you can read it from .ssh directory if you started installation manually. If you do not manage to get hold of the key you can change SSH key to jumphost vie Azure portal (https://portal.azure.com). Key is changed from VM settings via Set password.
-   - ssh -i /tmp/azurekey.$groupname
+   - ssh -i /Users/imckinle/Projects/openshift/azure-ansible/temp/mountexport/azurekey.$groupname
 
 ## TODO
 * Define number of app and infra nodes thru envs.
