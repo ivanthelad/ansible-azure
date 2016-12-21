@@ -128,14 +128,6 @@ nodes:
       infra: "false"
       stage: prod
 
-  node3prod:
-    name: node2
-    tags:
-      region: "{{ region }}"
-      zone: zone2
-      infra: "false"
-      stage: prod
-
 #i#nodes:
 #  name: node1
 #  name: node2
