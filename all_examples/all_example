@@ -1,5 +1,5 @@
 #---
-openshiftversion: 3.2
+openshiftversion: 3.3
 resource_group_name: pirates
 ##  Azure AD user.
 ad_username: XXXXXXXXXXXXXXXXXXX
