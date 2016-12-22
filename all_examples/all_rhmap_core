@@ -1,5 +1,6 @@
 #---
 ### This example is a single master with infra and app nodes designed for RHMAP core
+openshiftversion: 3.2
 resource_group_name: pirates
 ##  Azure AD user.
 ad_username: XXXXXXXXXXXXXXXXXXX
