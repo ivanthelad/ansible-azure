@@ -69,6 +69,18 @@
         "description": "OS to use. Centos or Redhat Enterprise Linux"
       }
     }
+    ,
+       "storageType": {
+           "type": "string",
+           "defaultValue": "Standard_LRS",
+           "allowedValues": [
+             "Premium_LRS",
+             "Standard_LRS"
+           ],
+           "metadata": {
+             "description": "Type of storage:Premium (SSD) or Standard"
+           }
+       }
   },
   "variables": {
 
@@ -98,7 +110,7 @@
       "sku": "7.3",
       "version": "latest"
     },
-    "vhdStorageType": "Standard_LRS"
+    "vhdStorageType": "[parameters('storageType')]"
   },
   "resources": [
     {
