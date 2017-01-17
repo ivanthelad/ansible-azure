@@ -83,7 +83,7 @@
           adminUsername:
             value: "{{ adminUsername }}"
           vmSize:
-            value: "{{ item.value.machinesize | default(Standard_D2_v2) }}"
+            value: "{{ item.value.machinesize | default('Standard_D2_v2') }}"
           adminPassword:
             value: "{{ adminPassword }}"
           vmName:
@@ -96,9 +96,9 @@
           publicip:
             value: "jumphostip"
           dataDiskSize:
-            value: "{{ item.value.datadisksize | default(60) }}"
+            value: "{{ item.value.datadisksize | default('60') }}"
           storageType:
-            value: "{{ item.value.storagtype | default(Standard_LRS) }}"
+            value: "{{ item.value.storagtype | default('Standard_LRS') }}"
 
 
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/jumphost-avail.json'
@@ -234,7 +234,7 @@
           adminUsername:
             value: "{{ adminUsername }}"
           vmSize:
-            value: "{{ item.value.machinesize | default(Standard_D2_v2) }}"
+            value: "{{ item.value.machinesize | default('Standard_D2_v2') }}"
           adminPassword:
             value: "{{ adminPassword }}"
           image:
@@ -258,9 +258,9 @@
           internalLoadbalancerip:
             value: "10.0.3.11"
           dataDiskSize:
-            value: "{{ item.value.datadisksize | default(60) }}"
+            value: "{{ item.value.datadisksize | default('60') }}"
           storageType:
-            value: "{{ item.value.storagtype | default(Standard_LRS) }}"
+            value: "{{ item.value.storagtype | default('Standard_LRS') }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
@@ -291,7 +291,7 @@
           adminUsername:
             value: "{{ adminUsername }}"
           vmSize:
-            value: "{{ item.value.machinesize | default(Standard_D2_v2) }}"
+            value: "{{ item.value.machinesize | default('Standard_D2_v2') }}"
           adminPassword:
             value: "{{ adminPassword }}"
           image:
@@ -313,9 +313,9 @@
           publicip:
             value: "routerip"
           dataDiskSize:
-            value: "{{ item.value.datadisksize | default(60) }}"
+            value: "{{ item.value.datadisksize | default('60') }}"
           storageType:
-            value: "{{ item.value.storagtype | default(Standard_LRS) }}"
+            value: "{{ item.value.storagtype | default('Standard_LRS') }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async
@@ -346,7 +346,7 @@
           adminUsername:
             value: "{{ adminUsername }}"
           vmSize:
-            value: "{{ item.value.machinesize | default(Standard_D2_v2) }}"
+            value: "{{ item.value.machinesize | default('Standard_D2_v2') }}"
           adminPassword:
             value: "{{ adminPassword }}"
           image:
@@ -362,9 +362,9 @@
           availabilitySetName:
             value: "nodeAvailSet"
           dataDiskSize:
-            value: "{{ item.value.datadisksize | default(60) }}"
+            value: "{{ item.value.datadisksize | default('60') }}"
           storageType:
-            value: "{{ item.value.storagtype | default(Standard_LRS) }}"
+            value: "{{ item.value.storagtype | default('Standard_LRS') }}"
  ## simple nodes
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'

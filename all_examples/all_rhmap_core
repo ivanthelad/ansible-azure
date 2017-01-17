@@ -53,6 +53,9 @@ openshift_pool_id: XXXXXXXXXXX
 jumphost:
   jumphost1:
     name: jumphost1
+    datadisksize: 64
+    machinesize: Standard_D1_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: jumphost
@@ -62,6 +65,9 @@ jumphost:
 masters:
   master1:
     name: master1
+    datadisksize: 80
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: zone1
@@ -82,6 +88,9 @@ masters:
 infranodes:
   infranode1:
     name: infranode1
+    datadisksize: 80
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: zone1
@@ -90,6 +99,9 @@ infranodes:
       infratype: registry
   infranode2:
     name: infranode2
+    datadisksize: 80
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: zone2
@@ -97,6 +109,9 @@ infranodes:
       type: core
   infranode3:
     name: infranode3
+    datadisksize: 80
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: zone3
@@ -105,6 +120,9 @@ infranodes:
 nodes:
   node1:
     name: node1
+    datadisksize: 80
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: zone1
@@ -115,6 +133,9 @@ nodes:
 
   node2:
     name: node2
+    datadisksize: 80
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: zone2
@@ -126,6 +147,9 @@ nodes:
 
   node3:
     name: node3
+    datadisksize: 80
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: zone3
