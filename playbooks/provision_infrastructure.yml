@@ -83,7 +83,7 @@
           adminUsername:
             value: "{{ adminUsername }}"
           vmSize:
-            value: "Standard_D1"
+            value: "{{ item.value.machinesize }}"
           adminPassword:
             value: "{{ adminPassword }}"
           vmName:
@@ -95,6 +95,8 @@
 ## ip address has to be created before hand  for some reason i cannot fathom at the mo
           publicip:
             value: "jumphostip"
+          dataDiskSize:
+            value: "{{ item.value.datadisksize }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/jumphost-avail.json'
       register: azure_async
       async: 7200
@@ -228,7 +230,7 @@
           adminUsername:
             value: "{{ adminUsername }}"
           vmSize:
-            value: "{{ node_vmSize }}"
+            value: "{{ item.value.machinesize }}"
           adminPassword:
             value: "{{ adminPassword }}"
           image:
@@ -251,7 +253,8 @@
             value: "apipublicip"
           internalLoadbalancerip:
             value: "10.0.3.11"
-
+          dataDiskSize:
+            value: "{{ item.value.datadisksize }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
@@ -282,7 +285,7 @@
           adminUsername:
             value: "{{ adminUsername }}"
           vmSize:
-            value: "{{ node_vmSize }}"
+            value: "{{ item.value.machinesize }}"
           adminPassword:
             value: "{{ adminPassword }}"
           image:
@@ -303,6 +306,8 @@
             ## ip address has to be created before hand  for some reason i cannot fathom at the mo
           publicip:
             value: "routerip"
+          dataDiskSize:
+            value: "{{ item.value.datadisksize }}"
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async
@@ -333,7 +338,7 @@
           adminUsername:
             value: "{{ adminUsername }}"
           vmSize:
-            value: "{{ node_vmSize }}"
+            value: "{{ item.value.machinesize }}"
           adminPassword:
             value: "{{ adminPassword }}"
           image:
@@ -348,7 +353,8 @@
             value: "{{ sshkey }}"
           availabilitySetName:
             value: "nodeAvailSet"
-
+          dataDiskSize:
+            value: "{{ item.value.datadisksize }}"
  ## simple nodes
         template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'

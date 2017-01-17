@@ -30,6 +30,9 @@
     "vmSize": {
       "type": "string"
     },
+    "dataDiskSize": {
+      "type": "string"
+    },
     "adminUsername": {
       "type": "string"
     },
