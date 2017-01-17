@@ -1,0 +1,44 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+  - debug: msg="Provisioning with ad_user {{ ad_username }} "
+
+  - name: fffff
+    azure_rm_deployment:
+      deployment_mode: incremental
+      state: present
+      ad_user: "{{ ad_username }}"
+      password: "{{ ad_password }}"
+      subscription_id: "{{ subscriptionID }}"
+      resource_group_name: "{{ resource_group_name }}"
+      location: "{{ region }}"
+      #### We add it to the master subnet but really don't matter
+      deployment_name: cloudforms
+      parameters:
+        osDiskVhdUri:
+          value: https://2f4tux6ag3tq5tftrb2cecwz.blob.core.windows.net/myimages/cfme-azure-5.7.0.17-1.x86_64fixed.vhd
+        osType:
+          value: Linux
+        vmSize:
+          value: Standard_DS3_v2
+        vmName:
+          value: "cloudforms"
+        adminUsername:
+          value: "{{ adminUsername }}"
+        adminPassword:
+          value: "password2centos#"
+        sshKeyData:
+          value: "{{ sshkey }}"
+      template_link: 'https://gist.githubusercontent.com/ivanthelad/bbda38b96a9e8b8c9b452ae2464fe17a/raw/0ed49878c83b9672ea2400dcbfd158b4d8f93ba9/cftest'
+    register: azure_async
+#    async: 7200
+#    poll: 0
+  - name: Wait for jump instance creation to complete
+    async_status: jid={{ item.ansible_job_id }}
+    register: azure
+    until: azure.finished
+    retries: 320
+    with_items: "{{ azure_async.results }}"
+  - debug: msg="the value of azure  {{ azure }}"
