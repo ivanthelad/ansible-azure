@@ -152,7 +152,7 @@
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '.vhd')]"
+              "uri": "[concat('http://', variables('sa'), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), '.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -165,7 +165,7 @@
               "lun": 0,
               "name": "[parameters('vmName')]",
               "vhd": {
-                "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '_datadisk1.vhd')]"
+                "uri": "[concat('http://', variables('sa'), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), '_datadisk1.vhd')]"
               }
             }
           ]
