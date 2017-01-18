@@ -162,7 +162,7 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[variables('image')]",
+          "imageReference": "[parameters('image')]",
           "osDisk": {
             "name": "osdisk",
             "vhd": {
