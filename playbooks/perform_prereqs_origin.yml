@@ -1,0 +1,223 @@
+---
+- hosts: azure_vms
+  user: "{{ adminUsername }}"
+  sudo: true
+  strategy: free
+  tasks:
+    - name: Add repository
+      yum_repository:
+        name: epel
+        description: EPEL YUM repo
+        baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+        enabled: yes
+#    - command: "sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo"
+    - name: Install Basic Preqes from epel
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+           - ansible
+           - pyOpenSSL
+    - name: Add repository
+      yum_repository:
+        name: epel
+        description: EPEL YUM repo
+        baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+        enabled: no
+
+
+- hosts: azure_vms
+  user: "{{ adminUsername }}"
+  sudo: true
+  strategy: free
+  tasks:
+    - name: Install Basic Preqes
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+           - git
+           - vim
+    - git:
+      repo: https://github.com/openshift/openshift-ansible
+      dest: /srv/checkout
+
+
+################################################
+#### This is kinda messy, While you can technially jump onto the jump machine and  call ansible playbook
+####    ---  /bin/ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml
+####  In this case i'm using to jump host as a 'gatewayed' ansible proxy. basically proxying my ansible commands via the jump host.
+#### To do this seamlessly the local machine requires the hosts to be added to know hosts
+#### This the funky stuff that going on below... ohh forgive me
+####
+################################################
+- hosts: azure_vms
+  user: "{{ adminUsername }}"
+  tasks:
+## From the jumphost scan the keys for all app nodes  and print to file
+    - name: From the jumphost scan the keys for all app nodes  and print to file
+      shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
+      with_dict: "{{ nodes }}"
+## From the jumphost fetch the keys for all app nodes  and save locally
+    - name: From the jumphost fetch the keys for all app nodes  and save locally
+      fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
+      with_dict: "{{ nodes }}"
+
+## From the jumphost scan the keys for all infranodes  and print to file
+    - name:  From the jumphost scan the keys for all infranodes  and print to file
+      shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
+      with_dict: "{{ infranodes }}"
+## From the jumphost fetch the keys for all infra nodes  and save locally
+    - name: From the jumphost fetch the keys for all infra nodes  and save locally
+      fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
+      with_dict: "{{ infranodes }}"
+
+## From the jumphost scan the keys for all masters  and print to file
+    - name: From the jumphost scan the keys for all masters  and print to file
+      shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
+      with_dict: "{{ masters }}"
+## From the jumphost fetch the keys for all master nodes  and save locally
+    - name:  From the jumphost fetch the keys for all master nodes  and save locally
+      fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
+      with_dict: "{{ masters }}"
+
+## From the jumphost scan the keys for all jumphost  and print to file
+    - name: From the jumphost scan the keys for all jumphost  and print to file
+      shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
+      with_dict: "{{ jumphost }}"
+## From the jumphost fetch the keys for all jumphost nodes  and save locally
+    - name:  From the jumphost fetch the keys for all jumphost nodes  and save locally
+      fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
+      with_dict: "{{ jumphost }}"
+
+#################################################
+ #### This is kinda messy, I'm appending all known hosts to local file. We fetched these in the previous step
+################################################
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Assemble nodes knownhosts locally
+      shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
+      with_dict: "{{ nodes }}"
+    - name:  Assemble masters knownhosts locally
+      shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
+      with_dict: "{{ masters }}"
+    - name:  Assemble infranodes knownhosts locally
+      shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
+      with_dict: "{{ infranodes }}"
+    - name:  Assemble jumphost knownhosts locally
+      shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
+      with_dict: "{{ jumphost }}"
+
+
+
+
+
+
+
+
+#################################################
+ #### Prepare dynamic group
+#################################################
+- hosts: localhost
+  gather_facts: False
+  connection: local
+  tasks:
+    - name: Add new infranodes instance to gatewayed-nodes group
+      add_host: hostname={{ item.value.name }} groupname=gatewayed-nodes
+      with_dict:  "{{ infranodes }}"
+    - name: Add new nodes instance to gatewayed-nodes group
+      add_host: hostname={{ item.value.name }} groupname=gatewayed-nodes
+      with_dict:  "{{ nodes }}"
+    - name: Add new instance to gatewayed-masters group
+      add_host: hostname={{ item.value.name }} groupname=gatewayed-masters
+      with_dict:  "{{ masters }}"
+
+
+
+
+
+#################################################
+ ####  Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
+################################################
+- hosts: gatewayed-masters:gatewayed-nodes
+  gather_facts: False
+  strategy: free
+  serial: 50
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+  user: "{{ adminUsername }}"
+  sudo: true
+  roles:
+    - { role: prereqs_azure  }
+#################################################
+ #### Heres the real business. Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
+################################################
+- hosts: gatewayed-nodes
+  gather_facts: False
+  strategy: free
+  serial: 50
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+
+  user: "{{ adminUsername }}"
+  sudo: true
+  roles:
+    - { role: lv_create, filesystem: "xfs", create_lvname: 'origin', create_vgname: 'docker_vg', new_mntp: '/var/lib/origin', create_lvsize: '5G' }
+    - { role: lv_create, filesystem: "xfs", create_lvname: 'logs', create_vgname: 'docker_vg', new_mntp: '/var/log', create_lvsize: '10G' }
+    ### this crappy role tries to figure out what device it should use
+#################################################
+ #### Heres the real business. Preparing only master. Via jump host
+################################################
+- hosts: gatewayed-masters
+  strategy: free
+  gather_facts: False
+  serial: 50
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+
+  user: "{{ adminUsername }}"
+  sudo: true
+  ## TODO, need to check this. stopped working
+  roles:
+    - { role: lv_create, filesystem: "xfs", create_lvname: 'origin', create_vgname: 'docker_vg', new_mntp: '/var/lib/origin', create_lvsize: '5G' }
+    - { role: lv_create, filesystem: "xfs", create_lvname: 'logs', create_vgname: 'docker_vg', new_mntp: '/var/log', create_lvsize: '10G' }
+    - { role: lv_create, filesystem: "xfs", create_lvname: 'etcd', create_vgname: 'docker_vg', new_mntp: '/var/lib/etcd', create_lvsize: '5G' }
+
+#################################################
+ #### Heres the real business. Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
+################################################
+- hosts: gatewayed-masters:gatewayed-nodes
+  name: setup docker on all masters and nodes
+  gather_facts: False
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+  user: "{{ adminUsername }}"
+  sudo: true
+  roles:
+    ### this crappy role tries to figure out what device it should use
+    - { role: figureout_device_ms_hack }
+    - { role: storage_docker }
+
+#################################################
+ #### Heres the real business. Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
+################################################
+#- hosts: gatewayed-nodes
+#  serial: 3
+#  vars:
+#    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+#    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+#    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+#  user: "{{ adminUsername }}"
+#  sudo: true
+#  roles:
+#    - { role: storage_docker }
+#
