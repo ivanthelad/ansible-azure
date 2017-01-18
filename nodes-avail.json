@@ -95,6 +95,8 @@
       "sku": "7.3",
       "version": "latest"
     },
+    "imageReference": "[variables(parameters('image'))]",
+
     "vhdStorageType": "[parameters('storageType')]"
   },
   "resources": [
@@ -192,7 +194,7 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[variables(parameters('image'))]",
+          "imageReference": "[variables('imageReference')]",
           "osDisk": {
             "name": "osdisk",
             "vhd": {
