@@ -301,7 +301,7 @@
           }
         },
         "storageProfile": {
-          "imageReference": "[parameters('image')]",
+          "imageReference": "[variables(parameters('image')]",
           "osDisk": {
             "name": "osdisk",
             "vhd": {
