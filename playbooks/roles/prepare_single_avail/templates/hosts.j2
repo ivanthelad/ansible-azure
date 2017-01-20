@@ -13,7 +13,11 @@ openshift_release=v{{openshiftversion}}
 ansible_become=yes
 os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 deployment_type=openshift-enterprise
+#deployment_type=origin
+#openshift_image_tag=v1.4.0-rc1
+#containerized=true
 osm_default_subdomain={{ routerpublicip }}.xip.io
+openshift_master_default_subdomain={{ routerpublicip }}.xip.io
 # uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
 openshift_master_htpasswd_users={'ivan':'$apr1$mmH6F3HC$wFVQmONOvOswQL.Ev821o.', 'user1': '$apr1$uml9xP6B$6cuH4KGOwVWJ4S1Ipl.gg.', 'user2': '$apr1$uml9xP6B$6cuH4KGOwVWJ4S1Ipl.gg.' }
@@ -148,7 +152,3 @@ jumphost1
 {% for key, value in infranodes.iteritems() %}
 {{ value.name }} openshift_hostname={{ value.name }}  openshift_public_hostname={{ value.name }}  openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
 {% endfor %}
-##[somegroup]
-##{% for host in groups['gatewayed-nodes'] %}
-##   {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }},  {{ hostvars[host]['ansible_hostname'] }}, {{ hostvars[host]['inventory_hostname_short'] }}
-##{% endfor %}

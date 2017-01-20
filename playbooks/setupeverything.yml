@@ -31,6 +31,7 @@
 ## https://blogs.technet.microsoft.com/stefan_stranger/2016/10/21/using-the-azure-arm-rest-apin-get-access-token/
 
 - include: provision_infrastructure.yml
+#- include: perform_prereqs_origin.yml
 - include: perform_prereqs.yml
 - include: install_openshift.yml
 - include: metrics.yml

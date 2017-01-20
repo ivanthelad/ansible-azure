@@ -10,14 +10,17 @@
         description: EPEL YUM repo
         baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
         enabled: yes
+        repo_gpgcheck: yes
 #    - command: "sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo"
-    - name: Install Basic Preqes from epel
-      yum:
-        name: "{{ item }}"
-        state: present
-      with_items:
-           - ansible
-           - pyOpenSSL
+    - command: yum -y --enablerepo=epel install ansible pyOpenSSL --nogpgcheck
+#    - name: Install Basic Preqes from epel#
+    #  yum:
+  #      name: "{{ item }}"
+#        state: present#
+#        disable_gpg_check: no
+#      with_items:
+#           - ansible#
+#           - pyOpenSSL
     - name: Add repository
       yum_repository:
         name: epel
@@ -36,11 +39,12 @@
         name: "{{ item }}"
         state: present
       with_items:
-           - git
-           - vim
-    - git:
-      repo: https://github.com/openshift/openshift-ansible
-      dest: /srv/checkout
+        - git
+        - vim
+    - name: Git cloning openshift
+      git:
+        repo: https://github.com/openshift/openshift-ansible
+        dest: /usr/share/ansible/openshift-ansible
 
 
 ################################################

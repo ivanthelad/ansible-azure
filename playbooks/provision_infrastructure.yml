@@ -75,7 +75,7 @@
         deployment_name: "{{ item.value.name }}"
         parameters:
           image:
-            value: centos
+            value: rhel
           subnetName:
             value: masterSubnet
           virtualNetworkName:
@@ -238,7 +238,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: centos
+            value: rhel
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -295,7 +295,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: centos
+            value: rhel
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -350,7 +350,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: centos
+            value: rhel
           masterKey:
             value: "{{ masterkey }}"
           tags:
