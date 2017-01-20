@@ -111,6 +111,7 @@ The following snippet is a brief example of how the ansible scripts are configur
 jumphost:
   jumphost1:
     name: jumphost1
+
     tags:
       region: "{{ region }}"
       zone: jumphost
@@ -120,14 +121,32 @@ jumphost:
 masters:
   master1:
     name: master1
+    datadisksize: 80
+    machinesize: Standard_DS2_v2
+    storagtype: Premium_LRS
     tags:
       region: "{{ region }}"
       zone: zone1
       type: infra
+#  master2:
+#    name: master2
+#    tags:
+#      region: northeurope
+#      zone: infra
+#      stage: none
+#  master3:
+#    name: master3
+#    tags:
+#      region: northeurope
+#      zone: infra
+#      stage: none
 
 infranodes:
   infranode1:
     name: infranode1
+    datadisksize: 64
+    machinesize: Standard_DS2_v2
+    storagtype: Premium_LRS
     tags:
       region: "{{ region }}"
       zone: zone1
@@ -137,6 +156,9 @@ infranodes:
       mbaas_id: mbaas1
   infranode2:
     name: infranode2
+    datadisksize: 64
+    machinesize: Standard_DS2_v2
+    storagtype: Premium_LRS
     tags:
       region: "{{ region }}"
       zone: zone2
@@ -144,6 +166,9 @@ infranodes:
       type: core
       mbaas_id: mbaas2
   infranode3:
+    datadisksize: 64
+    machinesize: Standard_DS2_v2
+    storagtype: Premium_LRS
     name: infranode3
     tags:
       region: "{{ region }}"
@@ -154,6 +179,9 @@ infranodes:
 nodes:
   node1:
     name: node1
+    datadisksize: 64
+    machinesize: Standard_DS2_v2
+    storagtype: Premium_LRS
     tags:
       region: "{{ region }}"
       zone: zone1
@@ -162,6 +190,9 @@ nodes:
       type: apps
   node2:
     name: node2
+    datadisksize: 64
+    machinesize: Standard_DS2_v2
+    storagtype: Premium_LRS
     tags:
       region: "{{ region }}"
       zone: zone2
