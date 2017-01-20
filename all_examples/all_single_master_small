@@ -1,6 +1,6 @@
 #---
 ### This example is a single master with 1 infra nodes and 1 app nodes. Its the smallest 'production' like cluster you can provision
-openshiftversion: 3.3
+openshiftversion: 3.4
 resource_group_name: pirates
 ##  Azure AD user.
 ad_username: XXXXXXXXXXXXXXXXXXX

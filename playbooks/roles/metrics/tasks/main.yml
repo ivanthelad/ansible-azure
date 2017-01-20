@@ -22,6 +22,10 @@
 
 - name: Grant Heapster service account the cluster-reader permission to read the stats
   action: command oadm policy add-cluster-role-to-user cluster-reader system:serviceaccount:openshift-infra:heapster -n openshift-infra
+
+  tags: hawkular-metrics
+- name: Grant hawkular service account the cluster-reader permission to view the stats
+  action: command oc adm policy add-role-to-user view system:serviceaccount:openshift-infra:hawkular -n openshift-infra
   tags: hawkular-metrics
 
 - name: Create a "dummy" secret that does not specify a certificate value for the metrics deployer
@@ -34,7 +38,7 @@
 #  tags: hawkular-metrics
 
 - name: Process the metrics deployer
-  shell: command oc process metrics-deployer-template -n openshift -v HAWKULAR_METRICS_HOSTNAME={{ hawkular_metrics_hostname }},USE_PERSISTENT_STORAGE=true,CASSANDRA_PV_SIZE=10Gi | oc create -n openshift-infra -f -
+  shell: command oc process metrics-deployer-template -n openshift -v HAWKULAR_METRICS_HOSTNAME={{ hawkular_metrics_hostname }} -v USE_PERSISTENT_STORAGE=true -v IMAGE_VERSION=latest -v CASSANDRA_PV_SIZE=10Gi | oc create -n openshift-infra -f -
   tags: hawkular-metrics
 
 

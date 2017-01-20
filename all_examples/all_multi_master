@@ -1,6 +1,6 @@
 #---
 ### This example is a multi master with 2 infra nodes and 2 app nodes.
-openshiftversion: 3.3
+openshiftversion: 3.4
 resource_group_name: pirates
 ##  Azure AD user.
 ad_username: XXXXXXXXXXXXXXXXXXX

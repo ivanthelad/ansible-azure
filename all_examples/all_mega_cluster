@@ -6,7 +6,7 @@
 ##   and 2 app nodes for production. These are labeled with stage=production
 
 #########################
-openshiftversion: 3.3
+openshiftversion: 3.4
 resource_group_name: pirates
 ##  Azure AD user.
 ad_username: XXXXXXXXXXXXXXXXXXX
