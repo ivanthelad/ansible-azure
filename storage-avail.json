@@ -210,7 +210,7 @@
             {
               "caching": "None",
               "createOption": "Empty",
-              "diskSizeGB": "[variables('dataDiskSize')]",
+              "diskSizeGB": "[parameters('dataDiskSize')]",
               "lun": 0,
               "name": "[parameters('vmName')]",
               "vhd": {
@@ -221,7 +221,7 @@
             {
               "caching": "None",
               "createOption": "Empty",
-              "diskSizeGB": "[variables('storageDiskSize')]",
+              "diskSizeGB": "[parameters('storageDiskSize')]",
               "lun": 0,
               "name": "storagedisk",
               "vhd": {
