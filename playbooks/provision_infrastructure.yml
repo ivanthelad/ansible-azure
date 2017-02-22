@@ -262,7 +262,7 @@
             value: "{{ item.value.datadisksize | default('60') }}"
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
-        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/jumphost-avail.json"
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/masters-avail.json"
         #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
@@ -416,7 +416,7 @@
             value: "nodeAvailSet"
           dataDiskSize:
             value: "{{ item.value.datadisksize | default('60') }}"
-          storageiskSize:
+          storageDiskSize:
             value: "{{ item.value.storagedisksize | default('256') }}"
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
@@ -453,12 +453,12 @@
       with_items: "{{ azurenodes_async.results }}"
 
 ### wait for nodes
-   - name: Wait for nodes instance creation to complete
-     async_status: jid={{ item.ansible_job_id }}
-     register: azurestoragenodes
-     until: azurestoragenodes.finished
-     retries: 900
-     with_items: "{{ azurestoragenodes_async.results }}"
+    - name: Wait for nodes instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azurestoragenodes
+      until: azurestoragenodes.finished
+      retries: 900
+      with_items: "{{ azurestoragenodes_async.results }}"
 
 #    async: 7200
 #    poll: 0

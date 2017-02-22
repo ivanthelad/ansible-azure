@@ -223,7 +223,7 @@
               "createOption": "Empty",
               "diskSizeGB": "[variables('storageDiskSize')]",
               "lun": 0,
-              "name": "[parameters('vmName')]",
+              "name": "storagedisk",
               "vhd": {
                 "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('sa')), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), '_storage1.vhd')]"
 
