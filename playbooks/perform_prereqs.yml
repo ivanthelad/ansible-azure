@@ -151,6 +151,9 @@
     - name: Add new instance to gatewayed-masters group
       add_host: hostname={{ item.value.name }} groupname=gatewayed-masters
       with_dict:  "{{ masters }}"
+    - name: Add new instance to gatewayed-storage group
+      add_host: hostname={{ item.value.name }} groupname=gatewayed-storage
+      with_dict:  "{{ storage }}"
 
 #################################################
  #### Heres the real business. Subscribing all nodes and masters Via jump host

@@ -1,0 +1,5 @@
+  #command: subscription-manager attach --pool=8a85f9843e3d687a013e3ddd471a083e
+- name: disable all other repos
+  command: subscription-manager repos --disable="*"
+- name: enable only oscp repos
+  command:  subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-{{openshiftversion}}-rpms"
