@@ -26,7 +26,7 @@
   #      tenant: "72f988bf-86f1-41af-91ab-2d7cd011db47"
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}}}/infra-avail.json"
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/infra-avail.json"
       #  template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra-avail.json'
       #  template_link: 'file://Users/imckinle/Projects/openshift/azure-ansible/ansible-azure/infra-avail.json'
         parameters:
