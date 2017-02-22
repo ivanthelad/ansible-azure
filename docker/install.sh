@@ -9,10 +9,15 @@ else
   echo "Using master branch"
   BRANCH=master
 fi
+
+if [ -n "$SOURCE" ]; then
+  echo "Using source '$SOURCE' for install scripts. "
+else
+  echo "Using default source https://github.com/ivanthelad/ansible-azure."
+  SOURCE=https://github.com/ivanthelad/ansible-azure
+fi
 rm -rf ansible-azure
-git clone -b $BRANCH https://github.com/ivanthelad/ansible-azure
-#git clone https://github.com/ivanthelad/ansible-azure
-#cp -rf  ansible-azure/playbooks/ .
+git clone -b $BRANCH $SOURCE
 
 if [ ! -f /exports/all  ]; then
  echo Expected a a file called 'all' under the path /exports/all exiting.
