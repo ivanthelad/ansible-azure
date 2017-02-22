@@ -47,6 +47,15 @@
       fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
       with_dict: "{{ nodes }}"
 
+## From the jumphost scan the keys for all app nodes  and print to file
+    - name: From the jumphost scan the keys for all storage nodes  and print to file
+      shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
+      with_dict: "{{ storage }}"
+## From the jumphost fetch the keys for all app nodes  and save locally
+    - name: From the jumphost fetch the keys for all storage nodes  and save locally
+      fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
+      with_dict: "{{ storage }}"
+
 ## From the jumphost scan the keys for all infranodes  and print to file
     - name:  From the jumphost scan the keys for all infranodes  and print to file
       shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
@@ -83,6 +92,9 @@
     - name: Assemble nodes knownhosts locally
       shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
       with_dict: "{{ nodes }}"
+    - name: Assemble storage knownhosts locally
+      shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
+      with_dict: "{{ storage }}"
     - name:  Assemble masters knownhosts locally
       shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
       with_dict: "{{ masters }}"
@@ -133,6 +145,9 @@
     - name: Add new nodes instance to gatewayed-nodes group
       add_host: hostname={{ item.value.name }} groupname=gatewayed-nodes
       with_dict:  "{{ nodes }}"
+    - name: Add new storage nodes instance to gatewayed-nodes group
+      add_host: hostname={{ item.value.name }} groupname=gatewayed-nodes
+      with_dict:  "{{ storage }}"
     - name: Add new instance to gatewayed-masters group
       add_host: hostname={{ item.value.name }} groupname=gatewayed-masters
       with_dict:  "{{ masters }}"
