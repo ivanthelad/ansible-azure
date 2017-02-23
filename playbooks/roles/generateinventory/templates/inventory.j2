@@ -1,5 +1,5 @@
 ## Purpose of this file is to allow the script to be run repeatedly via the local executing hosts
-## The  groups gatewayed-masters and gatewayed-nodes are simply the names dns names of the machines behind the jumphosts 
+## The  groups gatewayed-masters and gatewayed-nodes are simply the names dns names of the machines behind the jumphosts
 [all:vars]
 publicjumpip={{ publicjumpip }}
 publicjumpdns={{ publicjumpdns }}
@@ -21,7 +21,16 @@ publicjumpip={{  publicjumpip  }}
 {% for key, value in infranodes.iteritems() %}
 {{ value.name }}
 {% endfor %}
-## nodes
+## masters
 {% for key, value in masters.iteritems() %}
+{{ value.name }}
+{% endfor %}
+## storage
+{% for key, value in storage.iteritems() %}
+{{ value.name }}
+{% endfor %}
+[gatewayed-storage]
+## storage
+{% for key, value in storage.iteritems() %}
 {{ value.name }}
 {% endfor %}
