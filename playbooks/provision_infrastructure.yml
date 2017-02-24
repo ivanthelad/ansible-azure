@@ -44,7 +44,7 @@
         publicjumpip: "{{ infrastruct.deployment.outputs.jumphostip.value }}"
     - debug: msg="public api  {{ publicjumpip }}"
     - debug: msg="public dns {{ publicjumpdns }}"
-    - debug: msg=" router ip {{ routerpublicip }}"
+    - debug: msg="router ip {{ routerpublicip }}"
  #   - debug: msg=" jumphostip {{ jumphostip }}"
 
     ################################################

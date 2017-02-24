@@ -1,5 +1,5 @@
 - name: Create storage project
-  command:  oc new-project {{storage_project}}
+  command:  oc new-project {{project_name}}
   tags: gluster-install
 - name: Modify scc
   command: oc adm policy add-scc-to-user privileged -z default
@@ -9,5 +9,5 @@
     src: topology.j2
     dest: "{{topology_file}}"
 - name: Deploy Gluster
-  command: "cns-deploy -n {{storage_project}} -g {{topology_file}}"
+  command: "cns-deploy -n {{project_name}} -g {{topology_file}}"
   tags: gluster-install
