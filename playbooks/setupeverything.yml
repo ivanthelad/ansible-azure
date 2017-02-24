@@ -14,22 +14,6 @@
         - mastercount  != '3'
         - mastercount  != '5'
 
-
-#- hosts: localhost
-#  connection: local
-#  gather_facts: no
-
-#  tasks:
-#    - fail: msg="Bailing out. this play requires 'bar'"
-#      when: bar is undefined
-
-## pip install  msrestazure --upgrade
-## pip show azure
-## pip install  msrest --upgrade
-## pip install ansible --upgrade
- ## sudo pip install -U pyOpenSSL
-## https://blogs.technet.microsoft.com/stefan_stranger/2016/10/21/using-the-azure-arm-rest-apin-get-access-token/
-
 - include: provision_infrastructure.yml
 - include: perform_prereqs_origin.yml
   when: openshiftorigin
