@@ -1,6 +1,7 @@
 #---
 ### This example is a single master with 1 infra nodes and 1 app nodes. Its the smallest 'production' like cluster you can provision
 openshiftversion: 3.4
+openshiftorigin: false
 resource_group_name: pirates
 ##  Azure AD user.
 ad_username: XXXXXXXXXXXXXXXXXXX
@@ -46,6 +47,9 @@ openshift_pool_id: XXXXXXXXXXX
 
 #### For Gluster storage ####
 install_storage: true
+
+#### For RHMAP storage ####
+install_rhmap: false
 
 ########### list of node  ###########
 ### Warning, you currently cannot create more infra nodes ####

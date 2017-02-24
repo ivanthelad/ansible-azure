@@ -31,15 +31,20 @@
 ## https://blogs.technet.microsoft.com/stefan_stranger/2016/10/21/using-the-azure-arm-rest-apin-get-access-token/
 
 - include: provision_infrastructure.yml
-#- include: perform_prereqs_origin.yml
+- include: perform_prereqs_origin.yml
+  when: openshiftorigin
 - include: perform_prereqs.yml
+  when: not openshiftorigin
 - include: install_openshift.yml
 - include: metrics.yml
 - include: logging.yml
+- include: restart.yml
 - include: configure_gluster.yml
-#- include: restart.yml
-#- include: configure_rhnmapstorage.yml
-#- include: configure.rhmap.yaml
+  when: install_storage
+- include: configure_rhnmapstorage.yml
+  when: install_rhmap
+- include: configure.rhmap.yaml
+  when: install_rhmap
 
 - hosts: localhost
   connection: local

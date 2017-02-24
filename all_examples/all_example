@@ -1,5 +1,6 @@
 #---
 openshiftversion: 3.4
+openshiftorigin: false
 resource_group_name: pirates
 ##  Azure AD user.
 ad_username: XXXXXXXXXXXXXXXXXXX
@@ -37,6 +38,12 @@ create_vgname: docker_vg
 filesystem: 'xfs'
 create_lvsize: '80%FREE'
 #create_lvsize: '2g'
+
+#### For Gluster storage ####
+install_storage: false
+
+#### For RHMAP storage ####
+install_rhmap: true
 
 #### subscription information
 rh_subcription_user: XXXXXXXXXXX
