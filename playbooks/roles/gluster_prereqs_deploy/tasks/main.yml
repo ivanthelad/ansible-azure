@@ -1,0 +1,7 @@
+- name: Install Gluster packages for deployment
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - cns-deploy
+    - heketi-client

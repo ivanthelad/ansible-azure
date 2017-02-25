@@ -1,0 +1,36 @@
+- name: Install Gluster client packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - heketi-client
+- name: Gluster IP tabes port 24007
+  iptables:
+    chain: OS_FIREWALL_ALLOW
+    protocol: tcp
+    ctstate: NEW
+    jump: ACCEPT
+    destination_port: 24007
+- name: Gluster IP tabes port 24008
+  iptables:
+    chain: OS_FIREWALL_ALLOW
+    protocol: tcp
+    ctstate: NEW
+    jump: ACCEPT
+    destination_port: 24008
+- name: Gluster IP tabes port 2222
+  iptables:
+    chain: OS_FIREWALL_ALLOW
+    protocol: tcp
+    ctstate: NEW
+    jump: ACCEPT
+    destination_port: 2222
+- name: Gluster IP tabes port 49152:49664
+  iptables:
+    chain: OS_FIREWALL_ALLOW
+    protocol: tcp
+    ctstate: NEW
+    jump: ACCEPT
+    destination_port: 49152:49664
+- name: Reload iptables
+  command: systemctl reload iptables

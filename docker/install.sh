@@ -2,17 +2,25 @@
 echo "Performing fresh build"
 mkdir ~/.ssh
 ### The dir /export is used to accept key and inventory files
+
 if [ -n "$BRANCH" ]; then
   echo "Discovered a value for environment variable BRANCH.  Performing a fresh checkout of branch '$BRANCH'. "
-  rm -rf ansible-azure
-  git clone -b $BRANCH https://github.com/ivanthelad/ansible-azure
+else
+  echo "Using master branch"
+  BRANCH=master
 fi
 
-#git clone https://github.com/ivanthelad/ansible-azure
-#cp -rf  ansible-azure/playbooks/ .
+if [ -n "$SOURCE" ]; then
+  echo "Using source '$SOURCE' for install scripts. "
+else
+  echo "Using default source https://github.com/ivanthelad/ansible-azure."
+  SOURCE=https://github.com/ivanthelad/ansible-azure
+fi
+rm -rf ansible-azure
+git clone -b $BRANCH $SOURCE
 
 if [ ! -f /exports/all  ]; then
- echo expected a a file called 'all' under the path /exports/all. exiting
+ echo Expected a a file called 'all' under the path /exports/all exiting.
  exit 1
 fi
 temp=$(grep  '^resource_group_name:' /exports/all | awk '{ print $2}')
@@ -51,8 +59,6 @@ if [ -f /exports/known_hosts ]; then
 fi
 
 touch ~/.ssh/known_hosts
-#cp ~/.ssh/id_rsa: ./export/azurekey.$(grep  '^resource_group_name:' /ansible-azure/group_vars/all | awk '{ print $2}')
-#o#ansible-playbook -i inventory playbooks/init.yml
 sed -i "/sshkey: /c\sshkey: $(cat /root/.ssh/id_rsa.pub)" /ansible-azure/group_vars/all
 ansible-playbook --forks=50 -i inventory.$temp  ansible-azure/playbooks/setupeverything.yml
 

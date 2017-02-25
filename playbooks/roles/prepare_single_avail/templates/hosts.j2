@@ -152,3 +152,6 @@ jumphost1
 {% for key, value in infranodes.iteritems() %}
 {{ value.name }} openshift_hostname={{ value.name }}  openshift_public_hostname={{ value.name }}  openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
 {% endfor %}
+{% for key, value in storage.iteritems() %}
+{{ value.name }} openshift_hostname={{ value.name }}  openshift_public_hostname={{ value.name }}  openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
+{% endfor %}

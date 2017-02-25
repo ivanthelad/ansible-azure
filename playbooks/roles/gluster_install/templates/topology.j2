@@ -1,0 +1,26 @@
+{
+    "clusters": [
+        {
+            "nodes": [
+            {% for host in groups['gatewayed-storage'] %}
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "{{ hostvars[host]['ansible_hostname'] }}"
+                            ],
+                            "storage": [
+                                "{{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}"
+                            ]
+                        },
+                        "zone": {{loop.index}}
+                    },
+                    "devices": [
+                        "/dev/sdd"
+                    ]
+                }{% if not loop.last %},{% endif %}
+            {% endfor %}
+            ]
+        }
+    ]
+}

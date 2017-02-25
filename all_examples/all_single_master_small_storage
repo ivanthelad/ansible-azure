@@ -1,4 +1,5 @@
 #---
+### This example is a single master with 1 infra nodes and 1 app nodes. Its the smallest 'production' like cluster you can provision
 openshiftversion: 3.4
 openshiftorigin: false
 resource_group_name: pirates
@@ -39,16 +40,16 @@ filesystem: 'xfs'
 create_lvsize: '80%FREE'
 #create_lvsize: '2g'
 
-#### For Gluster storage ####
-install_storage: false
-
-#### For RHMAP storage ####
-install_rhmap: true
-
 #### subscription information
 rh_subcription_user: XXXXXXXXXXX
 rh_subcription_pass: XXXXXXXXXXX
 openshift_pool_id: XXXXXXXXXXX
+
+#### For Gluster storage ####
+install_storage: true
+
+#### For RHMAP storage ####
+install_rhmap: false
 
 ########### list of node  ###########
 ### Warning, you currently cannot create more infra nodes ####
@@ -59,7 +60,9 @@ openshift_pool_id: XXXXXXXXXXX
 jumphost:
   jumphost1:
     name: jumphost1
-
+    datadisksize: 64
+    machinesize: Standard_D1_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: jumphost
@@ -70,83 +73,75 @@ masters:
   master1:
     name: master1
     datadisksize: 80
-    machinesize: Standard_DS2_v2
-    storagtype: Premium_LRS
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: zone1
       type: infra
-#  master2:
-#    name: master2
-#    tags:
-#      region: northeurope
-#      zone: infra
-#      stage: none
-#  master3:
-#    name: master3
-#    tags:
-#      region: northeurope
-#      zone: infra
-#      stage: none
+      infra: "true"
 
 infranodes:
   infranode1:
     name: infranode1
-    datadisksize: 64
-    machinesize: Standard_DS2_v2
-    storagtype: Premium_LRS
+    datadisksize: 80
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: zone1
       infra: "true"
-      type: core
       infratype: registry
-      mbaas_id: mbaas1
-  infranode2:
-    name: infranode2
-    datadisksize: 64
-    machinesize: Standard_DS2_v2
-    storagtype: Premium_LRS
-    tags:
-      region: "{{ region }}"
-      zone: zone2
-      infra: "true"
-      type: core
-      mbaas_id: mbaas2
-  infranode3:
-    datadisksize: 64
-    machinesize: Standard_DS2_v2
-    storagtype: Premium_LRS
-    name: infranode3
-    tags:
-      region: "{{ region }}"
-      zone: zone3
-      infra: "true"
-      type: core
-      mbaas_id: mbaas3
+
 nodes:
   node1:
     name: node1
-    datadisksize: 64
-    machinesize: Standard_DS2_v2
-    storagtype: Premium_LRS
+    datadisksize: 80
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
     tags:
       region: "{{ region }}"
       zone: zone1
       infra: "false"
       stage: dev
-      type: apps
-  node2:
-    name: node2
-    datadisksize: 64
-    machinesize: Standard_DS2_v2
-    storagtype: Premium_LRS
+
+storage:
+  storage1:
+    name: storage1
+    datadisksize: 40
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
+    storagedisksize: 256
     tags:
       region: "{{ region }}"
-      zone: zone2
       infra: "false"
       stage: dev
-      type: apps
+      type: storage
+      zone: 1
+  storage2:
+    name: storage2
+    datadisksize: 40
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
+    storagedisksize: 256
+    tags:
+      region: "{{ region }}"
+      infra: "false"
+      stage: dev
+      type: storage
+      zone: 2
+  storage3:
+    name: storage3
+    datadisksize: 40
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
+    storagedisksize: 256
+    tags:
+      region: "{{ region }}"
+      infra: "false"
+      stage: dev
+      type: storage
+      zone: 3
 
 #i#nodes:
 #  name: node1

@@ -26,7 +26,8 @@
   #      tenant: "72f988bf-86f1-41af-91ab-2d7cd011db47"
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra-avail.json'
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/infra-avail.json"
+      #  template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra-avail.json'
       #  template_link: 'file://Users/imckinle/Projects/openshift/azure-ansible/ansible-azure/infra-avail.json'
         parameters:
           dnsNameAPI:
@@ -43,7 +44,7 @@
         publicjumpip: "{{ infrastruct.deployment.outputs.jumphostip.value }}"
     - debug: msg="public api  {{ publicjumpip }}"
     - debug: msg="public dns {{ publicjumpdns }}"
-    - debug: msg=" router ip {{ routerpublicip }}"
+    - debug: msg="router ip {{ routerpublicip }}"
  #   - debug: msg=" jumphostip {{ jumphostip }}"
 
     ################################################
@@ -100,8 +101,8 @@
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
 
-
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/jumphost-avail.json'
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/jumphost-avail.json"
+        #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/jumphost-avail.json'
       register: azure_async
       async: 7200
       poll: 0
@@ -261,7 +262,8 @@
             value: "{{ item.value.datadisksize | default('60') }}"
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/masters-avail.json"
+        #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
 
@@ -316,7 +318,8 @@
             value: "{{ item.value.datadisksize | default('60') }}"
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/infranode-avail.json"
+        #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async
 
@@ -366,10 +369,62 @@
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
  ## simple nodes
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/nodes-avail.json"
+        #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azurenodes_async
 
+################################################
+#### Creating the storage nodes.
+#### Todo, dyncamically add the list of infra nodes to group
+################################################
+    - name: Create Storage Nodes Deploy
+      async: 7200
+      poll: 0
+      with_dict: "{{ storage }}"
+      azure_rm_deployment:
+        ad_user: "{{ ad_username }}"
+        password: "{{ ad_password }}"
+        subscription_id: "{{ subscriptionID }}"
+        deployment_mode: incremental
+        state: present
+        resource_group_name: "{{ resource_group_name }}"
+        location: "{{ region }}"
+        deployment_name: "{{ item.value.name }}"
+        parameters:
+          subnetName:
+            value: nodeSubnet
+          virtualNetworkName:
+            value: openshiftVnet
+          adminUsername:
+            value: "{{ adminUsername }}"
+          vmSize:
+            value: "{{ item.value.machinesize | default('Standard_DS3_v2') }}"
+          adminPassword:
+            value: "{{ adminPassword }}"
+          image:
+            value: rhel
+          masterKey:
+            value: "{{ masterkey }}"
+          tags:
+            value: "{{ item.value.tags }}"
+          vmName:
+            value: "{{ item.value.name }}"
+          sshKeyData:
+            value: "{{ sshkey }}"
+          availabilitySetName:
+            value: "nodeAvailSet"
+          dataDiskSize:
+            value: "{{ item.value.datadisksize | default('60') }}"
+          storageDiskSize:
+            value: "{{ item.value.storagedisksize | default('256') }}"
+          storageType:
+            value: "{{ item.value.storagtype | default('Standard_LRS') }}"
+ ## simple nodes
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/storage-avail.json"
+        #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
+        #i#template_link: 'ansible-azure/nodes.json'
+      register: azurestoragenodes_async
 
 
 
@@ -397,12 +452,21 @@
       retries: 900
       with_items: "{{ azurenodes_async.results }}"
 
+### wait for nodes
+    - name: Wait for nodes instance creation to complete
+      async_status: jid={{ item.ansible_job_id }}
+      register: azurestoragenodes
+      until: azurestoragenodes.finished
+      retries: 900
+      with_items: "{{ azurestoragenodes_async.results }}"
+
 #    async: 7200
 #    poll: 0
 
 
     - debug: msg="the value of (MASTERS)azuremasternodes {{ azuremasternodes }}"
     - debug: msg="the value of (NODES)azurenodes {{ azurenodes }}"
+    - debug: msg="the value of (STORAGE NODES)azurestoragenodes {{ azurestoragenodes }}"
     - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
 
 - hosts: localhost
@@ -410,6 +474,7 @@
   roles:
      - { role: tagvm, machines: "{{ masters }}" }
      - { role: tagvm, machines: "{{ nodes }}" }
+     - { role: tagvm, machines: "{{ storage }}" }
      - { role: tagvm, machines: "{{ infranodes }}" }
      - { role: generateinventory }
 
@@ -435,6 +500,15 @@
     - name: From the jumphost fetch the keys for all app nodes  and save locally
       fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
       with_dict: "{{ nodes }}"
+
+## From the jumphost scan the keys for all app nodes  and print to file
+    - name: From the jumphost scan the keys for all storage nodes  and print to file
+      shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
+      with_dict: "{{ storage }}"
+## From the jumphost fetch the keys for all app nodes  and save locally
+    - name: From the jumphost fetch the keys for all storage nodes  and save locally
+      fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
+      with_dict: "{{ storage }}"
 
 ## From the jumphost scan the keys for all infranodes  and print to file
     - name:  From the jumphost scan the keys for all infranodes  and print to file
@@ -472,6 +546,9 @@
     - name: Assemble nodes knownhosts locally
       shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
       with_dict: "{{ nodes }}"
+    - name: Assemble storage nodes knownhosts locally
+      shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
+      with_dict: "{{ storage }}"
     - name:  Assemble masters knownhosts locally
       shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
       with_dict: "{{ masters }}"
