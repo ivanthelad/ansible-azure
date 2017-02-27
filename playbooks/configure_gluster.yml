@@ -16,7 +16,7 @@
   sudo: true
   roles:
     - { role: gluster_subscribe }
-- hosts: gatewayed-masters:gatewayed-nodes
+- hosts: gatewayed-nodes
   strategy: free
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
@@ -29,6 +29,19 @@
   sudo: true
   roles:
     - { role: gluster_prereqs_client }
+
+- hosts: gatewayed-storage
+  strategy: free
+  vars:
+    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
+    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
+    routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
+    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
+  gather_facts: false
+  user: "{{ adminUsername }}"
+  sudo: true
+  roles:
+    - { role: gluster_prereqs_node }
 
 - hosts: gatewayed-masters[0]
   strategy: free

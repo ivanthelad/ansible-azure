@@ -1,8 +1,2 @@
-- redhat_subscription: state=absent
-- redhat_subscription: state=present username={{ rh_subcription_user }} password={{ rh_subcription_pass }}
-  ignore_errors: yes
-- name: Attach to OpenShift Pool
-  ignore_errors: yes
-  command: subscription-manager attach --pool={{ openshift_pool_id }}
-- name: enable Gluster repos
+- name: enable gluster repos
   command: subscription-manager repos --enable="rh-gluster-3-for-rhel-7-server-rpms"

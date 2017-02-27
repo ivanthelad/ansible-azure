@@ -1,6 +1,0 @@
-- name: Install Gluster packages
-  yum:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - heketi-client
