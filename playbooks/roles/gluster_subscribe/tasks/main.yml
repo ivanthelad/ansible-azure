@@ -1,6 +1,6 @@
 - name: Unregister subscription
   ignore_errors: yes
-  command: subscription-manager remove
+  command: subscription-manager remove --all
 - name: Attach to gluster pool
   ignore_errors: yes
   command: subscription-manager attach --pool={{ openshift_pool_id }}
