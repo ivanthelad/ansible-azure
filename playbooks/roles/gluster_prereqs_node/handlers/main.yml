@@ -1,0 +1,3 @@
+- name: reload iptables
+  command: systemctl reload iptables
+  ignore_errors: yes
