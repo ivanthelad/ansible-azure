@@ -1,3 +1,5 @@
+- name: Delete storage project
+  command:  oc delete project {{project_name}}
 - name: Create storage project
   command:  oc adm new-project {{project_name}} --node-selector=""
   tags: gluster-install

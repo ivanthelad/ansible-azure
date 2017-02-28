@@ -6,27 +6,27 @@
     - heketi-client
 - name: Gluster IP tables port 24007
   lineinfile:
-    path: /etc/sysconfig/iptables
+    dest: /etc/sysconfig/iptables
     state: present
-    insertafter: 'COMMIT'
+    insertbefore: 'COMMIT'
     line: '-A OS_FIREWALL_ALLOW -p tcp -m state --state NEW -m tcp --dport 24007 -j ACCEPT'
 - name: Gluster IP tables port 24008
   lineinfile:
-    path: /etc/sysconfig/iptables
+    dest: /etc/sysconfig/iptables
     state: present
-    insertafter: 'COMMIT'
+    insertbefore: 'COMMIT'
     line: '-A OS_FIREWALL_ALLOW -p tcp -m state --state NEW -m tcp --dport 24008 -j ACCEPT'
 - name: Gluster IP tables port 2222
   lineinfile:
-    path: /etc/sysconfig/iptables
+    dest: /etc/sysconfig/iptables
     state: present
-    insertafter: 'COMMIT'
+    insertbefore: 'COMMIT'
     line: '-A OS_FIREWALL_ALLOW -p tcp -m state --state NEW -m tcp --dport 2222 -j ACCEPT'
 - name: Gluster IP tables port 49152:49664
   lineinfile:
-    path: /etc/sysconfig/iptables
+    dest: /etc/sysconfig/iptables
     state: present
-    insertafter: 'COMMIT'
+    insertbefore: 'COMMIT'
     line: '-A OS_FIREWALL_ALLOW -p tcp -m state --state NEW -m multiport --dports 49152:49664 -j ACCEPT'
   notify:
   - reload iptables
