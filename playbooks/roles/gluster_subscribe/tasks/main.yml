@@ -1,2 +1,5 @@
+- name: Attach to gluster pool
+  ignore_errors: yes
+  command: subscription-manager attach --pool={{ openshift_pool_id }}
 - name: enable gluster repos
   command: subscription-manager repos --enable="rh-gluster-3-for-rhel-7-server-rpms"
