@@ -47,6 +47,7 @@ openshift_pool_id: XXXXXXXXXXX
 
 #### For Gluster storage ####
 install_storage: true
+storage_disks: 1
 
 #### For RHMAP storage ####
 install_rhmap: false

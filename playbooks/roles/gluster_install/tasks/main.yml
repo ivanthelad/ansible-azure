@@ -1,15 +1,24 @@
-- name: Delete storage project
-  command:  oc delete project {{project_name}}
 - name: Create storage project
   command:  oc adm new-project {{project_name}} --node-selector=""
+  ignore_errors: yes
   tags: gluster-install
 - name: Modify scc
-  command: oc adm policy add-scc-to-user privileged -z default
+  command: oc adm policy add-scc-to-user privileged -z default -n {{project_name}}
   tags: gluster-install
 - name: Create topology file
   template:
     src: topology.j2
     dest: "{{topology_file}}"
+- name: Hack etc hosts file for heketi deployer
+  lineinfile:
+    dest: /etc/hosts
+    state: present
+    line: "{{ routerpublicip }} deploy-heketi-{{project_name}}.{{ routerpublicip }}.xip.io"
+- name: Hack etc hosts file for heketi
+  lineinfile:
+    dest: /etc/hosts
+    state: present
+    line: "{{ routerpublicip }} heketi-{{project_name}}.{{ routerpublicip }}.xip.io"  
 - name: Deploy Gluster
   command: "cns-deploy -n {{project_name}}  -y -c oc -g {{topology_file}}"
   tags: gluster-install

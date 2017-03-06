@@ -421,7 +421,7 @@
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
  ## simple nodes
-        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/storage-avail.json"
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/storage-avail-{{storage_disks}}.json"
         #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azurestoragenodes_async
