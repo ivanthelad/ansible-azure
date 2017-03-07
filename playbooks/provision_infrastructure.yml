@@ -262,7 +262,7 @@
             value: "{{ item.value.datadisksize | default('60') }}"
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
-        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/masters-avail.json"
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/masters-avail-nodisks.json"
         #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
