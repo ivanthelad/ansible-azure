@@ -29,12 +29,6 @@
     "vmSize": {
       "type": "string"
     },
-    "dataDiskSize": {
-      "type": "string"
-    },
-    "storageDiskSize": {
-      "type": "string"
-    },
     "adminUsername": {
       "type": "string"
     },
