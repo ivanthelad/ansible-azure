@@ -1,0 +1,4 @@
+- debug: msg=" Attaching disk to VM "
+- name: Attach disk to VM
+  command: "azure vm disk attach-new -g  {{resource_group_name}} {{item.value.name}} {{item.value.datadisksize}} "
+  with_dict: "{{ machines }}"

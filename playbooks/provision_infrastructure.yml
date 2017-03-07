@@ -471,6 +471,21 @@
 
 - hosts: localhost
   connection: localhost
+  tasks:
+    - name: Azure CLI telemetrics off
+      command: 'azure telemetry --disable'
+    - name: Azure Login
+      command: "azure login -u {{ ad_username }} -p {{ ad_password }}"
+  roles:
+    - { role: azuredisk, machines: "{{ masters }}" }
+    - { role: azuredisk, machines: "{{ nodes }}" }
+    - { role: azuredisk, machines: "{{ storage }}" }
+    - { role: azuredisk, machines: "{{ infranodes }}" }
+#      with_nested:
+#      - "{{storage_disks}}"
+#      - "{{storage}}"
+- hosts: localhost
+  connection: localhost
   roles:
      - { role: tagvm, machines: "{{ masters }}" }
      - { role: tagvm, machines: "{{ nodes }}" }
