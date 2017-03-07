@@ -30,7 +30,7 @@
 - include: configure_gluster.yml
   when:
   - install_storage is defined
-  - install_srorage
+  - install_storage
 - include: configure_rhnmapstorage.yml
   when:
   - install_rhmap is defined
