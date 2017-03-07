@@ -202,7 +202,20 @@
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+            {
+              "caching": "None",
+              "createOption": "Empty",
+              "diskSizeGB": "[parameters('dataDiskSize')]",
+              "lun": 0,
+              "name": "[parameters('vmName')]",
+              "vhd": {
+                "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('sa')), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), '_datadisk1.vhd')]"
+
+              }
+            }
+          ]
         },
         "networkProfile": {
           "networkInterfaces": [

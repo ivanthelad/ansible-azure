@@ -458,30 +458,10 @@
       retries: 900
       with_items: "{{ azurestoragenodes_async.results }}"
 
-#    async: 7200
-#    poll: 0
-
-
     - debug: msg="the value of (MASTERS)azuremasternodes {{ azuremasternodes }}"
     - debug: msg="the value of (NODES)azurenodes {{ azurenodes }}"
     - debug: msg="the value of (STORAGE NODES)azurestoragenodes {{ azurestoragenodes }}"
     - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
-
-- hosts: localhost
-  connection: localhost
-  tasks:
-    - name: Azure CLI telemetrics off
-      command: 'azure telemetry --disable'
-    - name: Azure Login
-      command: "azure login -u {{ ad_username }} -p {{ ad_password }}"
-  roles:
-    - { role: azure_datadisk, machines: "{{ masters }}" }
-    - { role: azure_datadisk, machines: "{{ nodes }}" }
-    - { role: azure_datadisk, machines: "{{ storage }}" }
-    - { role: azure_datadisk, machines: "{{ infranodes }}" }
-#      with_nested:
-#      - "{{storage_disks}}"
-#      - "{{storage}}"
 - hosts: localhost
   connection: localhost
   roles:

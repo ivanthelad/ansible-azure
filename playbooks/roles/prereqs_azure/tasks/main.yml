@@ -35,5 +35,16 @@
   notify: disable swap
 - name: upgrade all packages in prereqs
   yum: name=* state=latest
+    ##### Start Hack to determin storage device #####
+- shell: findmnt -no SOURCE
+  register: sdccheck
+- debug: msg="The /dev/sdc is already in use. This is because microsoft has the /mnt/resource temp directory  which ordinarly should be using the device /dev/sdb sometimes can be mounted under  /dev/sdc  "
+  when: sdccheck.stdout.find('sdc') != -1
+- set_fact:
+    docker_storage_device: "/dev/sdb"
+  when: sdccheck.stdout.find('sdc') != -1
+- debug: msg="Ok new device set, docker_storage_device={{docker_storage_device}}"
+    ##### End Hack to determin storage device #####
+
 - name: creating new LVM volume group
-  lvg: vg={{ create_vgname }} pvs=/dev/sdc state=present
+  lvg: vg={{ create_vgname }} pvs={{ docker_storage_device }} state=present
