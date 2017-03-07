@@ -262,7 +262,7 @@
             value: "{{ item.value.datadisksize | default('60') }}"
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
-        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/masters-avail-nodisks.json"
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/masters-avail.json"
         #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/masters-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
@@ -318,7 +318,7 @@
             value: "{{ item.value.datadisksize | default('60') }}"
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
-        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/infranode-avail-nodisks.json"
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/infranode-avail.json"
         #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async
@@ -369,7 +369,7 @@
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
  ## simple nodes
-        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/nodes-avail-nodisks.json"
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/nodes-avail.json"
         #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azurenodes_async
@@ -419,7 +419,7 @@
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
  ## simple nodes
-        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/storage-avail-nodisks.json"
+        template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/storage-avail.json"
         #template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azurestoragenodes_async
