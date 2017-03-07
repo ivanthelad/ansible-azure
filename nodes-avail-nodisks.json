@@ -2,24 +2,34 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "vmName": {
+
+
+    "availabilitySetName": {
       "type": "string"
     },
-    "dnsName": {
+
+
+    "vmName": {
       "type": "string"
     },
     "tags": {
       "type": "object",
       "defaultValue": {
         "region": "NorthEurope",
-        "zone": "infra",
-        "stage": "dev"
+        "zone": "zone1",
+        "type": "apps"
       }
+    },
+    "masterKey": {
+      "type": "string"
     },
     "virtualNetworkName": {
       "type": "string"
     },
     "vmSize": {
+      "type": "string"
+    },
+    "dataDiskSize": {
       "type": "string"
     },
     "adminUsername": {
@@ -31,12 +41,15 @@
     "adminPassword": {
       "type": "securestring"
     },
+
+
     "sshKeyData": {
       "type": "string",
       "metadata": {
         "description": "SSH rsa public key file as a string."
       }
     },
+
     "image": {
       "type": "string",
       "allowedValues": [
@@ -47,16 +60,28 @@
       "metadata": {
         "description": "OS to use. Centos or Redhat Enterprise Linux"
       }
-    }
+    }    ,
+        "storageType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+              "Premium_LRS",
+              "Standard_LRS"
+            ],
+            "metadata": {
+              "description": "Type of storage:Premium (SSD) or Standard"
+            }
+        }
   },
   "variables": {
+
+
     "apiVersion": "2015-06-15",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "storageName": "[concat(uniqueString(resourceGroup().id), parameters('vmName'))]",
     "location": "[resourceGroup().location]",
     "sa": "[variables('storageName')]",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-    "subnetName": "parameters('subnetName')",
     "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
     "centos": {
       "publisher": "Openlogic",
@@ -67,12 +92,29 @@
     "rhel": {
       "publisher": "RedHat",
       "offer": "RHEL",
-      "sku": "7.2",
+      "sku": "7.3",
       "version": "latest"
     },
-    "vhdStorageType": "Standard_LRS"
+    "imageReference": "[variables(parameters('image'))]",
+
+    "vhdStorageType": "[parameters('storageType')]"
   },
   "resources": [
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[parameters('availabilitySetName')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "platformFaultDomainCount": "3",
+        "platformUpdateDomainCount": "5"
+      }
+    },
+
+
+
+
+
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageName')]",
@@ -93,28 +135,19 @@
       "tags": {
         "displayName": "NetworkInterface"
       },
-      "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', concat(parameters('vmName'), 'pip'))]",
-        "[concat('Microsoft.Network/networkSecurityGroups/', concat(parameters('vmName'), 'nsg'))]"
-      ],
+
       "properties": {
         "ipConfigurations": [
           {
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), 'pip'))]"
-              },
               "subnet": {
                 "id": "[variables('subnetRef')]"
               }
             }
           }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName'), 'nsg'))]"
-        }
+        ]
       }
     },
     {
@@ -122,22 +155,25 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "VirtualMachine",
-        "openshift": "3.2",
-        "region": "[parameters('tags').region]",
-        "zone": "[parameters('tags').zone]",
-        "stage": "[parameters('tags').stage]"
-      },
+
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+        "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+
+
 
       ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
+
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
+
+        },
+
         "osProfile": {
           "computerName": "[parameters('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
@@ -148,34 +184,25 @@
                 {
                   "path": "[variables('sshKeyPath')]",
                   "keyData": "[parameters('sshKeyData')]"
+                },
+                {
+                  "path": "[variables('sshKeyPath')]",
+                  "keyData": "[parameters('masterKey')]"
                 }
-
               ]
             }
           }
         },
         "storageProfile": {
-          "imageReference": "[variables('rhel')]",
+          "imageReference": "[variables('imageReference')]",
           "osDisk": {
             "name": "osdisk",
             "vhd": {
-              "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '.vhd')]"
+              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('sa')), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), 'osdisk.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          },
-          "dataDisks": [
-            {
-              "caching": "None",
-              "createOption": "Empty",
-              "diskSizeGB": "128",
-              "lun": 0,
-              "name": "[parameters('vmName')]",
-              "vhd": {
-                "uri": "[concat('http://', variables('sa'), '.blob.core.windows.net/openshiftvmachines/', parameters('vmName'), '_datadisk1.vhd')]"
-              }
-            }
-          ]
+          }
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -185,70 +212,8 @@
           ]
         }
       }
-    },
-    {
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[concat(parameters('vmName'), 'nsg')]",
-      "tags": {
-        "displayName": "NetworkSecurityGroup"
-      },
-      "apiVersion": "[variables('apiVersion')]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "securityRules": [
-          {
-            "name": "default-allow-ssh",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 1000,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "default-allow-openshift-master",
-            "properties": {
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "8443",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 2000,
-              "direction": "Inbound"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(parameters('vmName'), 'pip')]",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "PublicIPAddress"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Static",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsName')]"
-        }
-      }
     }
   ],
   "outputs": {
-    "fqdn": {
-      "type": "string",
-      "value": "[reference(concat(parameters('vmName'), 'pip')).dnsSettings.fqdn]"
-    },
-    "pip": {
-      "type": "string",
-      "value": "[reference(concat(parameters('vmName'), 'pip')).ipAddress]"
-    }
   }
 }

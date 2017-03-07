@@ -1,0 +1,388 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+
+
+    "availabilitySetName": {
+      "type": "string"
+    },
+
+
+    "vmName": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {
+        "region": "NorthEurope",
+        "zone": "apps",
+        "type": "apps"
+      }
+    },
+    "masterKey": {
+      "type": "string"
+    },
+    "virtualNetworkName": {
+      "type": "string"
+    },
+    "vmSize": {
+      "type": "string"
+    },
+    "dataDiskSize": {
+      "type": "string"
+    },
+    "adminUsername": {
+      "type": "string"
+    },
+    "subnetName": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
+
+    "loadBalancer": {
+      "type": "string"
+    },
+    "publicip": {
+      "type": "string"
+    },
+    "internalLoadbalancerip": {
+      "type": "string"
+    },
+    "sshKeyData": {
+      "type": "string",
+      "metadata": {
+        "description": "SSH rsa public key file as a string."
+      }
+    },
+
+    "image": {
+      "type": "string",
+      "allowedValues": [
+        "centos",
+        "rhel"
+      ],
+      "defaultValue": "centos",
+      "metadata": {
+        "description": "OS to use. Centos or Redhat Enterprise Linux"
+      }
+    }
+    ,
+       "storageType": {
+           "type": "string",
+           "defaultValue": "Standard_LRS",
+           "allowedValues": [
+             "Premium_LRS",
+             "Standard_LRS"
+           ],
+           "metadata": {
+             "description": "Type of storage:Premium (SSD) or Standard"
+           }
+       }
+  },
+  "variables": {
+
+    "PublicIP-name" : "[parameters('publicip')]",
+    "loadbalancer-name" : "[concat(parameters('loadBalancer'),'loadbalancername')]",
+    "loadbalancer-name2" : "[concat(parameters('loadBalancer'),'loadbalancername2')]",
+
+    "backend-address-pool-name" : "[concat(parameters('loadBalancer'),'backendpool')]",
+
+    "apiVersion": "2015-06-15",
+    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
+    "storageName": "[concat(uniqueString(resourceGroup().id), parameters('vmName'))]",
+    "location": "[resourceGroup().location]",
+    "sa": "[variables('storageName')]",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+    "internalLoadbalancerip" : "[parameters('internalLoadbalancerip')]",
+    "centos": {
+      "publisher": "Openlogic",
+      "offer": "CentOS",
+      "sku": "7.2",
+      "version": "latest"
+    },
+    "rhel": {
+      "publisher": "RedHat",
+      "offer": "RHEL",
+      "sku": "7.3",
+      "version": "latest"
+    },
+    "imageReference": "[variables(parameters('image'))]",
+
+    "vhdStorageType": "[parameters('storageType')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[parameters('availabilitySetName')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "platformFaultDomainCount": "3",
+        "platformUpdateDomainCount": "5"
+      }
+    },
+
+
+    {
+      "type": "Microsoft.Network/loadBalancers",
+      "name": "[variables('loadbalancer-name')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "Load Balancer API"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEnd",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP-name'))]"
+              }
+
+            }
+          }
+
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('backend-address-pool-name')]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "Http",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name')), '/frontendIPConfigurations/LoadBalancerFrontEnd')]"
+              },
+              "frontendPort": 443,
+              "backendPort": 443,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "loadDistribution": "Default",
+              "backendAddressPool": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name')), '/backendAddressPools/', variables('backend-address-pool-name'))]"
+              },
+              "probe": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name')), '/probes/TCP-ProbeHTTP')]"
+
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "TCP-ProbeHTTP",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 443,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ],
+        "inboundNatRules": [ ],
+        "outboundNatRules": [ ],
+        "inboundNatPools": [ ]
+      }
+
+    },
+    {
+      "type": "Microsoft.Network/loadBalancers",
+      "name": "[variables('loadbalancer-name2')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "Load Balancer API"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+
+          {
+            "name": "LoadBalancerFrontback",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('internalLoadbalancerip')]",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('backend-address-pool-name')]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "Http",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name2')), '/frontendIPConfigurations/LoadBalancerFrontback')]"
+              },
+              "frontendPort": 443,
+              "backendPort": 443,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 4,
+              "protocol": "Tcp",
+              "loadDistribution": "Default",
+              "backendAddressPool": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name2')), '/backendAddressPools/', variables('backend-address-pool-name'))]"
+              },
+              "probe": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name2')), '/probes/TCP-ProbeHTTP')]"
+
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "TCP-ProbeHTTP",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 443,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
+            }
+          }
+        ],
+        "inboundNatRules": [ ],
+        "outboundNatRules": [ ],
+        "inboundNatPools": [ ]
+      }
+
+    },
+
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageName')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "StorageAccount"
+      },
+      "properties": {
+        "accountType": "[variables('vhdStorageType')]"
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('vmName'), 'nic')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NetworkInterface"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('loadbalancer-name'))]"
+
+
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadbalancer-name')), '/backendAddressPools/', variables('backend-address-pool-name'))]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[parameters('vmName')]",
+      "location": "[resourceGroup().location]",
+
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('vmName'), 'nic'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+        "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+
+
+
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
+
+        },
+
+
+        "osProfile": {
+          "computerName": "[parameters('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": "true",
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[variables('sshKeyPath')]",
+                  "keyData": "[parameters('sshKeyData')]"
+                },
+                {
+                  "path": "[variables('sshKeyPath')]",
+                  "keyData": "[parameters('masterKey')]"
+                }
+              ]
+            }
+          }
+        },
+        "storageProfile": {
+          "imageReference": "[variables('imageReference')]",
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('sa')), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), 'osdisk.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "caching": "None",
+              "createOption": "Empty",
+              "diskSizeGB": "128",
+              "lun": 0,
+              "name": "[parameters('vmName')]",
+              "vhd": {
+                "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('sa')), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), '_datadisk1.vhd')]"
+
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName'), 'nic'))]"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+  }
+}

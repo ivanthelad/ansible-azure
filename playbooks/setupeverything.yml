@@ -15,30 +15,30 @@
         - mastercount  != '5'
 
 - include: provision_infrastructure.yml
-- include: perform_prereqs_origin.yml
-  when:
-  - openshiftorigin is defined
-  - openshiftorigin
-- include: perform_prereqs.yml
-  when:
-  - openshiftorigin is defined
-  - not openshiftorigin
-- include: install_openshift.yml
-- include: metrics.yml
-- include: logging.yml
-- include: restart.yml
-- include: configure_gluster.yml
-  when:
-  - install_storage is defined
-  - install_storage
-- include: configure_rhnmapstorage.yml
-  when:
-  - install_rhmap is defined
-  - install_rhmap
-- include: configure.rhmap.yaml
-  when:
-  - install_rhmap is defined
-  - install_rhmap
+#- include: perform_prereqs_origin.yml
+#  when:
+#  - openshiftorigin is defined
+#  - openshiftorigin
+#- include: perform_prereqs.yml
+#  when:
+#  - openshiftorigin is defined
+#  - not openshiftorigin
+#- include: install_openshift.yml
+#- include: metrics.yml
+#- include: logging.yml
+#- include: restart.yml
+#- include: configure_gluster.yml
+#  when:
+#  - install_storage is defined
+#  - install_storage
+#- include: configure_rhnmapstorage.yml
+#  when:
+#  - install_rhmap is defined
+#  - install_rhmap
+#- include: configure.rhmap.yaml
+#  when:
+#  - install_rhmap is defined
+#  - install_rhmap
 - hosts: localhost
   connection: local
   name: Success message
