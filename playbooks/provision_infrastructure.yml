@@ -416,8 +416,6 @@
             value: "nodeAvailSet"
           dataDiskSize:
             value: "{{ item.value.datadisksize | default('60') }}"
-          storageDiskSize:
-            value: "{{ item.value.storagedisksize | default('256') }}"
           storageType:
             value: "{{ item.value.storagtype | default('Standard_LRS') }}"
  ## simple nodes
@@ -477,10 +475,10 @@
     - name: Azure Login
       command: "azure login -u {{ ad_username }} -p {{ ad_password }}"
   roles:
-    - { role: azuredisk, machines: "{{ masters }}" }
-    - { role: azuredisk, machines: "{{ nodes }}" }
-    - { role: azuredisk, machines: "{{ storage }}" }
-    - { role: azuredisk, machines: "{{ infranodes }}" }
+    - { role: azure_datadisk, machines: "{{ masters }}" }
+    - { role: azure_datadisk, machines: "{{ nodes }}" }
+    - { role: azure_datadisk, machines: "{{ storage }}" }
+    - { role: azure_datadisk, machines: "{{ infranodes }}" }
 #      with_nested:
 #      - "{{storage_disks}}"
 #      - "{{storage}}"
