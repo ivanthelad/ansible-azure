@@ -24,8 +24,8 @@
   - openshiftorigin is defined
   - not openshiftorigin
 - include: install_openshift.yml
-#- include: metrics.yml
-#- include: logging.yml
+- include: metrics.yml
+- include: logging.yml
 - include: restart.yml
 - include: configure_gluster.yml
   when:
