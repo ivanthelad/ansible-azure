@@ -1,3 +1,5 @@
 project_name: "storage-project"
 topology_file: "/tmp/topology.json"
 config_file: "/tmp/heketi.json"
+secret_file: "/tmp/glusterfs-secret.yaml"
+storageclass_file: "/tmp/gluster-storageclass.yaml"
