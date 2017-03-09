@@ -18,7 +18,36 @@
   lineinfile:
     dest: /etc/hosts
     state: present
-    line: "{{ routerpublicip }} heketi-{{project_name}}.{{ routerpublicip }}.xip.io"  
+    line: "{{ routerpublicip }} heketi-{{project_name}}.{{ routerpublicip }}.xip.io"
 - name: Deploy Gluster
   command: "cns-deploy -n {{project_name}}  -y -c oc -g {{topology_file}}"
   tags: gluster-install
+- name: Remove deployment triggers
+  command: "oc set triggers dc/heketi --from-config --remove -n {{project_name}} "
+  tags: gluster-post-install
+- name: Create heketi config
+  template:
+    src: heketi.j2
+    dest: "{{config_file}}"
+- name: Create configmap for heketi.json
+  command: "oc create configmap heketiconfig --from-file={{ config_file }} -n {{project_name}} "
+  tags: gluster-post-install
+- name: Add configmap to heketi DC
+  command: "oc volume dc/heketi --add --name=config -t configmap --configmap-name=heketiconfig -m /etc/heketi -n {{project_name}} "
+  tags: gluster-post-install
+- name: Create glusterfs secret yaml
+  template:
+    src: glusterfs-secret.j2
+    dest: "{{secret_file}}"
+  tags: gluster-post-install
+- name: Create heketi secrets object
+  command: "oc create -f {{ secret_file }}"
+  tags: gluster-post-install
+- name: Create glusterfs storage class yaml
+  template:
+    src: glusterfs-storageclass.j2
+    dest: "{{ storageclass_file }}"
+  tags: gluster-post-install
+- name: Create storage class object
+  command: "oc create -f {{ storageclass_file }} -n {{ project_name }} "
+  tags: gluster-post-install
