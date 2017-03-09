@@ -49,6 +49,9 @@ openshift_pool_id: XXXXXXXXXXX
 install_storage: true
 storage_disks:
   - 128
+storage_user_key: glusteruser
+storage_admin_key: glusteruser
+storage_api_user: admin
 
 #### For RHMAP storage ####
 install_rhmap: false

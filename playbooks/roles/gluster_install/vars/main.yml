@@ -1,2 +1,3 @@
 project_name: "storage-project"
 topology_file: "/tmp/topology.json"
+config_file: "/tmp/heketi.json"

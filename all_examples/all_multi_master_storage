@@ -42,7 +42,11 @@ create_lvsize: '80%FREE'
 
 #### For Gluster storage ####
 install_storage: true
-storage_disks: 1
+storage_disks:
+  - 128
+storage_user_key: glusteruser
+storage_admin_key: glusteruser
+storage_api_user: admin
 
 #### For RHMAP storage ####
 install_rhmap: false

@@ -1,0 +1,12 @@
+apiVersion: storage.k8s.io/v1beta1
+kind: StorageClass
+metadata:
+  name: gluster-container
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+parameters:
+  resturl: "http://heketi-{{ project_name }}.{{ routerpublicip }}.io"
+  restuser: {{ storage_api_user }}
+  secretName: heketi-secret
+  secretNamespace: default
+provisioner: kubernetes.io/glusterfs
