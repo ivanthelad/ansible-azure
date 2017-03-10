@@ -1,5 +1,5 @@
 #---
-### This example is a single master with infra and app nodes designed for RHMAP core
+### This example is a single master with 1 infra nodes and 1 app nodes. Its the smallest 'production' like cluster you can provision
 openshiftversion: 3.4
 openshiftorigin: false
 resource_group_name: pirates
@@ -7,9 +7,6 @@ resource_group_name: pirates
 ad_username: XXXXXXXXXXXXXXXXXXX
 ### Azure AD password
 ad_password: XXXXXXXXXXXXXXXXXXX
-client_id: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-secret: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-tenant: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 #resource_group_name: oscp
 #### Azure Subscription ID
 subscriptionID: "XXXXXXXXXXXXXXXXXXX"
@@ -22,8 +19,6 @@ adminPassword: XXx_please_change_me_xXX
 sshkey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCdC20wMbD9vmCPDD6VP6u3eYHCznqKOm+aPZi3EgUZIM7r91X7MFzuVS5U6gHXnOa4m7yh26zceh68T6FqIKby1WAGTShLFDCU6czEe0Pa5yMAV6Q4dQ34HyioTIu4HmXi4504ZxneLNJP2AHc+eJkV0ANcXIHSqoaleVyWt7HLNltFNO349GZMj01TSchBYzqZpYqSGIDsTIXwF6+/NosMLfmg6WF0J4M7A34Gn/YTXD8r2oWeSs3O+MdTMH2Zdt4j9Q8MPCgic6xDPiONpCvEdt5pkzrwaK9ZJEV4wZsV7CSy+5a+poOl/a/5F+Mj3Fc2IRJiDkScuV07qWthKH
 
 
-### can also be centos
-image: "rhel"
 # see https://azure.microsoft.com/en-us/documentation/articles/cloud-services-sizes-specs/
 ### Size for the master
 master_vmSize: Standard_DS3_v2
@@ -45,19 +40,29 @@ filesystem: 'xfs'
 create_lvsize: '80%FREE'
 #create_lvsize: '2g'
 
-#### For Gluster storage ####
-install_storage: false
-
-#### For RHMAP storage ####
-install_rhmap: true
-
-#### For Red Hat SSO ####
-install_sso: false
-
 #### subscription information
 rh_subcription_user: XXXXXXXXXXX
 rh_subcription_pass: XXXXXXXXXXX
 openshift_pool_id: XXXXXXXXXXX
+
+#### For Gluster storage ####
+install_storage: true
+storage_disks:
+  - 128
+storage_user_key: glusteruser
+storage_admin_key: glusteruser
+storage_api_user: admin
+
+#### For RHMAP storage ####
+install_rhmap: false
+
+#### For Red Hat SSO ####
+install_sso: true
+sso_keypairdname: CN=jsmith,OU=IT,O=example.com,L=Somewhere,C=Country
+sso_apptemplate: sso70-mysql-persistent
+#sso_apptempalte: sso70-postgresql
+sso_realm: azure
+
 
 ########### list of node  ###########
 ### Warning, you currently cannot create more infra nodes ####
@@ -87,18 +92,7 @@ masters:
       region: "{{ region }}"
       zone: zone1
       type: infra
-#  master2:
-#    name: master2
-#    tags:
-#      region: northeurope
-#      zone: infra
-#      stage: none
-#  master3:
-#    name: master3
-#    tags:
-#      region: northeurope
-#      zone: infra
-#      stage: none
+      infra: "true"
 
 infranodes:
   infranode1:
@@ -110,28 +104,8 @@ infranodes:
       region: "{{ region }}"
       zone: zone1
       infra: "true"
-      type: core
       infratype: registry
-  infranode2:
-    name: infranode2
-    datadisksize: 80
-    machinesize: Standard_D2_v2
-    storagtype: Standard_LRS
-    tags:
-      region: "{{ region }}"
-      zone: zone2
-      infra: "true"
-      type: core
-  infranode3:
-    name: infranode3
-    datadisksize: 80
-    machinesize: Standard_D2_v2
-    storagtype: Standard_LRS
-    tags:
-      region: "{{ region }}"
-      zone: zone3
-      infra: "true"
-      type: core
+
 nodes:
   node1:
     name: node1
@@ -143,35 +117,45 @@ nodes:
       zone: zone1
       infra: "false"
       stage: dev
-      type: mbaas
-      mbaas_id: mbaas1
 
-  node2:
-    name: node2
-    datadisksize: 80
+storage:
+  storage1:
+    name: storage1
+    datadisksize: 40
     machinesize: Standard_D2_v2
     storagtype: Standard_LRS
+    storagedisksize: 256
     tags:
       region: "{{ region }}"
-      zone: zone2
       infra: "false"
       stage: dev
-      type: mbaas
-      mbaas_id: mbaas2
-
-
-  node3:
-    name: node3
-    datadisksize: 80
+      type: storage
+      zone: 1
+  storage2:
+    name: storage2
+    datadisksize: 40
     machinesize: Standard_D2_v2
     storagtype: Standard_LRS
+    storagedisksize: 256
     tags:
       region: "{{ region }}"
-      zone: zone3
       infra: "false"
       stage: dev
-      type: mbaas
-      mbaas_id: mbaas3
+      type: storage
+      zone: 2
+  storage3:
+    name: storage3
+    datadisksize: 40
+    machinesize: Standard_D2_v2
+    storagtype: Standard_LRS
+    storagedisksize: 256
+    tags:
+      region: "{{ region }}"
+      infra: "false"
+      stage: dev
+      type: storage
+      zone: 3
+
 #i#nodes:
 #  name: node1
 #  name: node2

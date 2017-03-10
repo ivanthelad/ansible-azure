@@ -1,0 +1,93 @@
+- hosts: gatewayed-masters[0]
+  gather_facts: false
+  vars:
+    ssoproject: sso-project
+    reqsubj: "/CN=sso-on-ocp.ca"
+    keypairdname: "{{ sso_keypairdname | default('CN=jsmith,OU=IT,O=example.com,L=Somewhere,C=Country') }}"
+    ssoadminusername: admin
+    ssoserviceusername: manager
+    ssorealm: "{{ sso_realm | default('azure') }}"
+    routerdns: "{{ publicjumpip }}.xip.io"
+  tasks:
+  - name: Cleanup OCP stuff
+    command: "{{item}}"
+    ignore_errors: true
+    with_items:
+    - "oc delete project {{ssoproject}}"
+  - name: Cleanup files
+    file:
+      state: absent
+      path: "{{item}}"
+    with_items:
+    - defaultStore.keystore
+    - jgroups.jceks
+    - sso-https.jks
+    - server.keystore
+    - sso.crt
+    - sso.csr
+    - truststore.jks
+    - xpaas.crt
+    - xpaas.key
+    - xpaas.srl
+    - certreq.csr
+  - name: Install Java and keytool
+    yum: name=java state=latest
+  - name: Password for keystore
+    command: openssl rand -base64 12
+    register: storepass_command
+  - set_fact:
+      storepass: "{{ storepass_command.stdout }}"
+  - name: Password for admin user
+    command: openssl rand -base64 12
+    register: ssoadminpass_command
+  - set_fact:
+      ssoadminpass: "{{ ssoadminpass_command.stdout }}"
+  - name: Password for service user
+    command: openssl rand -base64 12
+    register: ssomanagerpass_command
+  - set_fact:
+      ssomanagerpass: "{{ ssomanagerpass_command.stdout }}"
+  - name: Create key pair - keycloak
+    command: "keytool -genkeypair -alias keycloak -keyalg RSA -keystore server.keystore -storepass {{ storepass }} -keypass {{ storepass }} -dname '{{ keypairdname }}'"
+  - name: Create certreq keycloak
+    command: 'keytool -certreq -keyalg RSA -alias keycloak -storepass {{ storepass }} -keystore server.keystore -file certreq.csr -keypass {{ storepass }}'
+  - name: Create sec key keycloakjgroups
+    command: 'keytool -genseckey -alias keycloakjgroups -keypass {{ storepass }} -storepass {{ storepass }} -keyalg Blowfish -keysize 56 -keystore defaultStore.keystore -storetype JCEKS'
+  - name: Create project for SSO
+    command: 'oc adm new-project "{{ssoproject}}" --display-name="SSO Project" --node-selector=""'
+  - name: Create service account
+    command: "oc create serviceaccount sso-service-account -n {{ssoproject}}"
+  - name: Add view role to service account
+    command: "oc policy add-role-to-user view system:serviceaccount:{{ ssoproject }}:sso-service-account -n {{ssoproject}}"
+  - name: Execute openssl req
+    command: "openssl req -new -newkey rsa:4096 -x509 -keyout xpaas.key -out xpaas.crt -days 365 -subj '{{ reqsubj }}' -batch -nodes"
+  - name: Create key pair - sso-https-key
+    command: "keytool -genkeypair -keyalg RSA -keysize 2048 -dname 'CN=secure-sso-{{ssoproject}}.{{ routerdns }}' -alias sso-https-key -keystore sso-https.jks -storepass {{ storepass }} -keypass {{ storep
+ass }}"
+  - name: Create certreq sso-https-key
+    command: "keytool -certreq -keyalg rsa -alias sso-https-key -keystore sso-https.jks -file sso.csr -storepass {{ storepass }} -keypass {{ storepass }}"
+  - name: Create sso.crt
+    command: "openssl x509 -req -CA xpaas.crt -CAkey xpaas.key -in sso.csr -out sso.crt -days 365 -CAcreateserial"
+  - name: Import xpaas.crt
+    command: "keytool -import -file xpaas.crt -alias xpaas.ca -keystore sso-https.jks -noprompt -storepass {{ storepass }}"
+  - name: Import sso.crt
+    command: "keytool -import -file sso.crt -alias sso-https-key -keystore sso-https.jks -noprompt -keypass {{ storepass }} -storepass {{ storepass }}"
+  - name: Import xpaas.crt
+    command: "keytool -import -file xpaas.crt -alias xpaas.ca -keystore truststore.jks -noprompt -keypass {{ storepass }} -storepass {{ storepass }}"
+  - name: Gen seckey jgroups
+    command: "keytool -genseckey -alias jgroups -storetype JCEKS -keystore jgroups.jceks -keypass {{ storepass }} -storepass {{ storepass }}"
+  - name: Create secrets object
+    command: "oc create secret generic sso-app-secret --from-file=jgroups.jceks --from-file=sso-https.jks --from-file=truststore.jks -n {{ssoproject}}"
+  - name: Add secrets to sa
+    command: "oc secret add sa/sso-service-account secret/sso-app-secret -n {{ssoproject}}"
+  - name: Deploy SSO
+    command: "oc new-app {{ sso_apptemplate }} -p SSO_TRUSTSTORE_PASSWORD={{ storepass }} -p SSO_TRUSTSTORE=truststore.jks -p SSO_SERVICE_PASSWORD={{ ssomanagerpass }} -p SSO_SERVICE_USERNAME={{ ssoservi
+ceusername }} -p SSO_REALM={{ ssorealm }} -p SSO_ADMIN_PASSWORD={{ ssoadminpass }} -p SSO_ADMIN_USERNAME={{ ssoadminusername }} -p VOLUME_CAPACITY=5Gi -p HOSTNAME_HTTP=sso-{{ssoproject}}.{{ routerdns }} -
+p HOSTNAME_HTTPS=secure-sso-{{ssoproject}}.{{ routerdns }} -p HTTPS_KEYSTORE=sso-https.jks -p HTTPS_KEYSTORE_TYPE=JCEKS -p JGROUPS_ENCRYPT_KEYSTORE=jgroups.jceks  -p JGROUPS_ENCRYPT_PASSWORD={{ storepass
+}} -p HTTPS_NAME=sso-https-key -p HTTPS_PASSWORD={{ storepass }} -n {{ssoproject}}"
+  - debug:
+      msg: "Store pass: {{ storepass }}"
+  - debug:
+      msg: "Admin password: {{ssoadminpass}}"
+  - debug:
+      msg: "Service password: {{ssomanagerpass}}"

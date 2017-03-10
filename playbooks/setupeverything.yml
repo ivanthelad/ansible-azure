@@ -39,6 +39,10 @@
   when:
   - install_rhmap is defined
   - install_rhmap
+- include: configure_sso.yaml
+  when:
+  - install_sso is defined
+  - install_sso
 - hosts: localhost
   connection: local
   name: Success message

@@ -61,6 +61,9 @@ storage_api_user: admin
 #### For RHMAP storage ####
 install_rhmap: false
 
+#### For Red Hat SSO ####
+install_sso: false
+
 ########### list of node  ###########
 ### Warning, you currently cannot create more infra nodes ####
 ### this will change in the future
