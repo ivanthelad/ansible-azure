@@ -46,6 +46,20 @@ For the azure creditials, i recommend created a "ansible" user instead of using 
 https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/
  - After creating a user as outlined in the above instructions. in the azure portal. go "settings"->"administrators", and then add user
 
+ ### Creating a user principle
+ It is recommended to user a user principle to provision the openshift infra.
+
+ - az login
+ - az account set --subscription="${SUBSCRIPTION_ID}"
+ - az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}"
+ This will output your appId, password, name, and tenant. The name or appId may be used for the ClientId and the password is used for Secret. where app_id = ClientId
+
+ add these properties to the config file "group_vars/all"
+ - secret: "{{ secret }}"
+ - tenant: "{{ tenant }}"
+- client_id: "{{ client_id }}"
+Important, ensure ad_username and ad_password are empty when using principle
+
 ## Update ansible,
 This ansible script uses features only found in the latest version on ansible (notable the azure plugin and the gatewayed feature )
  upgrade to ansible 2.1.0.0
