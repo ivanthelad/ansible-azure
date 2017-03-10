@@ -21,9 +21,9 @@
         state: present
         ad_user: "{{ ad_username }}"
         password: "{{ ad_password }}"
-  #      client_id: tenc0157244-5527-46e9-a379-57bf3f83050b
-  #      tenant: 806a3527-ec8c-42b7-a080-e648814b0275
-  #      tenant: "72f988bf-86f1-41af-91ab-2d7cd011db47"
+        secret: "{{ secret }}"
+        tenant: "{{ tenant }}"
+        client_id: "{{ client_id }}"
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
         template_link: "{{ template_root | default('https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/') }}/infra-avail.json"
