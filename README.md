@@ -244,3 +244,56 @@ to debug stuff on nodes your first need to ssh to the jump node. ssh $adminUsern
 Since the openshift install is execute async on the jump node we cannot see the progress of the install.
 To following the progress of the install, You can login using your user ivan@23.100.53.57 and tail the log file /tmp/ansible.log.
 TODO: write ansible check to distinguish between failure and success of the install.
+
+## GlusterFS storage
+NOTE: Community version not yet supported and OCP & Gluster repos need to be in same subsctiption
+Installer support single disk 3+ host GlusterFS installation. If you would like to install Gluster add following to all file.
+
+Basic settings with 128Gi disk for storage
+```
+install_storage: true
+storage_disks:
+  - 128
+storage_user_key: glusteruser
+storage_admin_key: glusteruser
+storage_api_user: admin
+```
+
+See storage hosts definition below. If you would like to SSD disk machinesize needs to be *DS* and then storagtype Premium_LRS.
+ 
+```
+storage:
+  storage1:
+    name: storage1
+    datadisksize: 40
+    machinesize: Standard_DS2_v2
+    storagtype: Standard_LRS
+    tags:
+      region: "{{ region }}"
+      infra: "false"
+      stage: dev
+      type: storage
+      zone: 1
+  storage2:
+    name: storage2
+    datadisksize: 40
+    machinesize: Standard_DS2_v2
+    storagtype: Standard_LRS
+    tags:
+      region: "{{ region }}"
+      infra: "false"
+      stage: dev
+      type: storage
+      zone: 2
+  storage3:
+    name: storage3
+    datadisksize: 40
+    machinesize: Standard_DS2_v2
+    storagtype: Standard_LRS
+    tags:
+      region: "{{ region }}"
+      infra: "false"
+      stage: dev
+      type: storage
+      zone: 3
+ ```
