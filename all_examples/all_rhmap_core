@@ -47,7 +47,7 @@ install_storage: false
 install_rhmap: true
 
 #### For Red Hat SSO ####
-install_sso: true
+install_sso: false
 
 #### subscription information
 rh_subcription_user: XXXXXXXXXXX

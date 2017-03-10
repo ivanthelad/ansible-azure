@@ -57,7 +57,12 @@ storage_api_user: admin
 install_rhmap: false
 
 #### For Red Hat SSO ####
-install_sso: false
+install_sso: true
+sso_keypairdname: CN=jsmith,OU=IT,O=example.com,L=Somewhere,C=Country
+sso_apptemplate: sso70-mysql-persistent
+#sso_apptempalte: sso70-postgresql
+sso_realm: azure
+
 
 ########### list of node  ###########
 ### Warning, you currently cannot create more infra nodes ####

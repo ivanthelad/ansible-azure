@@ -1,14 +1,13 @@
-- hosts: localhost
+- hosts: gatewayed-masters[0]
   gather_facts: false
   vars:
     ssoproject: sso-project
     reqsubj: "/CN=sso-on-ocp.ca"
-    keypairdname: "CN=jsmith,OU=IT,O=example.com,L=Somewhere,C=Country"
+    keypairdname: "{{ sso_keypairdname | default('CN=jsmith,OU=IT,O=example.com,L=Somewhere,C=Country') }}"
     ssoadminusername: admin
     ssoserviceusername: manager
-    ssorealm: azure
-    routerdns: 13.74.13.66.xip.io
-    apptemplate: sso70-mysql-persistent
+    ssorealm: "{{ sso_realm | default('azure') }}"
+    routerdns: "{{ publicjumpip }}.xip.io"
   tasks:
   - name: Cleanup OCP stuff
     command: "{{item}}"
@@ -30,7 +29,7 @@
     - xpaas.crt
     - xpaas.key
     - xpaas.srl
-    - certreq.csr 
+    - certreq.csr
   - name: Install Java and keytool
     yum: name=java state=latest
   - name: Password for keystore
@@ -82,7 +81,7 @@ ass }}"
   - name: Add secrets to sa
     command: "oc secret add sa/sso-service-account secret/sso-app-secret -n {{ssoproject}}"
   - name: Deploy SSO
-    command: "oc new-app {{ apptemplate }} -p SSO_TRUSTSTORE_PASSWORD={{ storepass }} -p SSO_TRUSTSTORE=truststore.jks -p SSO_SERVICE_PASSWORD={{ ssomanagerpass }} -p SSO_SERVICE_USERNAME={{ ssoservi
+    command: "oc new-app {{ sso_apptemplate }} -p SSO_TRUSTSTORE_PASSWORD={{ storepass }} -p SSO_TRUSTSTORE=truststore.jks -p SSO_SERVICE_PASSWORD={{ ssomanagerpass }} -p SSO_SERVICE_USERNAME={{ ssoservi
 ceusername }} -p SSO_REALM={{ ssorealm }} -p SSO_ADMIN_PASSWORD={{ ssoadminpass }} -p SSO_ADMIN_USERNAME={{ ssoadminusername }} -p VOLUME_CAPACITY=5Gi -p HOSTNAME_HTTP=sso-{{ssoproject}}.{{ routerdns }} -
 p HOSTNAME_HTTPS=secure-sso-{{ssoproject}}.{{ routerdns }} -p HTTPS_KEYSTORE=sso-https.jks -p HTTPS_KEYSTORE_TYPE=JCEKS -p JGROUPS_ENCRYPT_KEYSTORE=jgroups.jceks  -p JGROUPS_ENCRYPT_PASSWORD={{ storepass
 }} -p HTTPS_NAME=sso-https-key -p HTTPS_PASSWORD={{ storepass }} -n {{ssoproject}}"

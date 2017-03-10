@@ -52,7 +52,7 @@ storage_api_user: admin
 install_rhmap: false
 
 #### For Red Hat SSO ####
-install_sso: true
+install_sso: false
 
 
 #### subscription information
