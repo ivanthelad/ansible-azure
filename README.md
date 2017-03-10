@@ -305,7 +305,6 @@ Add following to all file if you would like to install SSO.
 ```
 install_sso: true
 sso_keypairdname: CN=jsmith,OU=IT,O=example.com,L=Somewhere,C=Country
-sso_apptemplate: sso70-mysql-persistent
 sso_apptempalte: sso70-postgresql
 sso_realm: azure
 ```
