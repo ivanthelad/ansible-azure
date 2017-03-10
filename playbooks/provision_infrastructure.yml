@@ -79,7 +79,7 @@
         deployment_name: "{{ item.value.name }}"
         parameters:
           image:
-            value: rhel
+            value: {{ image }}
           subnetName:
             value: masterSubnet
           virtualNetworkName:
@@ -245,7 +245,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: rhel
+            value: {{ image }}
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -306,7 +306,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: rhel
+            value: {{ image }} 
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -365,7 +365,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: rhel
+            value: {{ image }} 
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -418,7 +418,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: rhel
+            value: {{ image }} 
           masterKey:
             value: "{{ masterkey }}"
           tags:
