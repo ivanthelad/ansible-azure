@@ -7,6 +7,9 @@ resource_group_name: pirates
 ad_username: XXXXXXXXXXXXXXXXXXX
 ### Azure AD password
 ad_password: XXXXXXXXXXXXXXXXXXX
+client_id: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+secret: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+tenant: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 #resource_group_name: oscp
 #### Azure Subscription ID
 subscriptionID: "XXXXXXXXXXXXXXXXXXX"
@@ -19,6 +22,8 @@ adminPassword: XXx_please_change_me_xXX
 sshkey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCdC20wMbD9vmCPDD6VP6u3eYHCznqKOm+aPZi3EgUZIM7r91X7MFzuVS5U6gHXnOa4m7yh26zceh68T6FqIKby1WAGTShLFDCU6czEe0Pa5yMAV6Q4dQ34HyioTIu4HmXi4504ZxneLNJP2AHc+eJkV0ANcXIHSqoaleVyWt7HLNltFNO349GZMj01TSchBYzqZpYqSGIDsTIXwF6+/NosMLfmg6WF0J4M7A34Gn/YTXD8r2oWeSs3O+MdTMH2Zdt4j9Q8MPCgic6xDPiONpCvEdt5pkzrwaK9ZJEV4wZsV7CSy+5a+poOl/a/5F+Mj3Fc2IRJiDkScuV07qWthKH
 
 
+### can also be centos
+image: "rhel"
 # see https://azure.microsoft.com/en-us/documentation/articles/cloud-services-sizes-specs/
 ### Size for the master
 master_vmSize: Standard_DS3_v2
