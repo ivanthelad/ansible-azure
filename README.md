@@ -297,3 +297,20 @@ storage:
       type: storage
       zone: 3
  ```
+
+# Red Hat SSO (Keycloak). NOT FOR PRODUCTION
+If you need test Red Hat's SSO product you can define installer to set it up for you. Setup is not for production and will contains self signed sertificates. If you would like to use Red Hat SSO for OCP authentication follow documentation from here https://access.redhat.com/documentation/en-us/red_hat_jboss_middleware_for_openshift/3/html/red_hat_jboss_sso_for_openshift/tutorials
+
+Add following to all file if you would like to install SSO.
+```
+install_sso: true
+sso_keypairdname: CN=jsmith,OU=IT,O=example.com,L=Somewhere,C=Country
+sso_apptemplate: sso70-mysql-persistent
+sso_apptempalte: sso70-postgresql
+sso_realm: azure
+```
+
+If you need persistance storage change sso_apptemplate to sso70-mysql-persistent or sso70-postgresql-persistent but then you need to provide 5Gi PV for SSO.
+
+## Troubleshooting
+If database doesn't start fast enough SSO server startup may fail due error creating database connection pool. In this case delete sso pod and let Openshift to spin it up again.
