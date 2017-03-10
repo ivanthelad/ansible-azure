@@ -166,9 +166,6 @@
           "imageReference": "[variables('imageReference')]",
           "osDisk": {
             "name": "osdisk",
-            "vhd": {
-              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('sa')), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), '.vhd')]"
-            },
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
@@ -179,9 +176,6 @@
               "diskSizeGB": "40",
               "lun": 0,
               "name": "[parameters('vmName')]",
-              "vhd": {
-                "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('sa')), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), '_datadisk1.vhd')]"
-              }
             }
           ]
         },
