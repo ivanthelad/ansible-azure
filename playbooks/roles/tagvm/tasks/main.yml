@@ -9,6 +9,9 @@
     state: present
     ad_user: "{{ ad_username }}"
     password: "{{ ad_password }}"
+    secret: "{{ secret }}"
+    tenant: "{{ tenant }}"
+    client_id: "{{ client_id }}"
     subscription_id: "{{ subscriptionID }}"
     resource_group: "{{ resource_group_name }}"
     name: "{{ item.value.name }}"
