@@ -1,6 +1,12 @@
 # ansible-azure
 ## install azure cli client
-https://azure.microsoft.com/en-us/documentation/articles/xplat-cli-install/
+https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli
+
+Or run azure client as docker image
+
+```
+docker run -v ${HOME}:/root -it azuresdk/azure-cli-python
+```
 
 ## Configure setting  
 The following outlines the settings that need to be configured. Please ensure that your groupname is unique as this is used as public dns name for the console
