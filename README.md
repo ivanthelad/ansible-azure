@@ -54,10 +54,11 @@ https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-s
  - az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/${SUBSCRIPTION_ID}"
  This will output your appId, password, name, and tenant. The name or appId may be used for the ClientId and the password is used for Secret. where app_id = ClientId
 
- add these properties to the config file "group_vars/all"
- - secret: "{{ secret }}"
+ add these properties from principal creation output to the config file "group_vars/all"
+ - secret: "{{ password }}"
  - tenant: "{{ tenant }}"
-- client_id: "{{ client_id }}"
+ - client_id: "{{ appId }}"
+ - principal: "{{ name }}"
 Important, ensure ad_username and ad_password are empty when using principle
 
 ## Update ansible,
