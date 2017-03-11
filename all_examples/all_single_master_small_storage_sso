@@ -7,6 +7,10 @@ resource_group_name: pirates
 ad_username: XXXXXXXXXXXXXXXXXXX
 ### Azure AD password
 ad_password: XXXXXXXXXXXXXXXXXXX
+client_id: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+secret: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+tenant: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+principal: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 #resource_group_name: oscp
 #### Azure Subscription ID
 subscriptionID: "XXXXXXXXXXXXXXXXXXX"
