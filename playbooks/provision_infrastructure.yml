@@ -79,7 +79,7 @@
         deployment_name: "{{ item.value.name }}"
         parameters:
           image:
-            value: {{ image }}
+            value: "{{ image }}"
           subnetName:
             value: masterSubnet
           virtualNetworkName:
@@ -193,10 +193,10 @@
 
 
 
-- hosts: localhost
-  connection: localhost
-  roles:
-     - { role: tagvm, machines: "{{ jumphost }}" }
+#- hosts: localhost#
+#  connection: localhost
+#  roles:
+#     - { role: tagvm, machines: "{{ jumphost }}" }
 
 
 ################################################
@@ -218,6 +218,7 @@
     - name: Create Masters Deploy
       async: 7200
       poll: 0
+      when: masters is defined
       with_dict: "{{ masters }}"
       delay: 30
       retries: 1
@@ -245,7 +246,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: {{ image }}
+            value: "{{ image }}"
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -279,6 +280,7 @@
 ####Todo, dyncamically add the list of infra nodes to group
 ################################################
     - name: Create infra Nodes Deploy
+      when: infranodes is defined
       with_dict: "{{ infranodes }}"
       async: 7200
       poll: 0
@@ -306,7 +308,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: {{ image }} 
+            value: "{{ image }}"
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -340,6 +342,7 @@
     - name: Create Nodes Deploy
       async: 7200
       poll: 0
+      when: nodes is defined
       with_dict: "{{ nodes }}"
       azure_rm_deployment:
         ad_user: "{{ ad_username }}"
@@ -365,7 +368,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: {{ image }} 
+            value: "{{ image }}"
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -393,6 +396,7 @@
     - name: Create Storage Nodes Deploy
       async: 7200
       poll: 0
+      when: storage is defined
       with_dict: "{{ storage }}"
       azure_rm_deployment:
         ad_user: "{{ ad_username }}"
@@ -418,7 +422,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: {{ image }} 
+            value: "{{ image }}"
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -445,6 +449,7 @@
     - name: Wait for master instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azuremasternodes
+      when: masters
       until: azuremasternodes.finished
       retries: 900
       with_items: "{{ azuremasternodes_sync.results }}"
@@ -453,6 +458,7 @@
     - name: Wait for infranode instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azureinfranodes
+      when: infranodes is defined
       until: azureinfranodes.finished
       retries: 900
       with_items: "{{ azureinfranodes_async.results }}"
@@ -461,13 +467,15 @@
     - name: Wait for nodes instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azurenodes
+      when: nodes is defined
       until: azurenodes.finished
       retries: 900
       with_items: "{{ azurenodes_async.results }}"
 
 ### wait for nodes
-    - name: Wait for nodes instance creation to complete
+    - name: Wait for storage nodes instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
+      when: storage is defined
       register: azurestoragenodes
       until: azurestoragenodes.finished
       retries: 900
@@ -476,14 +484,15 @@
     - debug: msg="the value of (MASTERS)azuremasternodes {{ azuremasternodes }}"
     - debug: msg="the value of (NODES)azurenodes {{ azurenodes }}"
     - debug: msg="the value of (STORAGE NODES)azurestoragenodes {{ azurestoragenodes }}"
+      when: storage is defined
     - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
 - hosts: localhost
   connection: localhost
   roles:
-     - { role: tagvm, machines: "{{ masters }}" }
-     - { role: tagvm, machines: "{{ nodes }}" }
-     - { role: tagvm, machines: "{{ storage }}" }
-     - { role: tagvm, machines: "{{ infranodes }}" }
+#     - { role: tagvm, machines: "{{ masters }}" }
+#     - { role: tagvm, machines: "{{ nodes }}" }
+#     - { role: tagvm, machines: "{{ storage }}" }
+#     - { role: tagvm, machines: "{{ infranodes }}" }
      - { role: generateinventory }
 
 ################################################
@@ -513,10 +522,13 @@
     - name: From the jumphost scan the keys for all storage nodes  and print to file
       shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
       with_dict: "{{ storage }}"
+      when: storage is defined
+
 ## From the jumphost fetch the keys for all app nodes  and save locally
     - name: From the jumphost fetch the keys for all storage nodes  and save locally
       fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
       with_dict: "{{ storage }}"
+      when: storage is defined
 
 ## From the jumphost scan the keys for all infranodes  and print to file
     - name:  From the jumphost scan the keys for all infranodes  and print to file
@@ -557,6 +569,7 @@
     - name: Assemble storage nodes knownhosts locally
       shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
       with_dict: "{{ storage }}"
+      when: storage is defined
     - name:  Assemble masters knownhosts locally
       shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
       with_dict: "{{ masters }}"

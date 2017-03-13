@@ -14,23 +14,31 @@ publicjumpip={{  publicjumpip  }}
 {% endfor %}
 [gatewayed-nodes]
 ## nodes
+{% if nodes is defined %}
 {% for key, value in nodes.iteritems() %}
 {{ value.name }}
 {% endfor %}
+{% endif %}
 ## infra
+{% if infranodes is defined %}
 {% for key, value in infranodes.iteritems() %}
 {{ value.name }}
 {% endfor %}
+{% endif %}
 ## masters
 {% for key, value in masters.iteritems() %}
 {{ value.name }}
 {% endfor %}
 ## storage
+{% if storage is defined %}
 {% for key, value in storage.iteritems() %}
 {{ value.name }}
 {% endfor %}
+{% endif %}
 [gatewayed-storage]
 ## storage
+{% if storage is defined %}
 {% for key, value in storage.iteritems() %}
 {{ value.name }}
 {% endfor %}
+{% endif %}

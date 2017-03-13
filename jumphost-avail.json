@@ -65,6 +65,7 @@
   },
   "variables": {
     "apiVersion": "2015-06-15",
+    "comoputeapiVersion": "2016-04-30-preview",
     "PublicIP-name" : "[parameters('publicip')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "storageName": "[concat(uniqueString(resourceGroup().id), parameters('vmName'))]",
@@ -76,7 +77,7 @@
     "centos": {
       "publisher": "Openlogic",
       "offer": "CentOS",
-      "sku": "7.2",
+      "sku": "7.3",
       "version": "latest"
     },
     "rhel": {
@@ -133,7 +134,7 @@
       }
     },
     {
-      "apiVersion": "[variables('apiVersion')]",
+      "apiVersion": "[variables('comoputeapiVersion')]",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
@@ -166,9 +167,6 @@
           "imageReference": "[variables('imageReference')]",
           "osDisk": {
             "name": "osdisk",
-            "vhd": {
-              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('sa')), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), '.vhd')]"
-            },
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
@@ -179,9 +177,6 @@
               "diskSizeGB": "40",
               "lun": 0,
               "name": "[parameters('vmName')]",
-              "vhd": {
-                "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('sa')), variables('apiVersion')).primaryEndpoints.blob, 'openshiftvmachines/', parameters('vmName'), '_datadisk1.vhd')]"
-              }
             }
           ]
         },

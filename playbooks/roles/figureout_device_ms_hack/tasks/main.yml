@@ -1,7 +1,7 @@
 ##### Start Hack to determin storage device #####
 - shell: findmnt -no SOURCE
   register: sdccheck
-- debug: msg="The /dev/sdc is already in use. This is because microsoft has the /mnt/resource temp directory  which ordinarly should be using the device /dev/sdb sometimes can be mounted under  /dev/sdc  "
+- debug: msg="The /dev/sdc is already in use. This is because  the /mnt/resource temp directory  which ordinarly should be using the device /dev/sdb sometimes can be mounted under  /dev/sdc  "
   when: sdccheck.stdout.find('sdc') != -1
 - set_fact:
     docker_storage_device: "/dev/sdb"

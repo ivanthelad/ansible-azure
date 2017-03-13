@@ -12,6 +12,9 @@
     azure_rm_virtualmachine:
       ad_user: "{{ ad_username }}"
       password: "{{ ad_password }}"
+      secret: "{{ secret }}"
+      tenant: "{{ tenant }}"
+      client_id: "{{ client_id }}"
       subscription_id: "{{ subscriptionID }}"
       resource_group: "{{ resource_group_name }}"
       name: "{{ item.value.name }}"
@@ -23,6 +26,9 @@
     async: 7200
     poll: 0
     azure_rm_virtualmachine:
+      secret: "{{ secret }}"
+      tenant: "{{ tenant }}"
+      client_id: "{{ client_id }}"
       ad_user: "{{ ad_username }}"
       password: "{{ ad_password }}"
       subscription_id: "{{ subscriptionID }}"
@@ -36,6 +42,9 @@
     async: 7200
     poll: 0
     azure_rm_virtualmachine:
+      secret: "{{ secret }}"
+      tenant: "{{ tenant }}"
+      client_id: "{{ client_id }}"
       ad_user: "{{ ad_username }}"
       password: "{{ ad_password }}"
       subscription_id: "{{ subscriptionID }}"
@@ -48,6 +57,9 @@
     async: 7200
     poll: 0
     azure_rm_virtualmachine:
+      secret: "{{ secret }}"
+      tenant: "{{ tenant }}"
+      client_id: "{{ client_id }}"
       ad_user: "{{ ad_username }}"
       password: "{{ ad_password }}"
       subscription_id: "{{ subscriptionID }}"

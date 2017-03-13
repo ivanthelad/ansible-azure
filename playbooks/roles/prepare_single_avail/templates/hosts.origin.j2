@@ -8,12 +8,12 @@ etcd
 [OSEv3:vars]
 # SSH user, this user should allow ssh based auth without requiring a password
 ansible_ssh_user={{ adminUsername }}
-openshift_release=v{{openshiftversion}}
+openshift_release=1.4.1
 # If ansible_ssh_user is not root, ansible_sudo must be set to true
 ansible_become=yes
 os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
-deployment_type=openshift-enterprise
-#deployment_type=origin
+#deployment_type=openshift-enterprise
+deployment_type=origin
 #openshift_image_tag=v1.4.0-rc1
 #containerized=true
 osm_default_subdomain={{ routerpublicip }}.xip.io

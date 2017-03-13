@@ -14,7 +14,7 @@
                    regexp='^  metricsPublicURL'
                    line='  metricsPublicURL: https://hawkular-metrics.{{ routerpublicip }}.xip.io/hawkular/metrics'"
 - hosts: gatewayed-masters[0]
-  name: postinstall, install flipping metrics
+  name: postinstall, install metrics
   user: "{{ adminUsername }}"
   sudo: true
   tags:
