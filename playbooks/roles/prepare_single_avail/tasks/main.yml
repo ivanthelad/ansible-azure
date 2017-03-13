@@ -1,6 +1,14 @@
-- name: Set configuration file
+### SplIT UP   config files cos the origin can differ greatly from the enterprise. handier to have sperate files
+- name: Set configuration file for enterprise
+  when: not openshiftorigin
   template:
     src: hosts.j2
+    dest: /etc/ansible/hosts
+  tags: ose
+- name: Set configuration file for origin
+  when: openshiftorigin
+  template:
+    src: hosts.origin.j2
     dest: /etc/ansible/hosts
   tags: ose
 - name: Set icustomer configuration file

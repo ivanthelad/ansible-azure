@@ -12,7 +12,7 @@
         enabled: yes
         repo_gpgcheck: yes
 #    - command: "sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo"
-    - command: yum -y --enablerepo=epel install ansible pyOpenSSL --nogpgcheck
+    - command: yum -y --enablerepo=epel install ansible-2.2.0 pyOpenSSL --nogpgcheck
 #    - name: Install Basic Preqes from epel#
     #  yum:
   #      name: "{{ item }}"
