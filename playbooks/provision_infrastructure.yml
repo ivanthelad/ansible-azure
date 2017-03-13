@@ -393,6 +393,7 @@
     - name: Create Storage Nodes Deploy
       async: 7200
       poll: 0
+      when: storage is defined
       with_dict: "{{ storage }}"
       azure_rm_deployment:
         ad_user: "{{ ad_username }}"
