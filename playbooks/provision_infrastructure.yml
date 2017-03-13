@@ -486,7 +486,7 @@
     - debug: msg="the value of (STORAGE NODES)azurestoragenodes {{ azurestoragenodes }}"
       when: storage is defined
     - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
-- hosts: localhost#
+- hosts: localhost
   connection: localhost
   roles:
 #     - { role: tagvm, machines: "{{ masters }}" }
