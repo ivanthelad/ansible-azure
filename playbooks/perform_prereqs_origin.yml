@@ -11,8 +11,16 @@
         baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
         enabled: yes
         repo_gpgcheck: yes
+    - name: Add SIG repository
+      yum_repository:
+        name: epel2
+        description: EPEL YUM SIG repo
+        baseurl:   http://mirror.centos.org/centos/7/paas/x86_64/openshift-origin/
+        enabled: yes
+        repo_gpgcheck: yes
 #    - command: "sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo"
-    - command: yum -y --enablerepo=epel install ansible-2.2.0 pyOpenSSL --nogpgcheck
+    - command: yum -y --enablerepo=epel2 install ansible-2.2.1.0-2.el7  --nogpgcheck
+    - command: yum -y --enablerepo=epel install pyOpenSSL --nogpgcheck
 #    - name: Install Basic Preqes from epel#
     #  yum:
   #      name: "{{ item }}"
