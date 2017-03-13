@@ -193,10 +193,10 @@
 
 
 
-- hosts: localhost
-  connection: localhost
-  roles:
-     - { role: tagvm, machines: "{{ jumphost }}" }
+#- hosts: localhost#
+#  connection: localhost
+#  roles:
+#     - { role: tagvm, machines: "{{ jumphost }}" }
 
 
 ################################################
@@ -245,7 +245,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: "{{ image }}" 
+            value: "{{ image }}"
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -306,7 +306,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: "{{ image }}" 
+            value: "{{ image }}"
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -365,7 +365,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: "{{ image }}" 
+            value: "{{ image }}"
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -418,7 +418,7 @@
           adminPassword:
             value: "{{ adminPassword }}"
           image:
-            value: "{{ image }}" 
+            value: "{{ image }}"
           masterKey:
             value: "{{ masterkey }}"
           tags:
@@ -477,13 +477,13 @@
     - debug: msg="the value of (NODES)azurenodes {{ azurenodes }}"
     - debug: msg="the value of (STORAGE NODES)azurestoragenodes {{ azurestoragenodes }}"
     - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
-- hosts: localhost
+- hosts: localhost#
   connection: localhost
   roles:
-     - { role: tagvm, machines: "{{ masters }}" }
-     - { role: tagvm, machines: "{{ nodes }}" }
-     - { role: tagvm, machines: "{{ storage }}" }
-     - { role: tagvm, machines: "{{ infranodes }}" }
+#     - { role: tagvm, machines: "{{ masters }}" }
+#     - { role: tagvm, machines: "{{ nodes }}" }
+#     - { role: tagvm, machines: "{{ storage }}" }
+#     - { role: tagvm, machines: "{{ infranodes }}" }
      - { role: generateinventory }
 
 ################################################

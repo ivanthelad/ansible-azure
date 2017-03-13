@@ -77,6 +77,8 @@
 
 
     "apiVersion": "2015-06-15",
+    "comoputeapiVersion": "2016-04-30-preview",
+
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "storageName": "[concat(uniqueString(resourceGroup().id), parameters('vmName'))]",
     "location": "[resourceGroup().location]",
@@ -151,7 +153,7 @@
       }
     },
     {
-      "apiVersion": "[variables('apiVersion')]",
+      "apiVersion": "[variables('comoputeapiVersion')]",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",

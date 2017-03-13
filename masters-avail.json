@@ -89,6 +89,7 @@
     "loadbalancer-name2" : "[concat(parameters('loadBalancer'),'loadbalancername2')]",
 
     "backend-address-pool-name" : "[concat(parameters('loadBalancer'),'backendpool')]",
+    "comoputeapiVersion": "2016-04-30-preview",
 
     "apiVersion": "2015-06-15",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
@@ -307,7 +308,7 @@
       }
     },
     {
-      "apiVersion": "[variables('apiVersion')]",
+      "apiVersion": "[variables('comoputeapiVersion')]",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
