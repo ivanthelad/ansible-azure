@@ -143,15 +143,26 @@ jumphost1
 ############################
 # host group for nodes, includes region info
 [nodes]
+{% if nodes is defined %}
 {% for key, value in nodes.iteritems() %}
 {{ value.name }} openshift_hostname={{ value.name }}  openshift_public_hostname={{ value.name }} openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
 {% endfor %}
+{% endif %}
+
+{% if masters is defined %}
 {% for key, value in masters.iteritems() %}
 {{ value.name }} openshift_hostname={{ value.name }}  openshift_public_hostname={{ value.name }}  openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
 {% endfor %}
+{% endif %}
+
+{% if infranodes is defined %}
 {% for key, value in infranodes.iteritems() %}
 {{ value.name }} openshift_hostname={{ value.name }}  openshift_public_hostname={{ value.name }}  openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
 {% endfor %}
+{% endif %}
+
+{% if storage is defined %}
 {% for key, value in storage.iteritems() %}
 {{ value.name }} openshift_hostname={{ value.name }}  openshift_public_hostname={{ value.name }}  openshift_node_labels="{ {% for key1, value1 in value.tags.iteritems() %}'{{ key1 }}': '{{ value1 }}' {% if not loop.last %}, {% endif %}{% endfor %} }"
 {% endfor %}
+{% endif %}
