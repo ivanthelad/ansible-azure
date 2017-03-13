@@ -218,6 +218,7 @@
     - name: Create Masters Deploy
       async: 7200
       poll: 0
+      when: masters is defined
       with_dict: "{{ masters }}"
       delay: 30
       retries: 1
@@ -279,6 +280,7 @@
 ####Todo, dyncamically add the list of infra nodes to group
 ################################################
     - name: Create infra Nodes Deploy
+      when: infranodes is defined
       with_dict: "{{ infranodes }}"
       async: 7200
       poll: 0
@@ -340,6 +342,7 @@
     - name: Create Nodes Deploy
       async: 7200
       poll: 0
+      when: nodes is defined
       with_dict: "{{ nodes }}"
       azure_rm_deployment:
         ad_user: "{{ ad_username }}"
@@ -446,6 +449,7 @@
     - name: Wait for master instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azuremasternodes
+      when: masters
       until: azuremasternodes.finished
       retries: 900
       with_items: "{{ azuremasternodes_sync.results }}"
@@ -454,6 +458,7 @@
     - name: Wait for infranode instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azureinfranodes
+      when: infranodes is defined
       until: azureinfranodes.finished
       retries: 900
       with_items: "{{ azureinfranodes_async.results }}"
@@ -462,13 +467,15 @@
     - name: Wait for nodes instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azurenodes
+      when: nodes is defined
       until: azurenodes.finished
       retries: 900
       with_items: "{{ azurenodes_async.results }}"
 
 ### wait for nodes
-    - name: Wait for nodes instance creation to complete
+    - name: Wait for storage nodes instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
+      when: storage is defined
       register: azurestoragenodes
       until: azurestoragenodes.finished
       retries: 900
