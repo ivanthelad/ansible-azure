@@ -5,6 +5,7 @@
   gather_facts: no
   vars:
     mastercount: "{{ masters | length }}"
+    storagecount: "{{ storage | length }}"
   tasks:
     - debug: msg="Checking if master size is correct either 1,3 or 5. Current size={{ mastercount }} "
     - name: 'check parm is null or invalid'
@@ -13,6 +14,18 @@
         - mastercount  != '1'
         - mastercount  != '3'
         - mastercount  != '5'
+    - debug: msg="Checking if storage size is correct either 3, 5, 7. Current size={{ storagecount }} "
+      when:
+      - install_storage is defined
+      - install_storage
+    - name: 'check parm is null or invalid'
+      fail: fail: msg="Openshift installation supports either 3, 5, 7 storage nodes because of storage's qourm. Your corrent number of storage is \"{{ storage | length }}\". Please ensure your master size fulfills this requirement. Update the dict/array called storage in the file groups/all"
+      when:
+      - storagecount  != '3'
+      - storagecount  != '5'
+      - storagecount  != '7'
+      - install_storage is defined
+      - install_storage
 
 - include: provision_infrastructure.yml
 - include: perform_prereqs_origin.yml
