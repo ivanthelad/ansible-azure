@@ -19,7 +19,7 @@
       - install_storage is defined
       - install_storage
     - name: 'check parm is null or invalid'
-      fail: fail: msg="Openshift installation supports either 3, 5, 7 storage nodes because of storage's qourm. Your corrent number of storage is \"{{ storage | length }}\". Please ensure your master size fulfills this requirement. Update the dict/array called storage in the file groups/all"
+      fail: msg="Openshift installation supports either 3, 5, 7 storage nodes because of storage's qourm. Your corrent number of storage is \"{{ storage | length }}\". Please ensure your master size fulfills this requirement. Update the dict/array called storage in the file groups/all"
       when:
       - storagecount  != '3'
       - storagecount  != '5'
