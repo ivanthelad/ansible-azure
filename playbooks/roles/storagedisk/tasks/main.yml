@@ -1,8 +1,12 @@
 - debug: msg=" Attaching disk to VM "
 - name: Azure CLI telemetrics off
   command: 'azure telemetry --disable'
-- name: Azure Login
+- name: Azure Login with cli 1.0
   command: "azure login -u {{ ad_username }} -p {{ ad_password }}"
+  when: ad_username is defined
+- name: Azure Login with cli 2.0
+  command: "az login --service-principal -u {{ principal }} -p {{ secret }} -t {{ tenant }}"
+  when: ad_username|default("") != ""
 - name: Attach disk to VM
   command: "azure vm disk attach-new -g  {{resource_group_name}} {{item[1]}} {{item[0]}} "
   with_nested:
