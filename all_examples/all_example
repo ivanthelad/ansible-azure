@@ -6,7 +6,7 @@ resource_group_name: pirates
 ad_username: XXXXXXXXXXXXXXXXXXX
 ### Azure AD password
 ad_password: XXXXXXXXXXXXXXXXXXX
-client_id: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" 
+client_id: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 secret: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 tenant: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 principal: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
@@ -56,6 +56,7 @@ install_sso: false
 rh_subcription_user: XXXXXXXXXXX
 rh_subcription_pass: XXXXXXXXXXX
 openshift_pool_id: XXXXXXXXXXX
+storage_pool_id: XXXXXX
 
 ########### list of node  ###########
 ### Warning, you currently cannot create more infra nodes ####

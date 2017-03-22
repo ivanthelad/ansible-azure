@@ -48,6 +48,7 @@ create_lvsize: '80%FREE'
 rh_subcription_user: XXXXXXXXXXX
 rh_subcription_pass: XXXXXXXXXXX
 openshift_pool_id: XXXXXXXXXXX
+storage_pool_id: XXXXXX
 
 #### For Gluster storage ####
 install_storage: true
