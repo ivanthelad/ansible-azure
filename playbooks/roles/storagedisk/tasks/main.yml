@@ -5,7 +5,7 @@
   command: "azure login -u {{ ad_username }} -p {{ ad_password }}"
   when: ad_username is defined
 - name: Azure Login with cli 2.0
-  command: "az login --service-principal -u {{ principal }} -p {{ secret }} -t {{ tenant }}"
+  command: "azure login --service-principal -u {{ principal }} -p {{ secret }} --tenant {{ tenant }}"
   when: ad_username|default("") != ""
 - name: Attach disk to VM
   command: "azure vm disk attach-new -g  {{resource_group_name}} {{item[1]}} {{item[0]}} "
