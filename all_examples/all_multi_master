@@ -61,9 +61,10 @@ openshift_pool_id: XXXXXXXXXXX
 storage_pool_id: XXXXXX
 
 ########### list of node  ###########
-### Warning, you currently cannot create more infra nodes ####
-### this will change in the future
-### You can add as many nodes as you want
+### 1,3 or 5 masters nodes       ####
+### 3,5 or 7 storage nodes       ####
+### 1+ infra nodes               ####
+### 1+ app nodes                 ####
 #####################################
 
 jumphost:
@@ -118,6 +119,7 @@ infranodes:
       zone: zone1
       infra: "true"
       infratype: registry
+      router: router
   infranode2:
     name: infranode2
     datadisksize: 80
@@ -127,6 +129,7 @@ infranodes:
       region: "{{ region }}"
       zone: zone2
       infra: "true"
+      router: router
 nodes:
   node1:
     name: node1
@@ -149,7 +152,3 @@ nodes:
       zone: zone2
       infra: "false"
       stage: dev
-
-#i#nodes:
-#  name: node1
-#  name: node2

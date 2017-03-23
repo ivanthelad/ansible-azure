@@ -70,9 +70,10 @@ sso_realm: azure
 
 
 ########### list of node  ###########
-### Warning, you currently cannot create more infra nodes ####
-### this will change in the future
-### You can add as many nodes as you want
+### 1,3 or 5 masters nodes       ####
+### 3,5 or 7 storage nodes       ####
+### 1+ infra nodes               ####
+### 1+ app nodes                 ####
 #####################################
 
 jumphost:
@@ -108,6 +109,7 @@ infranodes:
     tags:
       region: "{{ region }}"
       zone: zone1
+      router: router
       infra: "true"
       infratype: registry
 
@@ -160,7 +162,3 @@ storage:
       stage: dev
       type: storage
       zone: 3
-
-#i#nodes:
-#  name: node1
-#  name: node2
