@@ -109,9 +109,9 @@ infranodes:
     tags:
       region: "{{ region }}"
       zone: zone1
-      router: router
+      router: true
       infra: "true"
-      infratype: registry
+      registry: true
 
 nodes:
   node1:

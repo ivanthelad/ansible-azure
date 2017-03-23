@@ -117,8 +117,9 @@ openshift_hosted_registry_storage_volume_size=20Gi
 
 openshift_master_audit_config={"basicAuditEnabled": true}
 
-openshift_router_selector='router=router'
-openshift_registry_selector='infra=true,infratype=registry'
+openshift_router_selector='router=true'
+openshift_registry_selector='registry=true'
+
 [nfs]
 jumphost1
 #[etcd:vars]

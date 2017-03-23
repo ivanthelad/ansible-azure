@@ -109,8 +109,8 @@ infranodes:
       zone: zone1
       infra: "true"
       type: core
-      router: router
-      infratype: registry
+      router: true
+      registry: true
       mbaas_id: mbaas1
   infranode2:
     name: infranode2
@@ -119,7 +119,7 @@ infranodes:
     storagtype: Premium_LRS
     tags:
       region: "{{ region }}"
-      router: router
+      router: true
       zone: zone2
       infra: "true"
       type: core
@@ -131,7 +131,7 @@ infranodes:
     name: infranode3
     tags:
       region: "{{ region }}"
-      router: router
+      router: true
       zone: zone3
       infra: "true"
       type: core

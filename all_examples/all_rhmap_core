@@ -114,8 +114,8 @@ infranodes:
       zone: zone1
       infra: "true"
       type: core
-      router: router
-      infratype: registry
+      router: true
+      registry: true
   infranode2:
     name: infranode2
     datadisksize: 80
@@ -125,7 +125,7 @@ infranodes:
       region: "{{ region }}"
       zone: zone2
       infra: "true"
-      router: router
+      router: true
       type: core
   infranode3:
     name: infranode3
@@ -136,7 +136,7 @@ infranodes:
       region: "{{ region }}"
       zone: zone3
       infra: "true"
-      router: router
+      router: true
       type: core
 nodes:
   node1:
