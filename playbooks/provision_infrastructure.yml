@@ -479,11 +479,11 @@
       register: azurestoragenodes
       until: azurestoragenodes.finished
       retries: 900
-      with_items: "{{ azurestoragenodes_async.results }}"
+      with_items: "{{ azurestoragenodes_async.results | default([]) }}"
 
     - debug: msg="the value of (MASTERS)azuremasternodes {{ azuremasternodes }}"
     - debug: msg="the value of (NODES)azurenodes {{ azurenodes }}"
-    - debug: msg="the value of (STORAGE NODES)azurestoragenodes {{ azurestoragenodes }}"
+    - debug: msg="the value of (STORAGE NODES)azurestoragenodes {{ azurestoragenodes | default([]) }}"
       when: storage is defined
     - debug: msg="the value of (INFRA)azureinfranodes {{ azureinfranodes }}"
 - hosts: localhost
@@ -521,13 +521,13 @@
 ## From the jumphost scan the keys for all app nodes  and print to file
     - name: From the jumphost scan the keys for all storage nodes  and print to file
       shell: "ssh-keyscan -H -T 10  {{ item.value.name }} >> /home/{{ adminUsername }}/.ssh/known_hosts "
-      with_dict: "{{ storage }}"
+      with_dict: "{{ storage | default([])}}"
       when: storage is defined
 
 ## From the jumphost fetch the keys for all app nodes  and save locally
     - name: From the jumphost fetch the keys for all storage nodes  and save locally
       fetch: src=/home/{{ adminUsername }}/.ssh/known_hosts  dest=/tmp/{{ item.value.name }}_knownhosts flat=yes
-      with_dict: "{{ storage }}"
+      with_dict: "{{ storage | default([])}}"
       when: storage is defined
 
 ## From the jumphost scan the keys for all infranodes  and print to file
@@ -568,7 +568,7 @@
       with_dict: "{{ nodes }}"
     - name: Assemble storage nodes knownhosts locally
       shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
-      with_dict: "{{ storage }}"
+      with_dict: "{{ storage | default([])}}"
       when: storage is defined
     - name:  Assemble masters knownhosts locally
       shell : "cat /tmp/{{ item.value.name }}_knownhosts >> ~/.ssh/known_hosts "
